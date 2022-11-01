@@ -40,8 +40,25 @@ class PostController extends Controller
         return Inertia::render('Professional/Post/Create');
     }
 
-    public function store()
+    public function store(Request $request)
     {
+
+        $image_path = '';
+
+        if ($request->hasFile('image')) {
+            $image_path = $request->file('image')->store('image', 'public');
+        }
+
+        $user_id = Auth::user()->id;
+        $data = Post::create([
+            'user_id'=>$user_id,
+            'image'=>$image_path,
+            'title'=>$request->title,
+            'type'=>$request->type,
+            'status'=>$request->status,
+            'description'=>$request->description,
+        ]);
+
         return Inertia::render('Professional/Post/Index');
     }
 }
