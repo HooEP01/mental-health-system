@@ -84,11 +84,13 @@ function destroy(id) {
                         <div v-for="post in posts.data" :key="post.id" class="group relative">
                             <div
                                 class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-                                <img v-if="post.image" :src="'/storage/' + post.image" alt="image"
-                                    class="h-full w-full object-cover object-center lg:h-full lg:w-full" />
-                                <img v-else
-                                    src="https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg"
-                                    alt="images" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+                                <Link :href="route('professional-post.show', post.id)">
+                                    <img v-if="post.image" :src="'/storage/' + post.image" alt="image"
+                                        class="h-full w-full object-cover object-center lg:h-full lg:w-full" />
+                                    <img v-else
+                                        src="https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg"
+                                        alt="images" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+                                </Link>
                             </div>
                             <div class="mt-4 flex justify-between">
                                 <div>

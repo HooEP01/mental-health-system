@@ -43,6 +43,22 @@ class PostController extends Controller
 
     public function show($id)
     {
+        $data = DB::table('posts')
+        -> select('posts.*')
+        -> where('posts.id', '=', $id)
+        -> where('posts.user_id', '=', Auth::Id())
+        -> first();
+
+        return Inertia::render('Professional/Post/Show', [
+            'post' => [
+                'id' => $id,
+                'title' => $data->title,
+                'image' => $data->image,
+                'category' => $data->category,
+                'status' => $data->status,
+                'description' =>$data->description,
+            ]
+        ]);
 
     }
 

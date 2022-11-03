@@ -80,7 +80,6 @@ export default {
                             <div class="shadow sm:overflow-hidden sm:rounded-md">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
 
-
                                     <!-- title -->
                                     <div class="col-span-6">
                                         <label for="title" class="block text-sm font-medium text-gray-700">Title</label>

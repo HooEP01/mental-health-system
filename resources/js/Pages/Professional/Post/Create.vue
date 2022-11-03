@@ -3,12 +3,14 @@ import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useForm, Head } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 import BreadcrumbHeader from '@/Components/BreadcrumbHeader.vue';
+import Editor from '@/Components/TipTap.vue';
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
-        BreadcrumbHeader,
+        BreadcrumbHeader,   
+        Editor,
     },
     props: {
         errors: Object,
@@ -149,10 +151,8 @@ export default {
                                         <label for="description"
                                             class="block text-sm font-medium text-gray-700">Description</label>
                                         <div class="mt-1">
-                                            <textarea v-model="form.description" id="description" name="description"
-                                                rows="3"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                                placeholder="description"></textarea>
+                                            <Editor v-model="form.description" :max-limit="280" />
+                                           
                                         </div>
                                         <p class="mt-2 text-sm text-gray-500">Description for your post. URLs are
                                             hyperlinked.</p>
