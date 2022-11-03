@@ -6,6 +6,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use DB;
 
 class PostController extends Controller
 {
@@ -15,24 +16,34 @@ class PostController extends Controller
         $this->middleware('can:professional post create', ['only' => ['create', 'store']]);
         $this->middleware('can:professional post edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:professional post delete', ['only' => ['destroy']]);
-    }    /**
+    }   
+     
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $posts = (new Post)->newQuery();
-        $posts->latest();
-        $posts = $posts->paginate(100)->onEachSide(2)->appends(request()->query());        
+        $data = DB::table('posts')
+        -> select('posts.*')
+        -> where('posts.user_id','=',Auth::id())
+        -> orderBy('created_at','desc')
+        -> paginate(100);
+ 
         return Inertia::render('Professional/Post/Index', [
-            'posts' => $posts,
+            'posts' => $data,
             'can' => [
                 'create' => Auth::user()->can('user post create'),
                 'edit' => Auth::user()->can('user post edit'),
                 'delete' => Auth::user()->can('user post delete'),
             ]
         ]);
+    }
+
+    public function show($id)
+    {
+
     }
 
     public function create()
@@ -54,11 +65,55 @@ class PostController extends Controller
             'user_id'=>$user_id,
             'image'=>$image_path,
             'title'=>$request->title,
-            'type'=>$request->type,
+            'category'=>$request->category,
             'status'=>$request->status,
             'description'=>$request->description,
         ]);
 
-        return Inertia::render('Professional/Post/Index');
+        return $this->index();
+    }
+
+    public function edit($id)
+    {
+        $data = DB::table('posts')
+        -> select('posts.*')
+        -> where('posts.id', '=', $id)
+        -> where('posts.user_id', '=', Auth::Id())
+        -> first();
+        
+        return Inertia::render('Professional/Post/Edit', [
+            'post' => [
+                'id' => $id,
+                'title' => $data->title,
+                'image' => $data->image,
+                'category' => $data->category,
+                'status' => $data->status,
+                'description' =>$data->description,
+            ]
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = Post::find($id);
+
+        if ($request->hasFile('image')) {
+            $image_path = $request->file('image')->store('image', 'public');
+            $data->image = $image_path;
+        }
+
+        $data->title=$request->title;
+        $data->category=$request->category;
+        $data->status=$request->status;
+        $data->description=$request->description;
+        $data->save();
+
+        return $this->index();
+    }
+
+    public function destroy($id)
+    {
+        $data = Post::find($id);
+        $data->delete();
     }
 }
