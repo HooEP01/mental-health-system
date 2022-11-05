@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 
+// spatie - role permission
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -47,8 +52,11 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
         Auth::login($user);
+
+        // assign role
+        $user->assignRole('user');
+
 
         return redirect(RouteServiceProvider::HOME);
     }

@@ -13,16 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('content_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\User::class, 'user_id')->nullable();
-            $table->string('title', 1000);
-            $table->string('slug', 1000)->nullable();
-            $table->string('category', 255)->nullable();
-            $table->tinyInteger('status')->nullable();
+            $table->foreignIdFor(\App\Models\Content::class, 'content_id');
+            $table->string('category', 100);
+            $table->string('question', 2000);
+            $table->text('description')->nullable();
+            $table->text('data')->nullable();
             $table->string('image', 255)->nullable();
             $table->string('audio', 255)->nullable();
-            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('content_questions');
     }
 };

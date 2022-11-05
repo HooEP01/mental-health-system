@@ -1,17 +1,24 @@
 <script setup>
-import { ref } from 'vue';
+// import vue 
+import { ref, computed } from 'vue';
+
+// import inertia
+import { Link, usePage } from '@inertiajs/inertia-vue3';
+
+// import component
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import BreezeNavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link, usePage } from '@inertiajs/inertia-vue3';
-import { computed } from 'vue'
-const permission = computed(() => usePage().props.value.auth.permission)
-console.log(permission)
+import { canSplit } from 'prosemirror-transform';
 
+// get permission list set from Middleware/HandleInertiaRequests.php
+const can = computed(() => usePage().props.value.auth.can)
 
+// dropdown navigation ref
 const showingNavigationDropdown = ref(false);
+
 </script>
 
 <template>
@@ -35,38 +42,42 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <BreezeNavLink :href="route('home')" :active="route().current('home')">
-                                    Home
-                                </BreezeNavLink>
+
+                                <!-- dashboard -->
                                 <BreezeNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.user" :href="route('admin-user.index')"
-                                    :active="route().current('admin-user.index')">
-                                    Users
+
+                                <!-- Journey -->
+                                <BreezeNavLink v-if="can.appointment" :href="route('appointment.index')"
+                                    :active="route().current('appointment.index')">
+                                    Journey
                                 </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.userPostList" :href="route('post.index')"
-                                    :active="route().current('post.index')">
+
+                                <!-- resource -->
+                                <BreezeNavLink v-if="can.content" :href="route('content.index')"
+                                    :active="route().current('content.index')">
                                     Resource
                                 </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.permission" :href="route('admin-permission.index')"
-                                    :active="route().current('admin-permission.index')">
-                                    Permission
+
+                                <!-- transaction -->
+                                <BreezeNavLink v-if="can.payment" :href="route('payment.index')"
+                                    :active="route().current('payment.index')">
+                                    Transaction
                                 </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.role" :href="route('admin-role.index')"
-                                    :active="route().current('admin-role.index')">
-                                    Role
-                                </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.adminPostList" :href="route('admin-post.index')"
-                                    :active="route().current('admin-post.index')">
-                                    Post
-                                </BreezeNavLink>
-                                <BreezeNavLink v-if="permission.professionalPostList"
-                                    :href="route('professional-post.index')"
-                                    :active="route().current('professional-post.index')">
+
+                                <!-- professional -->
+                                <BreezeNavLink v-if="can.contents" :href="route('contents.index')"
+                                    :active="route().current('contents.index')">
                                     Professional
                                 </BreezeNavLink>
-   
+
+                                <!-- admin -->
+                                <BreezeNavLink v-if="can.contents_view" :href="route('contents_view.index')"
+                                    :active="route().current('contents_view.index')">
+                                    Admin
+                                </BreezeNavLink>
+
                             </div>
 
                         </div>
@@ -92,6 +103,9 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
+                                        <DropdownLink :href="route('profile.index')" v-if="can.profile" as="button">
+                                            Profile
+                                        </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
                                         </DropdownLink>
@@ -126,6 +140,35 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
+                        <!-- Journey -->
+                        <ResponsiveNavLink v-if="can.appointment" :href="route('appointment.index')"
+                            :active="route().current('appointment.index')">
+                            Journey
+                        </ResponsiveNavLink>
+
+                        <!-- resource -->
+                        <ResponsiveNavLink v-if="can.content" :href="route('content.index')"
+                            :active="route().current('content.index')">
+                            Resource
+                        </ResponsiveNavLink>
+
+                        <!-- transaction -->
+                        <ResponsiveNavLink v-if="can.payment" :href="route('payment.index')"
+                            :active="route().current('payment.index')">
+                            Transaction
+                        </ResponsiveNavLink>
+
+                        <!-- professional -->
+                        <ResponsiveNavLink v-if="can.contents" :href="route('contents.index')"
+                            :active="route().current('contents.index')">
+                            Professional
+                        </ResponsiveNavLink>
+
+                        <!-- admin -->
+                        <ResponsiveNavLink v-if="can.contents_view" :href="route('contents_view.index')"
+                            :active="route().current('contents_view.index')">
+                            Admin
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -136,25 +179,40 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink :href="route('profile.index')" v-if="can.profile" as="button">
+                                Profile
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
                     </div>
+                    <!-- End Responsive Settings Options -->
+
                 </div>
             </nav>
 
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        <slot name="header" />
+                    </h2>
                 </div>
             </header>
 
             <!-- Page Content -->
             <main>
-                <slot />
+                <div class="py-12">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
+                        <div class="md:grid md:grid-cols-4 md:gap-3">
+                            <slot name="content" />
+                        </div>
+                    </div>
+                </div>
             </main>
+            <!-- End Page Content -->
+
         </div>
     </div>
 </template>

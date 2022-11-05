@@ -3,16 +3,15 @@ import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useForm, Head } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 import BreadcrumbHeader from '@/Components/BreadcrumbHeader.vue';
-import Editor from '@/Components/TipTap.vue';
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
-        BreadcrumbHeader,   
-        Editor,
+        BreadcrumbHeader,
     },
     props: {
+        post: Object,
         errors: Object,
     },
     data() {
@@ -20,20 +19,20 @@ export default {
             image_url: null,
         }
     },
-    setup() {
+    setup(props) {
         const form = useForm({
-            title: null,
-            image: null,
+            id: props.post.id,
+            title: props.post.title,
+            image: props.post.image,
             slug: null,
-            category: '1',
-            status: '1',
-            description: null,
+            category: props.post.category,
+            status: props.post.status,
+            description: props.post.description,
         });
        
 
-
         function submit() {
-            Inertia.post(route('professional-post.store'), form)
+            Inertia.put(route('professional-post.update', form.id), form)
         }
 
         return { form, submit };
@@ -95,7 +94,7 @@ export default {
                                             class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                                             <div class="space-y-1 text-center">
                                                 <img v-if="form.image" :src="'/storage/' + form.image" class="w-64 h-48 object-cover"/>
-                                                <img v-if="image_url" :src="image_url" :alt="form.title"
+                                                <img v-else="image_url" :src="image_url" :alt="form.title"
                                                     class="w-64 h-48 object-cover" />
                                                 <svg v-else class="mx-auto h-12 w-12 text-gray-400"
                                                     stroke="currentColor" fill="none" viewBox="0 0 48 48"
@@ -122,8 +121,8 @@ export default {
                                     <!-- category & status -->
                                     <div class="grid grid-cols-6 gap-6">
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label for="category"
-                                                class="block text-sm font-medium text-gray-700">Type</label>
+                                            <label for="type"
+                                                class="block text-sm font-medium text-gray-700">Category</label>
                                             <select id="category" name="category" autocomplete="category-name"
                                                 class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                                 v-model="form.category">
@@ -151,8 +150,10 @@ export default {
                                         <label for="description"
                                             class="block text-sm font-medium text-gray-700">Description</label>
                                         <div class="mt-1">
-                                            <Editor v-model="form.description" :max-limit="280" />
-                                           
+                                            <textarea v-model="form.description" id="description" name="description"
+                                                rows="3"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                                placeholder="description"></textarea>
                                         </div>
                                         <p class="mt-2 text-sm text-gray-500">Description for your post. URLs are
                                             hyperlinked.</p>

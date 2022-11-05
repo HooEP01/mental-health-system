@@ -38,17 +38,33 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request)
     {
+
+        // can's name syntax follow routing syntax
         if(!Auth::guest()) {
             return array_merge(parent::share($request), [
                 'auth' => [
                     'user' => Auth::user(),
-                    'permission' => [
-                            'user' => Auth::user()->can('user list'),
-                            'role' => Auth::user()->can('role list'),
-                            'userPostList' => Auth::user()->can('user post list'),
-                            'professionalPostList' => Auth::user()->can('professional post list'),
-                            'adminPostList' => Auth::user()->can('admin post list'),
-                            'permission' => Auth::user()->can('permission list'),
+                    'can' => [
+                            'profile' => Auth::user()->can('user profile list'),
+                            'content' => Auth::user()->can('user content list'),
+                            'event' => Auth::user()->can('user event list'),
+                            'appointment' => Auth::user()->can('user appointment list'),
+                            'payment' => Auth::user()->can('user payment list'),
+
+                            'profiles' => Auth::user()->can('professional profile list'),
+                            'contents' => Auth::user()->can('professional content list'),
+                            'events' => Auth::user()->can('professional event list'),
+                            'appointments' => Auth::user()->can('professional appointment list'),
+                            'payments' => Auth::user()->can('professional payment list'),
+
+                            'contents_view' => Auth::user()->can('admin content list'),
+                            'events_view' => Auth::user()->can('admin event list'),
+                            'appointments_view' => Auth::user()->can('admin appointment list'),
+                            'payments_view' => Auth::user()->can('admin payment list'),
+
+                            'users_view' => Auth::user()->can('admin user list'),
+                            'roles_view' => Auth::user()->can('admin role list'),
+                            'permissions_view' => Auth::user()->can('admin permission list'),
                         ]
                 ],
                 'ziggy' => function () use ($request) {

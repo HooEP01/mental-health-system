@@ -15,6 +15,19 @@ use Inertia\Inertia;
 |
 */
 
+/*
+|--------------------------------------------------------------------------
+| Routing Syntax 
+|--------------------------------------------------------------------------
+| user level = singular nouns
+| professional level = plural nouns
+| admin level = plural nouns + underscore + view (_view)
+|
+*/
+
+
+
+// Auth
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -24,41 +37,52 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-
+// dashboard
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 require __DIR__.'/auth.php';
 
+// user level
 Route::group([
     'namespace' => 'App\Http\Controllers\User',
     'prefix' => '',
     'middleware' => ['auth'],
 ], function () {
-    Route::resource('role', 'RoleController');
-    Route::resource('permission', 'PermissionController');
-    Route::resource('post', 'PostController');
+    Route::resource('profile', 'ProfileController');
+    Route::resource('content', 'ContentController');
+    Route::resource('event', 'EventController');
+    Route::resource('appointment', 'EventController');
+    Route::resource('payment', 'EventController');
 });
 
+// professional level
 Route::group([
     'namespace' => 'App\Http\Controllers\Professional',
     'prefix' => 'professional',
     'middleware' => ['auth'],
 ], function () {
-    Route::resource('professional-role', 'RoleController');
-    Route::resource('professional-permission', 'PermissionController');
-    Route::resource('professional-post', 'PostController');
+    Route::resource('profiles', 'ProfileController');
+    Route::resource('contents', 'ContentController');
+    Route::resource('events', 'EventController');
+    Route::resource('appointments', 'AppointmentController');
+    Route::resource('payments', 'PaymentController');
 });
 
+// admin level
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
     'prefix' => 'admin',
     'middleware' => ['auth'],
 ], function () {
-    Route::resource('admin-user', 'UserController');
-    Route::resource('admin-role', 'RoleController');
-    Route::resource('admin-permission', 'PermissionController');
-    Route::resource('admin-post', 'PostController');
+    Route::resource('contents_view', 'ContentController');
+    Route::resource('events_view', 'EventController');
+    Route::resource('appointments_view', 'AppointmentController');
+    Route::resource('payments_view', 'PaymentController');
+    // function for admin 
+    Route::resource('users_view', 'UserController');
+    Route::resource('roles_view', 'RoleController');
+    Route::resource('permissions_view', 'PermissionController');
 });
 

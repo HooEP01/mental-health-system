@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Professional;
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use DB;
 
-class PostController extends Controller
+class ContentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:professional post list', ['only' => ['index', 'show']]);
-        $this->middleware('can:professional post create', ['only' => ['create', 'store']]);
-        $this->middleware('can:professional post edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:professional post delete', ['only' => ['destroy']]);
+        $this->middleware('can:professional content list', ['only' => ['index', 'show']]);
+        $this->middleware('can:professional content create', ['only' => ['create', 'store']]);
+        $this->middleware('can:professional content edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:professional content delete', ['only' => ['destroy']]);
     }   
      
     /**
@@ -25,32 +25,32 @@ class PostController extends Controller
      */
     public function index()
     {
-        $data = DB::table('posts')
-        -> select('posts.*')
-        -> where('posts.user_id','=',Auth::id())
+        $data = DB::table('contents')
+        -> select('contents.*')
+        -> where('contents.user_id','=',Auth::id())
         -> orderBy('created_at','desc')
         -> paginate(100);
  
-        return Inertia::render('Professional/Post/Index', [
-            'posts' => $data,
+        return Inertia::render('Professional/Content/Index', [
+            'contents' => $data,
             'can' => [
-                'create' => Auth::user()->can('user post create'),
-                'edit' => Auth::user()->can('user post edit'),
-                'delete' => Auth::user()->can('user post delete'),
+                'create' => Auth::user()->can('professional content create'),
+                'edit' => Auth::user()->can('professional content edit'),
+                'delete' => Auth::user()->can('professional content delete'),
             ]
         ]);
     }
 
     public function show($id)
     {
-        $data = DB::table('posts')
-        -> select('posts.*')
-        -> where('posts.id', '=', $id)
-        -> where('posts.user_id', '=', Auth::Id())
+        $data = DB::table('contents')
+        -> select('contents.*')
+        -> where('contents.id', '=', $id)
+        -> where('contents.user_id', '=', Auth::Id())
         -> first();
 
-        return Inertia::render('Professional/Post/Show', [
-            'post' => [
+        return Inertia::render('Professional/Content/Show', [
+            'content' => [
                 'id' => $id,
                 'title' => $data->title,
                 'image' => $data->image,
@@ -64,7 +64,7 @@ class PostController extends Controller
 
     public function create()
     {
-        return Inertia::render('Professional/Post/Create');
+        return Inertia::render('Professional/Content/Create');
     }
 
     public function store(Request $request)
@@ -77,7 +77,7 @@ class PostController extends Controller
         }
 
         $user_id = Auth::user()->id;
-        $data = Post::create([
+        $data = Content::create([
             'user_id'=>$user_id,
             'image'=>$image_path,
             'title'=>$request->title,
@@ -91,14 +91,14 @@ class PostController extends Controller
 
     public function edit($id)
     {
-        $data = DB::table('posts')
-        -> select('posts.*')
-        -> where('posts.id', '=', $id)
-        -> where('posts.user_id', '=', Auth::Id())
+        $data = DB::table('contents')
+        -> select('contents.*')
+        -> where('contents.id', '=', $id)
+        -> where('contents.user_id', '=', Auth::Id())
         -> first();
         
-        return Inertia::render('Professional/Post/Edit', [
-            'post' => [
+        return Inertia::render('Professional/Content/Edit', [
+            'content' => [
                 'id' => $id,
                 'title' => $data->title,
                 'image' => $data->image,
@@ -111,7 +111,7 @@ class PostController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = Post::find($id);
+        $data = Content::find($id);
 
         if ($request->hasFile('image')) {
             $image_path = $request->file('image')->store('image', 'public');
@@ -129,7 +129,7 @@ class PostController extends Controller
 
     public function destroy($id)
     {
-        $data = Post::find($id);
+        $data = Content::find($id);
         $data->delete();
     }
 }
