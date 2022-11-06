@@ -1,49 +1,108 @@
 <script>
+
+// import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { useForm, Head } from '@inertiajs/inertia-vue3';
+import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
+import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+import QuestionEditor from "@/Components/editor/QuestionEditor.vue";
+import Tiptap from '@/Components/Tiptap.vue'
+
+// import inertia
+import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
-import BreadcrumbHeader from '@/Components/BreadcrumbHeader.vue';
+
+// import uuid
+import { v4 as uuidv4 } from "uuid";
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
+        ContainerWithSideBar,
+        ProfessionalSideBar,
+        QuestionEditor,
+        Tiptap,
+        Inertia,
+        useForm,
+        Link,
         Head,
-        BreadcrumbHeader,
     },
     props: {
-        post: Object,
+        // receive content's information
+        content: Object,
         errors: Object,
     },
     data() {
         return {
+            categories: ["Article", "Case Study", "Survey", "Journal", "Report"],
+            statuses: ["draft", "complete"],
             image_url: null,
         }
     },
     setup(props) {
         const form = useForm({
-            id: props.post.id,
-            title: props.post.title,
-            image: props.post.image,
+            id: props.content.id,
+            title: props.content.title,
+            image: props.content.image,
             slug: null,
-            category: props.post.category,
-            status: props.post.status,
-            description: props.post.description,
+            category: props.content.category,
+            status: props.content.status,
+            description: props.content.description,
+            questions: props.content.questions,
         });
-       
 
         function submit() {
-            Inertia.put(route('professional-post.update', form.id), form)
+            Inertia.put(route('contents.update', form.id), form)
         }
 
         return { form, submit };
     },
+
     methods: {
+        // preview image
         previewImage(e) {
             const file = e.target.files[0];
             this.image_url = URL.createObjectURL(file);
+            // use ref with the name photo
             if (this.$refs.photo) {
                 this.form.image = this.$refs.photo.files[0];
             }
+        },
+
+        // create question
+        addQuestion(index) {
+
+            // question
+            const newQuestion = {
+                id: uuidv4(),
+                content_id: null,
+                category: "text",
+                question: "",
+                description: null,
+                data: {},
+            };
+
+            // locate it at the bottom of old questions
+            this.form.questions.splice(index, 0, newQuestion);
+        },
+
+        // destroy question
+        deleteQuestion(question) {
+            this.form.questions = this.form.questions.filter((q) => q !== question);
+        },
+
+        // retain options value 
+        questionChange(question) {
+            // Important to explicitelly assign question.data.options, because otherwise it is a Proxy object
+            // and it is lost in JSON.stringify()
+            if (question.data.options) {
+                question.data.options = [...question.data.options];
+            }
+            this.form.questions = this.form.questions.map((q) => {
+                if (q.id === question.id) {
+                    return JSON.parse(JSON.stringify(question));
+                }
+                return q;
+            });
         },
     },
 }
@@ -53,26 +112,50 @@ export default {
 
 <template>
 
-    <Head title="Post" />
-    <BreezeAuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Professional
-            </h2>
-        </template>
-        <div class="py-12">
-            <BreadcrumbHeader title="Create Your Post">
-                <div class="flex space-x-2 items-center">
-                    <a :href="route('professional-post.index')"
-                        class="px-4 py-2 bg-violet-500 uppercase text-white rounded focus:outline-none flex items-center">
-                        > Back
-                    </a>
-                </div>
-            </BreadcrumbHeader>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
-                <div class="md:grid md:grid-cols-3 md:gap-6">
+    <!-- header  -->
 
-                    <div class="mt-5 md:col-span-3 md:mt-0">
+    <Head title="Content Edit" />
+
+    <BreezeAuthenticatedLayout>
+
+        <template #header>
+            Professional
+        </template>
+
+        <template #content>
+
+            <!-- container with sidebar -->
+            <ContainerWithSideBar>
+
+                <template #title>
+                    Create Your Content
+                </template>
+
+                <template #subtitle>
+                    This information will be displayed publicly so be careful what you share.
+                </template>
+
+                <template #feature>
+                    <!-- index post -->
+                    <li class="flow-root">
+                        <Link :href="route('contents.show', content.id)"
+                            class="inline-flex items-center text-left w-full hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' name='arrow-back'></box-icon> <span class="inline-block align-top">Back</span>
+                        </Link>
+                    </li>
+                </template>
+
+                <template #tool>
+                    <!-- professional side bar -->
+                    <ProfessionalSideBar>
+                        <!-- null -->
+                    </ProfessionalSideBar>
+
+                </template>
+
+                <template #main>
+
+                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
 
                         <!-- form -->
                         <form @submit.prevent="submit">
@@ -82,34 +165,24 @@ export default {
                                     <!-- title -->
                                     <div class="col-span-6">
                                         <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                                        <input v-model="form.title" type="text" name="title" id="title"
-                                            autocomplete="title"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <input v-model="form.title" type="text" name="title" id="title" autocomplete="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
 
                                     <!-- profile image -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Cover photo</label>
-                                        <div
-                                            class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                                        <label class="block text-sm font-medium text-gray-700">Cover Image</label>
+                                        <div class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                                             <div class="space-y-1 text-center">
-                                                <img v-if="form.image" :src="'/storage/' + form.image" class="w-64 h-48 object-cover"/>
-                                                <img v-else="image_url" :src="image_url" :alt="form.title"
-                                                    class="w-64 h-48 object-cover" />
-                                                <svg v-else class="mx-auto h-12 w-12 text-gray-400"
-                                                    stroke="currentColor" fill="none" viewBox="0 0 48 48"
-                                                    aria-hidden="true">
-                                                    <path
-                                                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                        stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
+                                                <!-- if exist image url -->
+                                                <img v-if="form.image" :src="'/storage/' + form.image" class="w-64 h-48 object-cover" />
+                                                <img v-else="image_url" :src="image_url" :alt="form.title" class="w-64 h-48 object-cover" />
+                                                <svg v-else class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                                 </svg>
                                                 <div class="flex text-sm text-gray-600">
-                                                    <label for="file-upload"
-                                                        class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
-                                                        <span>Upload a Photo</span>
-                                                        <input @change="previewImage" ref="photo" type="file"
-                                                            id="file-upload" name="file-upload" class="sr-only">
+                                                    <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                        <span>Upload a Image</span>
+                                                        <input @change="previewImage" ref="photo" type="file" id="file-upload" name="file-upload" class="sr-only">
                                                     </label>
                                                     <p class="pl-1">or drag and drop</p>
                                                 </div>
@@ -117,47 +190,58 @@ export default {
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- category & status -->
+                                   
+                                    <!-- select -->
                                     <div class="grid grid-cols-6 gap-6">
+                                         <!-- category -->
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label for="type"
-                                                class="block text-sm font-medium text-gray-700">Category</label>
-                                            <select id="category" name="category" autocomplete="category-name"
-                                                class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                                v-model="form.category">
-                                                <option value="1" selected>Article</option>
-                                                <option value="2">Case Study</option>
-                                                <option value="3">Survey</option>
-                                                <option value="4">Journal</option>
-                                                <option value="5">Report</option>
+                                            <label for="category"
+                                                class="block text-sm font-medium text-gray-700">Type</label>
+                                            <select  v-model="form.category" id="category" name="category" autocomplete="category-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="category in categories" value="{{category}}">{{category}}</option>
                                             </select>
                                         </div>
+                                        <!-- status -->
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label for="status"
-                                                class="block text-sm font-medium text-gray-700">Status</label>
-                                            <select id="status" name="status" autocomplete="status-name"
-                                                class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                                v-model="form.status">
-                                                <option value="1" selected>Draft</option>
-                                                <option value="2">Complete</option>
+                                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                            <select v-model="form.status" id="status" name="status" autocomplete="status-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="status in statuses" value="{{status}}">{{status}}</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <!-- description -->
                                     <div>
-                                        <label for="description"
-                                            class="block text-sm font-medium text-gray-700">Description</label>
+                                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                                         <div class="mt-1">
-                                            <textarea v-model="form.description" id="description" name="description"
-                                                rows="3"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                                placeholder="description"></textarea>
+                                            <!-- Tiptap text editor-->
+                                            <Tiptap v-model="form.description" id="description" name="description" class="h-64" />
                                         </div>
-                                        <p class="mt-2 text-sm text-gray-500">Description for your post. URLs are
-                                            hyperlinked.</p>
+                                        <p class="mt-2 text-sm text-gray-500">Description for your post. URLs are hyperlinked.</p>
                                     </div>
+
+
+                                    <!-- Question -->
+                                    <div>
+                                        <label for="description" class="block text-sm font-medium text-gray-700">Questions</label>
+                                        <div class="mt-1">
+                                            <!-- Add new question -->
+                                            <button type="button" @click="addQuestion()" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 text-sm font-medium text-white shadow-sm focus:ring-offset-2 bg-green-500 hover:bg-green-600">
+                                                Add New Question
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- show all questions -->
+                                    <div v-for="(question, index) in form.questions" :key="question.id">
+                                        <!-- Question editor -->
+                                        <QuestionEditor :question="question" :index="index" @change="questionChange" @addQuestion="addQuestion" @deleteQuestion="deleteQuestion" />
+                                    </div>
+
+                                </div>
+
+                                <!-- if no question -->
+                                <div v-if="!form.questions.length" class="bg-gray-50 px-4 py-3 text-left sm:px-6">
+                                    You don't have any questions created
                                 </div>
 
                                 <!-- submit -->
@@ -168,8 +252,13 @@ export default {
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
-        </div>
+
+                </template>
+
+            </ContainerWithSideBar>
+
+        </template>
+
+
     </BreezeAuthenticatedLayout>
 </template>

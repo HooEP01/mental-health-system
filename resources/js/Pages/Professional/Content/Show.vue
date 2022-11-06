@@ -1,15 +1,17 @@
 <script setup>
 // import inertia file
 import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia';
 
 // import layout file
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import SideNavigationBar from '@/Components/SideNavigationBar.vue';
-import ProfessionalSideBar from '@/Components/ProfessionalSideBar.vue';
+import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
+import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+
 
 // props
 const props = defineProps({
-    post: {
+    content: {
         type: Object,
         default: () => ({}),
     },
@@ -21,82 +23,86 @@ const props = defineProps({
 
 // destroy function
 function destroy(id) {
-    Inertia.delete(route('professional-post.destroy', id));
+    Inertia.delete(route('contents.destroy', id));
 }
 </script>
+
+<style setup>
+.prose {
+  max-width: none;
+}
+</style>
     
 <template>
-    <Head title="Post"/>
 
-    <!-- main layout -->
+    <!-- header -->
+
+    <Head title="Content Show" />
+
+    <!-- breeze authenticated layout -->
     <BreezeAuthenticatedLayout>
 
-        <!-- header -->
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Professional
-            </h2>
+            Professional
         </template>
 
-        <!-- main content -->
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
-                <div class="md:grid md:grid-cols-4 md:gap-3">
+        <template #content>
+            <!-- side navigation bar -->
+            <ContainerWithSideBar>
 
-                    <!-- side navigation bar -->
-                    <SideNavigationBar>
+                <template #title>
+                    Show Your Content
+                </template>
 
-                        <!-- top function bar -->
-                        <template #top-bar >
+                <template #subtitle>
+                    This information will be displayed publicly so be careful what you share.
+                </template>
 
-                            <!-- edit post -->
-                            <li class="flow-root">
-                                <Link :href="route('professional-post.edit', post.id)" 
-                                class="inline-flex items-center text-left w-full hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                                <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                                <span class="inline-block align-top">Edit This Post</span>
-                                </Link>
-                            </li>
+                <template #feature>
+                    <!-- edit post -->
+                    <li class="flow-root">
+                        <Link v-if="can.edit" :href="route('contents.edit', content.id)"
+                            class="inline-flex items-center text-left w-full hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' name='message-square-edit'></box-icon>
+                        <span class="inline-block align-top">Edit This Content</span>
+                        </Link>
+                    </li>
 
-                            <!-- destroy post -->
-                            <li class="flow-root">
-                                <Link  @click="destroy(post.id)"
-                                class="inline-flex items-center text-left w-full hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                                <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                                <span class="inline-block align-top">Delete This Post</span>
-                                </Link>
-                            </li>
+                    <!-- destroy post -->
+                    <li class="flow-root">
+                        <Link v-if="can.delete" @click="destroy(content.id)"
+                            class="inline-flex items-center text-left w-full hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                        <box-icon class='mr-2' name='message-square-minus'></box-icon>
+                        <span class="inline-block align-top">Delete This Content</span>
+                        </Link>
+                    </li>
 
-                        </template>
-                        <!-- end function bar -->
+                </template>
 
-                        <!-- main tools bar -->
-                        <template #main-bar>
+                <template #tool>
+                    <!-- professional side bar -->
+                    <ProfessionalSideBar>
+                        <!-- null -->
+                    </ProfessionalSideBar>
 
-                            <!-- professional side bar -->
-                            <ProfessionalSideBar>
-                            </ProfessionalSideBar>
+                </template>
 
-                        </template>
+                <template #main>
 
-                    </SideNavigationBar>
-                    <!-- end side navigation bar -->
-
-                    <!-- card -->
-                    <div class="mt-5 md:col-span-3 md:mt-0">
+                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <div class="shadow sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <h1>{{ post.title }}</h1>
-                                <div v-html="post.description" class="prose lg:prose-xl"></div>
+                                <h1>{{ content.title }}</h1>
+                                <div v-html="content.description" class="prose w-full"></div>
                             </div>
                         </div>
                     </div>
-                    <!-- end card -->
 
-                </div>
-            </div>
-        </div>
-        <!-- end main content -->
+                </template>
+
+            </ContainerWithSideBar>
+            <!-- end side navigation bar -->
+        </template>
 
     </BreezeAuthenticatedLayout>
     <!-- end main layout -->

@@ -35,6 +35,7 @@
         "@tiptap/extension-underline": "^2.0.0-beta.199",
         "@tiptap/starter-kit": "^2.0.0-beta.199",
         "@tiptap/vue-3": "^2.0.0-beta.199",
+        "bootstrap-icons": "^1.9.1",
         "boxicons": "^2.1.4",
         "uuid": "^9.0.0",
         "uuid4": "^2.0.3"
