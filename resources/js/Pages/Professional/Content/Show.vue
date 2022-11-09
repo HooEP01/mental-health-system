@@ -7,7 +7,9 @@ import { Inertia } from '@inertiajs/inertia';
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+import QuestionViewer from "@/Components/editor/QuestionViewer.vue";
 
+import { computed, ref } from "vue";
 
 // props
 const props = defineProps({
@@ -20,6 +22,8 @@ const props = defineProps({
         default: () => ({}),
     },
 })
+
+const answers = ref({});
 
 // destroy function
 function destroy(id) {
@@ -96,7 +100,24 @@ function destroy(id) {
                                 <div v-html="content.description" class="prose w-full"></div>
                             </div>
                         </div>
+
+                        <div class="shadow sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                            <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <form @submit.prevent="submitSurvey" class="container mx-auto">
+                                <p>Question</p>
+                                <div v-for="(question, ind) of content.questions" :key="question.id">
+                                <QuestionViewer
+                                    v-model="answers[question.id]"
+                                    :question="question"
+                                    :index="ind"
+                                />
+                                </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+
+       
 
                 </template>
 

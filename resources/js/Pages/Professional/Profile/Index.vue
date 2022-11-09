@@ -25,6 +25,7 @@ export default {
     data() {
         return {
             image_url: null,
+            professional_statuses: ['approved', 'hide'],
         }
     },
 
@@ -38,7 +39,7 @@ export default {
         });
 
         function submit() {
-            Inertia.post(route('profile.store'), form)
+            Inertia.post(route('profiles.store'), form)
         }
 
         return { form, submit };
@@ -53,6 +54,7 @@ export default {
         },
     },
 }
+
 
 </script>
 
@@ -85,7 +87,7 @@ export default {
                 </template>
 
                 <template #main>
-
+                    
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <!-- form submit -->
                         <form @submit.prevent="submit">
@@ -133,7 +135,9 @@ export default {
                                         <!-- professional status -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="professional_status" class="block text-sm font-medium text-gray-700">Professional Status</label>
-                                            <input v-model="form.professional_status" type="text" name="professional_status" id="professional_status" autocomplete="professional_status" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <select v-model="form.professional_status" id="professional_status" name="professional_status" autocomplete="professional_status" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="professional_status in professional_statuses" :key="professional_status" :value="professional_status">{{professional_status}}</option>
+                                            </select>
                                         </div>
 
                                 

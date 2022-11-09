@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title', 1000);
             $table->string('slug', 1000)->nullable();
             $table->string('category', 255)->nullable();
-            $table->tinyInteger('status')->nullable();
+            $table->string('status', 100)->nullable();
             $table->string('image', 255)->nullable();
             $table->string('audio', 255)->nullable();
             $table->text('description')->nullable();

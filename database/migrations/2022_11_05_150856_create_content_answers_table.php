@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Appointment::class, 'appointment_id')->nullable();
             $table->foreignIdFor(\App\Models\Task::class, 'task_id')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'user_id')->nullable();
-            $table->tinyInteger('status')->default(0);
+            $table->foreignIdFor(\App\Models\Content::class, 'content_id')->nullable();
+            $table->string('status', 100);
             $table->dateTime('start_datetime', $precision = 0)->nullable();
             $table->dateTime('end_datetime', $precision = 0)->nullable();
             $table->timestamps();

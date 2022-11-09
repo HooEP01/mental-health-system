@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('price', 100)->nullable();
             $table->string('image', 1000)->nullable();
             $table->text('description')->nullable();
-            $table->tinyInteger('status');
+            $table->string('status', 100);
             $table->timestamps();
         });
     }

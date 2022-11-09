@@ -43,6 +43,7 @@ export default {
     setup(props) {
         // form
         const form = useForm({
+            id: null,
             title: null,
             image: null,
             slug: null,
@@ -161,7 +162,7 @@ export default {
                                     <!-- title -->
                                     <div class="col-span-6">
                                         <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                                        <input v-model="form.title" type="text" name="title" id="title" autocomplete="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <input v-model="form.title" type="text" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
 
                                     <!-- profile image -->
@@ -193,15 +194,15 @@ export default {
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="category"
                                                 class="block text-sm font-medium text-gray-700">Type</label>
-                                            <select  v-model="form.category" id="category" name="category" autocomplete="category-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <option v-for="category in categories" value="{{category}}">{{category}}</option>
+                                            <select  v-model="form.category" id="category" name="category" autocomplete="category-name" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="category in categories" :key="category" :value="category">{{category}}</option>
                                             </select>
                                         </div>
                                         <!-- status -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                            <select v-model="form.status" id="status" name="status" autocomplete="status-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <option v-for="status in statuses" value="{{status}}">{{status}}</option>
+                                            <select v-model="form.status" id="status" name="status" autocomplete="status-name" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="status in statuses" :key="status" :value="status">{{status}}</option>
                                             </select>
                                         </div>
                                     </div>

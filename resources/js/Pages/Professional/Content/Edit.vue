@@ -51,7 +51,7 @@ export default {
         });
 
         function submit() {
-            Inertia.put(route('contents.update', form.id), form)
+            Inertia.post(route('contents.store'), form)
         }
 
         return { form, submit };
@@ -165,7 +165,7 @@ export default {
                                     <!-- title -->
                                     <div class="col-span-6">
                                         <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                                        <input v-model="form.title" type="text" name="title" id="title" autocomplete="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <input v-model="form.title" type="text" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
 
                                     <!-- profile image -->
@@ -174,8 +174,8 @@ export default {
                                         <div class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                                             <div class="space-y-1 text-center">
                                                 <!-- if exist image url -->
-                                                <img v-if="form.image" :src="'/storage/' + form.image" class="w-64 h-48 object-cover" />
-                                                <img v-else="image_url" :src="image_url" :alt="form.title" class="w-64 h-48 object-cover" />
+                                                <img v-if="image_url" :src="image_url" :alt="form.title" class="w-64 h-48 object-cover" />
+                                                <img v-else-if="form.image" :src="'/storage/' + form.image" class="w-64 h-48 object-cover" />
                                                 <svg v-else class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                                 </svg>
@@ -197,15 +197,15 @@ export default {
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="category"
                                                 class="block text-sm font-medium text-gray-700">Type</label>
-                                            <select  v-model="form.category" id="category" name="category" autocomplete="category-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <option v-for="category in categories" value="{{category}}">{{category}}</option>
+                                            <select  v-model="form.category" id="category" name="category" autocomplete="category-name" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="category in categories" :key="category" :value="category">{{category}}</option>
                                             </select>
                                         </div>
                                         <!-- status -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                            <select v-model="form.status" id="status" name="status" autocomplete="status-name" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <option v-for="status in statuses" value="{{status}}">{{status}}</option>
+                                            <select v-model="form.status" id="status" name="status" autocomplete="status-name" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option v-for="status in statuses" :key="status" :value="status">{{status}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -246,9 +246,9 @@ export default {
 
                                 <!-- submit -->
                                 <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                                    <button type="submit"
-                                        class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save</button>
+                                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save</button>
                                 </div>
+                        
                             </div>
                         </form>
                     </div>
@@ -259,6 +259,6 @@ export default {
 
         </template>
 
-
     </BreezeAuthenticatedLayout>
+
 </template>

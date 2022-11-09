@@ -13,7 +13,7 @@ const can = computed(() => usePage().props.value.auth.can)
 <template>
     <!-- user profile link -->
     <li class="flow-root">
-        <Link :href="route('profile.index', 'user')"
+        <Link :href="route('profile.index')"
             class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
         <box-icon class="mr-2" name='spreadsheet'></box-icon>
         <span class="inline-block align-top">User Profile</span>
@@ -32,7 +32,7 @@ const can = computed(() => usePage().props.value.auth.can)
     </li>
 
     <li class="flow-root" v-else>
-        <Link :href="route('profile.index', 'professional')"
+        <Link :href="route('profile.show', 'professional')"
             class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
         <box-icon class="mr-2" name='calendar-event'></box-icon>
         <span class="inline-block align-top">Join Us</span>

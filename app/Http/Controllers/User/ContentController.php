@@ -16,7 +16,9 @@ class ContentController extends Controller
         $this->middleware('can:user content create', ['only' => ['create', 'store']]);
         $this->middleware('can:user content edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:user content delete', ['only' => ['destroy']]);
-    }    /**
+    }    
+    
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

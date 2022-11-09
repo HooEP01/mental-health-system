@@ -1,9 +1,13 @@
 <script setup>
+
+// import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/inertia-vue3';
-import { Inertia } from '@inertiajs/inertia';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+
+// import inertia
+import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
     contents: {

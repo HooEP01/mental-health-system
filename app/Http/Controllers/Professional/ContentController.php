@@ -51,6 +51,16 @@ class ContentController extends Controller
         -> where('contents.user_id', '=', Auth::Id())
         -> first();
 
+        $questions = DB::table('content_questions')
+        -> select('content_questions.*')
+        -> where('content_questions.content_id', '=', $id)
+        -> get();
+
+        // decode json
+        foreach($questions as $question) {
+            $question->data =  json_decode($question->data);
+        }
+
         return Inertia::render('Professional/Content/Show', [
             'content' => [
                 'id' => $id,
@@ -59,6 +69,7 @@ class ContentController extends Controller
                 'category' => $data->category,
                 'status' => $data->status,
                 'description' =>$data->description,
+                'questions' =>$questions,
             ],
             'can' => [
                 'create' => Auth::user()->can('professional content create'),
@@ -78,6 +89,10 @@ class ContentController extends Controller
     public function store(Request $request)
     {
 
+        if($request->id != null){
+            $this->updateContent($request);
+        }
+
         $image_path = '';
 
         if ($request->hasFile('image')) {
@@ -92,12 +107,15 @@ class ContentController extends Controller
             'category'=>$request->category,
             'status'=>$request->status,
             'description'=>$request->description,
+            
         ]);
 
-        // Create new questions
-        foreach ($request->questions as $question) {
-            $question['content_id'] = $data->id;
-            $this->storeQuestion($question);
+        if($request->questions != null){
+            // Create new questions
+            foreach ($request->questions as $question) {
+                $question['content_id'] = $data->id;
+                $this->storeQuestion($question);
+            }
         }
 
         return $this->index();
@@ -134,9 +152,19 @@ class ContentController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+
+    public function destroy($id)
     {
         $data = Content::find($id);
+        $data->delete();
+
+        return $this->index();
+    }
+
+    private function updateContent(Request $request)
+    {
+
+        $data = Content::find($request->id);
 
         if ($request->hasFile('image')) {
             $image_path = $request->file('image')->store('image', 'public');
@@ -147,7 +175,7 @@ class ContentController extends Controller
         $data->category=$request->category;
         $data->status=$request->status;
         $data->description=$request->description;
-        $data->save();
+        
 
         // Get ids as plain array of existing questions
         $existingIds = $data->questions()->pluck('id')->toArray();
@@ -180,18 +208,11 @@ class ContentController extends Controller
             }
         }
 
-        return $this->index();
-    }
-
-    public function destroy($id)
-    {
-        $data = Content::find($id);
-        $data->delete();
+        $data->save();
 
         return $this->index();
     }
 
-    
     private function storeQuestion($data)
     {
         if (is_array($data['data'])) {
@@ -218,7 +239,5 @@ class ContentController extends Controller
         $question->description=$data['description'];
         $question->data = $data['data'];
         return $question->save();
-    
-        
     }
 }
