@@ -9,7 +9,7 @@
         <Link :href="route('contents.index')"
             class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
             <box-icon class="mr-2" name='spreadsheet'></box-icon>
-            <span class="inline-block align-top">Post</span>
+            <span class="inline-block align-top">Content</span>
         </Link>
     </li>
 
@@ -51,7 +51,7 @@
 
     <!-- user link -->
     <li class="flow-root">
-        <Link 
+        <Link :href="route('users_view.index')"
             class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
             <box-icon class="mr-2" name='book-alt'></box-icon>
             <span class="inline-block align-top">User</span>

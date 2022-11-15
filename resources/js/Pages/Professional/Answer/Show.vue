@@ -27,12 +27,15 @@ export default {
 
     props: {
         content: Object, default: () => ({}),
+        answer: Object, default: () => ({}),
+        question_answer: Object, default: () => ({}),
         can: Object, default: () => ({}),
+        array: Object, default: () => ({}),
     },
 
     setup(props) {
         
-        const answers = ref({});
+        const answers = props.array;
 
         // form
         const form = useForm({
@@ -45,18 +48,12 @@ export default {
         // store function
         function submit() {
             this.form.answers = answers;
-            Inertia.post(route('answers.store'), form)
+            Inertia.post(route('answer.store'), form)
         }
 
         return { answers, form, submit };
     },
 
-    methods: {
-        // destroy content
-        destroy(id) {
-            Inertia.delete(route('contents.destroy', id));
-        },
-    }
 }
 
 </script>
@@ -87,32 +84,11 @@ export default {
             <ContainerWithSideBar>
 
                 <template #title>
-                    Show Your Content
+                    Show the Answer
                 </template>
 
                 <template #subtitle>
                     This information will be displayed publicly so be careful what you share.
-                </template>
-
-                <template #feature>
-                    <!-- edit post -->
-                    <li class="flow-root">
-                        <Link v-if="can.edit" :href="route('contents.edit', content.id)"
-                            class="inline-flex items-center text-left w-full hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                        <span class="inline-block align-top">Edit This Content</span>
-                        </Link>
-                    </li>
-
-                    <!-- destroy post -->
-                    <li class="flow-root">
-                        <Link v-if="can.delete" @click="destroy(content.id)"
-                            class="inline-flex items-center text-left w-full hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                        <span class="inline-block align-top">Delete This Content</span>
-                        </Link>
-                    </li>
-
                 </template>
 
                 <template #tool>
@@ -135,13 +111,13 @@ export default {
                         </div>
 
                         <!-- content question -->
-                        <div  v-if="content.questions" class="shadow sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                        <div class="shadow sm:overflow-hidden sm:rounded-md mt-2 pt-2">
 
                             <!-- form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 
                                 <!-- question viewer -->
-                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <p>Question</p>
                                     <div v-for="(question, ind) of content.questions" :key="question.id">
                                         <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
@@ -168,4 +144,4 @@ export default {
     </BreezeAuthenticatedLayout>
     <!-- end main layout -->
 
-</template>
+</template> 

@@ -52,9 +52,10 @@ Route::group([
 ], function () {
     Route::resource('profile', 'ProfileController');
     Route::resource('content', 'ContentController');
+    Route::resource('answer', 'AnswerController');
     Route::resource('event', 'EventController');
-    Route::resource('appointment', 'EventController');
-    Route::resource('payment', 'EventController');
+    Route::resource('appointment', 'AppointmentController');
+    Route::resource('payment', 'PaymentController');
 });
 
 // professional level
@@ -65,6 +66,7 @@ Route::group([
 ], function () {
     Route::resource('profiles', 'ProfileController');
     Route::resource('contents', 'ContentController');
+    Route::resource('answers', 'AnswerController');
     Route::resource('events', 'EventController');
     Route::resource('appointments', 'AppointmentController');
     Route::resource('payments', 'PaymentController');
@@ -77,6 +79,7 @@ Route::group([
     'middleware' => ['auth'],
 ], function () {
     Route::resource('contents_view', 'ContentController');
+    Route::resource('answers_view', 'AnswerController');
     Route::resource('events_view', 'EventController');
     Route::resource('appointments_view', 'AppointmentController');
     Route::resource('payments_view', 'PaymentController');

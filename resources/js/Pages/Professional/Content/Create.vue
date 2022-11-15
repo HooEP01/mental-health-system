@@ -43,7 +43,7 @@ export default {
     setup(props) {
         // form
         const form = useForm({
-            id: null,
+            content_id: null,
             title: null,
             image: null,
             slug: null,

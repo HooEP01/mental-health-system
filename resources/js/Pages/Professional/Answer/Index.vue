@@ -1,15 +1,16 @@
 <script setup>
+
 // import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
-import ResourceSideBar from '@/Components/SideBar/ResourceSideBar.vue';
+import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
 
 // import inertia
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
-    contents: {
+    answers: {
         type: Object,
         default: () => ({}),
     },
@@ -19,14 +20,18 @@ const props = defineProps({
     },
 })
 
-</script>
+function destroy(id) {
+    Inertia.delete(route('answers.destroy', id));
+}
 
+</script>
+    
 <template>
 
-<Head title="User Content" />
+    <Head title="Professional Content" />
     <BreezeAuthenticatedLayout>
         <template #header>
-            Resource
+            Professional
         </template>
 
         <template #content>
@@ -34,27 +39,36 @@ const props = defineProps({
             <ContainerWithSideBar>
 
                 <template #title>
-                    View All Content
+                    View Your Content
                 </template>
 
                 <template #subtitle>
                     This information will be displayed publicly so be careful what you share.
                 </template>
 
+                <template #feature>
+                    <!-- create content -->
+                    <Link v-if="can.create" :href="route('answers.create')"
+                        class="inline-flex items-center text-left w-full bg-transparent hover:bg-green-100 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                    <box-icon class='mr-2' name='message-square-add'></box-icon>
+                    <span class="inline-block align-top">Create New Content</span>
+                    </Link>
+                </template>
+
                 <template #tool>
                     <!-- professional side bar -->
-                    <ResourceSideBar>
+                    <ProfessionalSideBar>
                         <!-- null -->
-                    </ResourceSideBar>
+                    </ProfessionalSideBar>
                 </template>
 
                 <template #main>
 
                     <div class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <div v-for="content in contents.data" :key="content.id" class="group relative">
+                        <div v-for="content in answers.data" :key="content.id" class="group relative">
                             <div
                                 class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-                                <Link :href="route('content.show', content.id)">
+                                <Link :href="route('answers.show', content.id)">
                                 <img v-if="content.image" :src="'/storage/' + content.image" alt="image"
                                     class="h-full w-full object-cover object-center lg:h-full lg:w-full" />
                                 <img v-else

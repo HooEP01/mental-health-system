@@ -21,6 +21,7 @@ class RolePermissionSeeder extends Seeder
         // create permissions
         $permissions = [
             'admin content list', 'admin content create', 'admin content edit', 'admin content delete',
+            'admin answer list', 'admin answer create', 'admin answer edit', 'admin answer delete',
             'admin event list', 'admin event create', 'admin event edit', 'admin event delete',
             'admin appointment list', 'admin appointment create', 'admin appointment edit', 'admin appointment delete',
             'admin payment list', 'admin payment create', 'admin payment edit', 'admin payment delete',
@@ -30,12 +31,14 @@ class RolePermissionSeeder extends Seeder
 
             'professional profile list', 'professional profile create', 'professional profile edit', 'professional profile delete',
             'professional content list', 'professional content create', 'professional content edit', 'professional content delete',
+            'professional answer list', 'professional answer create', 'professional answer edit', 'professional answer delete',
             'professional event list', 'professional event create', 'professional event edit', 'professional event delete',
             'professional appointment list', 'professional appointment create', 'professional appointment edit', 'professional appointment delete',
             'professional payment list', 'professional payment create', 'professional payment edit', 'professional payment delete',
 
             'user profile list', 'user profile create', 'user profile edit', 'user profile delete',
             'user content list', 'user content create', 'user content edit', 'user content delete',
+            'user answer list', 'user answer create', 'user answer edit', 'user answer delete',
             'user event list', 'user event create', 'user event edit', 'user event delete',
             'user appointment list', 'user appointment create', 'user appointment edit', 'user appointment delete',
             'user payment list', 'user payment create', 'user payment edit', 'user payment delete',
@@ -65,6 +68,11 @@ class RolePermissionSeeder extends Seeder
         $role1->givePermissionTo('user content edit');
         $role1->givePermissionTo('user content delete');
 
+        $role1->givePermissionTo('user answer list');
+        $role1->givePermissionTo('user answer create');
+        $role1->givePermissionTo('user answer edit');
+        $role1->givePermissionTo('user answer delete');
+
         $role1->givePermissionTo('user event list');
         $role1->givePermissionTo('user event create');
         $role1->givePermissionTo('user event edit');
@@ -92,6 +100,11 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('user content edit');
         $role2->givePermissionTo('user content delete');
 
+        $role2->givePermissionTo('user answer list');
+        $role2->givePermissionTo('user answer create');
+        $role2->givePermissionTo('user answer edit');
+        $role2->givePermissionTo('user answer delete');
+
         $role2->givePermissionTo('user event list');
         $role2->givePermissionTo('user event create');
         $role2->givePermissionTo('user event edit');
@@ -116,6 +129,11 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('professional content create');
         $role2->givePermissionTo('professional content edit');
         $role2->givePermissionTo('professional content delete');
+
+        $role2->givePermissionTo('professional answer list');
+        $role2->givePermissionTo('professional answer create');
+        $role2->givePermissionTo('professional answer edit');
+        $role2->givePermissionTo('professional answer delete');
 
         $role2->givePermissionTo('professional event list');
         $role2->givePermissionTo('professional event create');

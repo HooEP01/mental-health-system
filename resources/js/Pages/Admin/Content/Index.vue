@@ -94,11 +94,15 @@ const props = defineProps({
                                     
                                 </td>
                                 <td data-label="Action" class="py-4 px-6">
-                                    <Link v-if="can.edit" :href="route('contents_view.edit', content.id)"
+                                    <Link v-if="can.edit && content.status != 'approve'" :href="route('contents_view.edit', content.id)"
                                         class="inline-flex items-center text-left w-full bg-green-100 hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
                                         <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                                        <span v-if="content.status != 'approve'" class="inline-block align-top">Approve</span>
-                                        <span v-else class="inline-block align-top">Disapprove</span>
+                                        <span class="inline-block align-top">Approve</span>
+                                    </Link>
+                                    <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)"
+                                        class="inline-flex items-center text-left w-full bg-red-100 hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
+                                        <span class="inline-block align-top">Disapprove</span>
                                     </Link>
                                 </td>
 

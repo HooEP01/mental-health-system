@@ -40,6 +40,24 @@ class User extends Authenticatable
     ];
 
     /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'first_name' => '',
+        'last_name' => '',
+        'gender' => '',
+        'relationship_status' => '',
+        'contact_number' => '',
+        'image' => '',
+        'professional_title' => '',
+        'professional_description' => '',
+        'professional_status' => 'setup',
+
+    ];
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>

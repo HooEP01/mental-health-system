@@ -13,6 +13,7 @@ class ContentAnswer extends Model
         'appointment_id',
         'task_id',
         'user_id',
+        'content_id',
         'status',
         'start_datetime',
         'end_datetime',
@@ -31,5 +32,10 @@ class ContentAnswer extends Model
     public function user()
     {
         return $this->belongTo(User::class);
+    }
+
+    public function content()
+    {
+        return $this->hasOne(Content::class);
     }
 }

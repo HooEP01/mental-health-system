@@ -31,6 +31,16 @@ export default {
     },
 
     setup(props) {
+
+        if(props.user.first_name == null){
+            props.user.first_name = '';
+            props.user.last_name = '';
+            props.user.birthday = '';
+            props.user.gender = '';
+            props.user.relationship_status = '';
+            props.user.contact_number = '';
+        }
+
         const form = useForm({
             id: props.user.id,
             name: props.user.name,
@@ -104,43 +114,43 @@ export default {
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="first-name"
                                                 class="block text-sm font-medium text-gray-700">First name</label>
-                                            <input v-model="form.first_name" type="text" name="first-name" id="first-name" autocomplete="given-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.first_name" type="text" required name="first-name" id="first-name" autocomplete="given-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- last name -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
-                                            <input v-model="form.last_name" type="text" name="last-name" id="last-name" autocomplete="family-name" requried class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.last_name" type="text" requried name="last-name" id="last-name" autocomplete="family-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- user name -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="name" class="block text-sm font-medium text-gray-700">User Name</label>
-                                            <input v-model="form.name" type="text" name="name" id="name" autocomplete="name" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.name" type="text" readonly name="name" id="name" autocomplete="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- contact number -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="contact-number" class="block text-sm font-medium text-gray-700">Contact Number</label>
-                                            <input v-model="form.contact_number" type="text" name="contact-number" id="contact-number" autocomplete="contact_number" placeholder="+60" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.contact_number" type="text" required name="contact-number" id="contact-number" autocomplete="contact_number" placeholder="+60" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- email address -->
                                         <div class="col-span-6 sm:col-span-4">
                                             <label for="email-address" class="block text-sm font-medium text-gray-700">Email address</label>
-                                            <input v-model="form.email" type="text" name="email-address" id="email-address" autocomplete="email" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.email" type="text" readonly name="email-address" id="email-address" autocomplete="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- birth date -->
                                         <div class="col-span-6 sm:col-span-2">
                                             <label for="birth-date" class="block text-sm font-medium text-gray-700">Birth Date</label>
-                                            <input v-model="form.birthday" type="date" name="birth-date" id="birth-date" autocomplete="birth-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <input v-model="form.birthday" type="date" required name="birth-date" id="birth-date" autocomplete="birth-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
 
                                         <!-- gender -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-                                            <select v-model="form.gender" id="gender" name="gender" autocomplete="gender" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                            <select v-model="form.gender" required id="gender" name="gender" autocomplete="gender" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                                 <option v-for="gender in genders" :key="gender" :value="gender">{{gender}}</option>
                                             </select>
                                         </div>
@@ -148,7 +158,7 @@ export default {
                                         <!-- relationship status -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="relationship_status" class="block text-sm font-medium text-gray-700">Relationship Status</label>
-                                            <select v-model="form.relationship_status" id="relationship_status" name="relationship_status" autocomplete="relationship_status" required class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                            <select v-model="form.relationship_status" required id="relationship_status" name="relationship_status" autocomplete="relationship_status" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                                 <option v-for="relationship_status in relationship_statuses" :key="relationship_status" :value="relationship_status">{{relationship_status}}</option>
                                             </select>
                                         </div>

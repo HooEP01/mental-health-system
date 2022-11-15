@@ -19,12 +19,13 @@ class Content extends Model
 
     protected $fillable = [
         'user_id', 
-        'image', 
         'title', 
-        'slug', 
+        'description', 
         'category',
         'status', 
-        'description', 
+        'image', 
+        'audio',
+        'slug', 
     ];
 
     public function getSlugOptions(): SlugOptions

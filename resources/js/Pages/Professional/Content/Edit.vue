@@ -29,6 +29,7 @@ export default {
     props: {
         // receive content's information
         content: Object,
+        questions: Object,
         errors: Object,
     },
     data() {
@@ -40,14 +41,14 @@ export default {
     },
     setup(props) {
         const form = useForm({
-            id: props.content.id,
+            content_id: props.content.id,
             title: props.content.title,
             image: props.content.image,
             slug: null,
             category: props.content.category,
             status: props.content.status,
             description: props.content.description,
-            questions: props.content.questions,
+            questions: props.questions,
         });
 
         function submit() {
@@ -78,7 +79,7 @@ export default {
                 category: "text",
                 question: "",
                 description: null,
-                data: {},
+                data: ({}),
             };
 
             // locate it at the bottom of old questions

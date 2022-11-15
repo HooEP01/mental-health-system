@@ -21,7 +21,7 @@
         <!-- radio -->
         <div v-else-if="question.category === 'radio'">
           <div v-for="(option, ind) of question.data.options" :key="option.uuid" class="flex items-center">
-            <input :id="option.uuid" :name="'question' + question.id" :value="option.text" @change="emits('update:modelValue', $event.target.value)" type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
+            <input v-model="modelValue" :id="option.uuid" :name="'question' + question.id" :value="option.text" @change="emits('update:modelValue', $event.target.value)" type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
             <label :for="option.uuid" class="ml-3 block text-sm font-medium text-gray-700">
               {{ option.text }}
             </label>
@@ -47,7 +47,7 @@
       </div>
     </fieldset>
     <!-- hr -->
-    <hr class="mb-4" />
+    <br />
   </template>
   
   <script setup>
@@ -62,6 +62,7 @@
   let model;
   if (question.category === "checkbox") {
     model = ref({});
+  
   }
   
   function shouldHaveOptions() {

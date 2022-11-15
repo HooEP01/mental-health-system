@@ -11,37 +11,34 @@ use DB;
 
 class ProfileController extends Controller
 {
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('can:user profile list', ['only' => ['index', 'show']]);
         $this->middleware('can:user profile create', ['only' => ['create', 'store']]);
         $this->middleware('can:user profile edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:user profile delete', ['only' => ['destroy']]);
-    }    /**
+    }    
+    
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $data = DB::table('users')
+        $user = DB::table('users')
         -> select('users.*')
         -> where('users.id', '=', Auth::Id())
         -> orderBy('created_at','desc')
         -> first();
-
-        if($data->first_name == null){
-            $data->first_name = "";
-            $data->last_name = "";
-            $data->birthday = "";
-            $data->gender = "";
-            $data->relationship_status = "";
-            $data->contact_number = "";
-            $data->professional_status = "";
-        }
  
         return Inertia::render('User/Profile/Index', [
-            'user' => $data,
+            'user' => $user,
             'can' => [
                 'create' => Auth::user()->can('user post create'),
                 'edit' => Auth::user()->can('user post edit'),
@@ -71,7 +68,6 @@ class ProfileController extends Controller
         }
 
         $id = Auth::Id();
-
         $data = User::find($id);
 
         $data->first_name = $request->first_name;
@@ -94,13 +90,6 @@ class ProfileController extends Controller
         -> orderBy('created_at','desc')
         -> first();
 
-        if($data->professional_title == null){
-            $data->image = null;
-            $data->professional_title = "";
-            $data->professional_description = "";
-            $data->professional_status = "setup";
-        }
- 
         return Inertia::render('User/Profile/Professional', [
             'user' => $data,
             'can' => [
@@ -114,17 +103,15 @@ class ProfileController extends Controller
     public function professionalUpdate(Request $request, $image_path)
     {
         $id = Auth::Id();
-
         $data = User::find($id);
 
         $data->image = $image_path;
         $data->professional_title = $request->professional_title;
         $data->professional_description = $request->professional_description;
         $data->professional_status = "pending";
-
         $data->save();
 
-        return $this->index();
+        return $this->professional();
     }
 
 

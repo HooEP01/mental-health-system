@@ -3,7 +3,7 @@
 // import layout file
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
-import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+import ResourceSideBar from '@/Components/SideBar/ResourceSideBar.vue';
 import QuestionViewer from "@/Components/editor/QuestionViewer.vue";
 
 // import inertia file
@@ -16,7 +16,7 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
-        ProfessionalSideBar,
+        ResourceSideBar,
         QuestionViewer,
         Inertia,
         useForm,
@@ -45,18 +45,12 @@ export default {
         // store function
         function submit() {
             this.form.answers = answers;
-            Inertia.post(route('answers.store'), form)
+            Inertia.post(route('answer.store'), form)
         }
 
         return { answers, form, submit };
     },
 
-    methods: {
-        // destroy content
-        destroy(id) {
-            Inertia.delete(route('contents.destroy', id));
-        },
-    }
 }
 
 </script>
@@ -87,39 +81,20 @@ export default {
             <ContainerWithSideBar>
 
                 <template #title>
-                    Show Your Content
+                    {{ content.category }}
                 </template>
 
                 <template #subtitle>
-                    This information will be displayed publicly so be careful what you share.
-                </template>
-
-                <template #feature>
-                    <!-- edit post -->
-                    <li class="flow-root">
-                        <Link v-if="can.edit" :href="route('contents.edit', content.id)"
-                            class="inline-flex items-center text-left w-full hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                        <span class="inline-block align-top">Edit This Content</span>
-                        </Link>
-                    </li>
-
-                    <!-- destroy post -->
-                    <li class="flow-root">
-                        <Link v-if="can.delete" @click="destroy(content.id)"
-                            class="inline-flex items-center text-left w-full hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                        <span class="inline-block align-top">Delete This Content</span>
-                        </Link>
-                    </li>
+                    
+                    <img v-if="content.image" :src="'/storage/' + content.image" class="w-199 h-100 object-cover" />
 
                 </template>
 
                 <template #tool>
                     <!-- professional side bar -->
-                    <ProfessionalSideBar>
+                    <ResourceSideBar>
                         <!-- null -->
-                    </ProfessionalSideBar>
+                    </ResourceSideBar>
 
                 </template>
 
@@ -129,19 +104,20 @@ export default {
                         <!-- content -->
                         <div class="shadow sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                
                                 <h1>{{ content.title }}</h1>
                                 <div v-html="content.description" class="prose w-full"></div>
                             </div>
                         </div>
 
                         <!-- content question -->
-                        <div  v-if="content.questions" class="shadow sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                        <div class="shadow sm:overflow-hidden sm:rounded-md mt-4">
 
                             <!-- form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 
                                 <!-- question viewer -->
-                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <p>Question</p>
                                     <div v-for="(question, ind) of content.questions" :key="question.id">
                                         <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
@@ -155,9 +131,8 @@ export default {
                             </form>
 
                         </div>
+
                     </div>
-
-
 
                 </template>
 

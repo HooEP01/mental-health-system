@@ -42,13 +42,24 @@ class ContentController extends Controller
     }
 
     // incomplete
-    public function show()
+    public function show($id)
     {
+
         $data = DB::table('contents')
         -> select('contents.*')
         -> where('contents.id', '=', $id)
         -> where('contents.status', '=', 'approve')
         -> first();
+
+        $questions = DB::table('content_questions')
+        -> select('content_questions.*')
+        -> where('content_questions.content_id', '=', $id)
+        -> get();
+
+        // decode json
+        foreach($questions as $question) {
+            $question->data =  json_decode($question->data);
+        }
 
         return Inertia::render('User/Content/Show', [
             'content' => [
@@ -58,7 +69,15 @@ class ContentController extends Controller
                 'category' => $data->category,
                 'status' => $data->status,
                 'description' =>$data->description,
+                'questions' =>$questions,
+            ],
+            'can' => [
+                'create' => Auth::user()->can('user content create'),
+                'edit' => Auth::user()->can('user content edit'),
+                'delete' => Auth::user()->can('user content delete'),
             ]
+
         ]);
+
     }
 }
