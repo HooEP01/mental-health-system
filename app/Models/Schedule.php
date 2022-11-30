@@ -11,9 +11,11 @@ class Schedule extends Model
 
     protected $fillable = [
         'event_id',
-        'periodical', // daily, weekly, biweekly, monthly 
+        'category',
+        'periodical', 
         'start_datetime',
         'end_datetime',
+        'recurring',
         'data',
     ];
 

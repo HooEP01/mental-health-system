@@ -14,18 +14,17 @@ const can = computed(() => usePage().props.value.auth.can)
     <!-- user profile link -->
     <li class="flow-root">
         <Link :href="route('profile.index')"
-            class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+        class="inline-flex items-center text-left w-full bg-transparent fill-black hover:bg-slate-600 hover:text-white hover:fill-white text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
         <box-icon class="mr-2" name='spreadsheet'></box-icon>
         <span class="inline-block align-top">User Profile</span>
         </Link>
     </li>
-
     <!-- user professional link -->
 
     <!-- professional profile link -->
     <li class="flow-root" v-if="can.profiles">
         <Link :href="route('profiles.index')"
-            class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+        class="inline-flex items-center text-left w-full bg-transparent fill-black hover:bg-slate-600 hover:text-white hover:fill-white text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
         <box-icon class="mr-2" name='book-alt'></box-icon>
         <span class="inline-block align-top">Professional Profile</span>
         </Link>
@@ -33,7 +32,7 @@ const can = computed(() => usePage().props.value.auth.can)
 
     <li class="flow-root" v-else>
         <Link :href="route('profile.show', 'professional')"
-            class="inline-flex items-center text-left w-full bg-transparent hover:bg-slate-50 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+        class="inline-flex items-center text-left w-full bg-transparent fill-black hover:bg-slate-600 hover:text-white hover:fill-white text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
         <box-icon class="mr-2" name='calendar-event'></box-icon>
         <span class="inline-block align-top">Join Us</span>
         </Link>

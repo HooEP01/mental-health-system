@@ -56,6 +56,9 @@ Route::group([
     Route::resource('event', 'EventController');
     Route::resource('appointment', 'AppointmentController');
     Route::resource('payment', 'PaymentController');
+    Route::resource('chat', 'ChatController');
+    Route::resource('appointment.content', 'AppointmentContentController')->shallow();
+    Route::resource('appointment.answer', 'AppointmentAnswerController')->shallow();
 });
 
 // professional level
@@ -70,6 +73,12 @@ Route::group([
     Route::resource('events', 'EventController');
     Route::resource('appointments', 'AppointmentController');
     Route::resource('payments', 'PaymentController');
+    Route::resource('tasks', 'TaskController');
+    Route::resource('chats', 'ChatController');
+    Route::resource('appointments.contents', 'AppointmentContentController');
+    Route::resource('appointments.answers', 'AppointmentAnswerController')->shallow();
+    Route::resource('appointments.tasks', 'AppointmentTaskController')->shallow();
+    Route::resource('events.tasks', 'EventTaskController')->shallow();
 });
 
 // admin level

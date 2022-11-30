@@ -18,6 +18,16 @@ class User extends Authenticatable
     // plugin:Spatie
     use HasRoles;
 
+    const GENDERS = ['Male','Female','Transgender','Gender Neutral','Others'];
+    const RELATIONSHIP_STATUSES = ['Single','In a Relationship','Engaged','Married','It is Complicated','In an Open Relationship','Widowed','Separated','Divorced'];
+    const PROFESSIONAL_STATUSES = ['Register','Pending'];
+    const PROFESSIONAL_STATUSES_ADMINISTRATOR = ['Approve','Disapprove'];
+    const PROFESSINAL_STATUS_REGISTER = 'Register';
+    const PROFESSINAL_STATUS_PENDING = 'Pending';
+    const PROFESSIONAL_STATUS_APPROVE = 'Approve';
+    const PROFESSIONAL_STATUS_DISAPPROVE = 'Disapprove';
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -45,16 +55,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $attributes = [
-        'first_name' => '',
-        'last_name' => '',
-        'gender' => '',
-        'relationship_status' => '',
-        'contact_number' => '',
-        'image' => '',
-        'professional_title' => '',
-        'professional_description' => '',
-        'professional_status' => 'setup',
-
+        'professional_status' => 'Register',
     ];
 
     /**

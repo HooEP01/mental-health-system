@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('content_questions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Content::class, 'content_id');
+            $table->string('index', 100);
             $table->string('category', 100);
             $table->string('question', 2000);
             $table->text('description')->nullable();

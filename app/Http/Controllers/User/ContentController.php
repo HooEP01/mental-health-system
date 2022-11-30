@@ -2,14 +2,27 @@
 
 namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+
+// models
+use App\Models\Content;
+use App\Models\ContentQuestion;
+
+// illuminate
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+// inertia
 use Inertia\Inertia;
-use DB;
 
 class ContentController extends Controller
 {
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('can:user content list', ['only' => ['index', 'show']]);
@@ -25,14 +38,14 @@ class ContentController extends Controller
      */
     public function index()
     {
-        $data = DB::table('contents')
+        $contents = DB::table('contents')
         -> select('contents.*')
-        -> where('contents.status','=','approve') 
+        -> where('contents.status','=','Approve') 
         -> orderBy('created_at','desc')
         -> paginate(100);
  
         return Inertia::render('User/Content/Index', [
-            'contents' => $data,
+            'contents' => $contents,
             'can' => [
                 'create' => Auth::user()->can('user contents create'),
                 'edit' => Auth::user()->can('user contents edit'),
@@ -41,36 +54,33 @@ class ContentController extends Controller
         ]);
     }
 
-    // incomplete
+    /**
+     * Display a content with a list of questions
+     *
+     * @param \App\Models\Content $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
 
-        $data = DB::table('contents')
-        -> select('contents.*')
-        -> where('contents.id', '=', $id)
-        -> where('contents.status', '=', 'approve')
-        -> first();
+        $content = DB::table('contents')
+        ->select('contents.*')
+        ->where('contents.id', '=', $id)
+        ->where('contents.status', '=', 'Approve')
+        ->first();
 
         $questions = DB::table('content_questions')
-        -> select('content_questions.*')
-        -> where('content_questions.content_id', '=', $id)
-        -> get();
+        ->select('content_questions.*')
+        ->where('content_questions.content_id', '=', $id)
+        ->get();
 
-        // decode json
         foreach($questions as $question) {
             $question->data =  json_decode($question->data);
         }
 
         return Inertia::render('User/Content/Show', [
-            'content' => [
-                'id' => $id,
-                'title' => $data->title,
-                'image' => $data->image,
-                'category' => $data->category,
-                'status' => $data->status,
-                'description' =>$data->description,
-                'questions' =>$questions,
-            ],
+            'content' => $content,
+            'questions' => $questions,
             'can' => [
                 'create' => Auth::user()->can('user content create'),
                 'edit' => Auth::user()->can('user content edit'),
@@ -78,6 +88,7 @@ class ContentController extends Controller
             ]
 
         ]);
-
     }
+
+    
 }

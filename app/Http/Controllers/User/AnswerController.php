@@ -2,19 +2,32 @@
 
 namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
+
+// models
 use App\Models\Content;
 use App\Models\ContentQuestion;
 use App\Models\ContentAnswer;
 use App\Models\ContentQuestionAnswer;
+
+// illuminate
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use DB;
+use Illuminate\Support\Facades\DB;
 
+// inertia
+use Inertia\Inertia;
+
+// Carbon
+use Carbon\Carbon;
 
 class AnswerController extends Controller
 {
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('can:user answer list', ['only' => ['index', 'show']]);
@@ -23,6 +36,11 @@ class AnswerController extends Controller
         $this->middleware('can:user answer delete', ['only' => ['destroy']]);
     }   
 
+    /**
+     * Display a listing of contents 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $data = DB::table('content_answers')
@@ -35,13 +53,19 @@ class AnswerController extends Controller
         return Inertia::render('User/Answer/Index', [
             'answers' => $data,
             'can' => [
-                'create' => Auth::user()->can('professional answer create'),
-                'edit' => Auth::user()->can('professional answer edit'),
-                'delete' => Auth::user()->can('professional answer delete'),
+                'create' => Auth::user()->can('user answer create'),
+                'edit' => Auth::user()->can('user answer edit'),
+                'delete' => Auth::user()->can('user answer delete'),
             ]
         ]);
     }
 
+    /**
+     * Display a content with a list of questions
+     *
+     * @param \App\Models\Content $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
 
@@ -72,39 +96,52 @@ class AnswerController extends Controller
             $question->data =  json_decode($question->data);
         }
 
+        $question_answers_array = [];
+
         foreach($question_answers as $question_answer) {
             if($question_answer->content_question_category == 'checkbox'){
                 $question_answer->answer =  json_decode($question_answer->answer);
             }
+
+            $question_answers_array[$question_answer->content_question_id] = $question_answer->answer;
+
         }
 
-        return Inertia::render('Professional/Answer/Show', [
-            'content' => [
-                'id' => $id,
-                'title' => $content->title,
-                'image' => $content->image,
-                'category' => $content->category,
-                'status' => $content->status,
-                'description' =>$content->description,
-                'questions' =>$questions,
-            ],
+        return Inertia::render('User/Answer/Show', [
+            'content' => $content,
+            'questions' => $questions,
             'answer' => $answer,
             'question_answer' => $question_answers,
+            'question_answers_array' => $question_answers_array,
+            'can' =>  [
+                'create' => Auth::user()->can('user answer create'),
+                'edit' => Auth::user()->can('user answer edit'),
+                'delete' => Auth::user()->can('user answer delete'),
+            ],
         ]);
-
-        
     }
 
     public function store(Request $request)
     {
-        if($request->id != null){
-            // update
+        if($request->answer_id != null){
+            $this->updateAnswer($request);
+            return $this->show($request->answer_id);
         }else{
-            // create
+            $this->storeAnswer($request);
         }
 
-        $this->storeAnswer($request);
+        return $this->index();
+    }
 
+    /**
+     * Remove the specified content from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $contentAnswer = ContentAnswer::find($id);
+        $contentAnswer->delete();
         return $this->index();
     }
 
@@ -129,6 +166,19 @@ class AnswerController extends Controller
 
         }
 
+    }
+
+    private function updateAnswer(Request $request)
+    {
+        $contentAnswer = ContentAnswer::find($request->answer_id);
+        $contentAnswer->user_id = Auth::Id();
+        $contentAnswer->save();
+
+        foreach ($request->answers as $question_id => $answer){
+            $questionAnswer = ContentQuestionAnswer::where(['content_question_id' => $question_id, 'content_answer_id' => $request->answer_id])->first();
+            $questionAnswer->answer = is_array($answer) ? json_encode($answer) : $answer;
+            $questionAnswer->save();
+        }
     }
 
 

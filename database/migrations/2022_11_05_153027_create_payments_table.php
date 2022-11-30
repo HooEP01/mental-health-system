@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\ContentQuestion::class, 'appointment_id');
+            $table->foreignIdFor(\App\Models\Appointment::class, 'appointment_id');
+            $table->foreignIdFor(\App\Models\User::class, 'user_id');
             $table->string('amount', 100);
             $table->string('status', 100);
             $table->string('method', 100);

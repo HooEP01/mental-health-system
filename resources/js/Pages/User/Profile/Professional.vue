@@ -1,14 +1,12 @@
 <script>
-
-// import layout
+// Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import SettingSideBar from '@/Components/SideBar/SettingSideBar.vue';
-
-// import inertia
+// Import inertia
 import { useForm, Head } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
-
+// Option API
 export default {
     components: {
         BreezeAuthenticatedLayout,
@@ -19,16 +17,23 @@ export default {
         Head,
     },
     props: {
-        errors: Object,
-        user: String,
+        user: Object, default: () => ({}),
+        can: Object, default: () => ({}),
     },
     data() {
         return {
             image_url: null,
         }
     },
-
     setup(props) {
+        // Set NULL
+        if(props.user.professional_title == null){
+            props.user.professional_title = '';
+            props.user.professional_description = '';
+            props.user.professional_status = 'Register';
+            props.user.image = '';
+        }
+        // Form
         const form = useForm({
             id: props.user.id,
             image: props.user.image,
@@ -36,14 +41,14 @@ export default {
             professional_description: props.user.professional_description,
             professional_status: props.user.professional_status,
         });
-
+        // Profile Store
         function submit() {
             Inertia.post(route('profile.store'), form)
         }
-
         return { form, submit };
     },
     methods: {
+        // Preview Image
         previewImage(e) {
             const file = e.target.files[0];
             this.image_url = URL.createObjectURL(file);
@@ -53,51 +58,75 @@ export default {
         },
     },
 }
-
 </script>
 
+
 <template>
-    <Head title="Profile" />
+     <!-- Header -->
+     <Head title="Professional Profile Show" />
+    <!--/ Header -->
+
+    <!-- Breeze Authenticated layout -->
     <BreezeAuthenticatedLayout>
+        <!-- #Header -->
         <template #header>
             Profile
         </template>
+        <!--/ #Header -->
+
+      <!-- #Content -->
         <template #content>
+            <!-- Container With Sidebar -->
             <ContainerWithSideBar>
+                <!-- #Title -->
                 <template #title>
                     Join Us
                 </template>
+                <!--/ #Title -->
+
+                <!-- #Subtitle -->
                 <template #subtitle>
-                    We are welcoming all the mental health professional to join us.
+                    This information will be displayed publicly so be careful what you share.
                 </template>
+                <!--/ #Subtitle -->
+
+                <!-- #Tool -->
                 <template #tool>
-                    <!-- professional side bar -->
-                    <SettingSideBar></SettingSideBar>
+                    <SettingSideBar />
                 </template>
+                <!--/ #Tool -->
+
+                <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
-                        <!-- form submit -->
+                        <!-- Form -->
                         <form @submit.prevent="submit">
-                            <div class="shadow sm:overflow-hidden sm:rounded-md">
+                            <div class="sm:overflow-hidden sm:rounded-md">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                   <!-- Profile -->
+                                   <h1 class="text-xl font-bold text-indigo-500">Professional Profile</h1>
                                     <div class="grid grid-cols-6 gap-6">
-                                        <!-- professional title -->
+                                        <!-- Professional Title -->
                                         <div class="col-span-6">
                                             <label for="first-name"
-                                                class="block text-sm font-medium text-gray-700">Professional Title</label>
-                                            <input v-model="form.professional_title" type="text" name="professional_title" id="professional_title" autocomplete="given-professional_title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                class="block text-sm font-medium text-slate-600">Professional Title</label>
+                                            <input v-model="form.professional_title" type="text" name="professional_title" id="professional_title" autocomplete="given-professional_title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
-                                        <!-- professional description -->
+                                        <!--/ Professional Title -->
+
+                                        <!-- Professional Description -->
                                         <div class="col-span-6">
                                             <label for="about" class="block text-sm font-medium text-gray-700">Professional Description</label>
                                             <div class="mt-1">
-                                                <textarea v-model="form.professional_description" id="professional_description" name="professional_description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></textarea>
+                                                <textarea v-model="form.professional_description" id="professional_description" name="professional_description" rows="3" class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></textarea>
                                             </div>
                                             <p class="mt-2 text-sm text-gray-500">Brief description for your profile. URLs are hyperlinked.</p>
                                         </div>
-                                        <!-- image -->
+                                        <!--/ Professional Description -->
+
+                                        <!-- Image -->
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label class="block text-sm font-medium text-gray-700">Photo</label>
+                                            <label class="block text-sm font-medium text-slate-600">Photo</label>
                                             <div class="mt-1 flex items-center">
                                                 <span class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
                                                 <!-- if exist image url -->
@@ -111,26 +140,37 @@ export default {
                                                 <span>Upload a Image</span>
                                                 <input @change="previewImage" ref="photo" type="file" id="file-upload" name="file-upload" class="sr-only">
                                             </label>
-                                                
                                             </div>
                                         </div>
-                                        <!-- professional status -->
+                                        <!--/ Image -->
+
+                                        <!-- Professional Status -->
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label for="professional_status" class="block text-sm font-medium text-gray-700">Professional Status</label>
-                                            <input v-model="form.professional_status" type="text" name="professional_status" id="professional_status" autocomplete="professional_status" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <label for="professional_status" class="block text-sm font-medium text-slate-600">Professional Status</label>
+                                            <input v-model="form.professional_status" readonly type="text" name="professional_title" id="professional_title" autocomplete="given-professional_title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
+                                        <!--/ Professional Status -->
+
                                     </div>
                                 </div>
-                                <!-- submit -->
-                                <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save</button>
+                                <!-- Submit -->
+                                <div class="bg-white px-4 py-3 text-right sm:px-6">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <box-icon class='mr-2' name='cube'></box-icon> 
+                                        <span class="inline-block align-top text-base mr-2">Save The Profile</span>
+                                    </button>
                                 </div>
+                                <!--/ Submit -->
                             </div>
                         </form>
-                        <!-- end form -->
+                        <!--/ Form -->
                     </div>
                 </template>
+                <!--/ #Main -->
             </ContainerWithSideBar>
+            <!--/ Container With Sidebar -->
         </template>
+        <!--/ #Content -->
     </BreezeAuthenticatedLayout>
+    <!--/ Breeze Authenticated layout -->
 </template>

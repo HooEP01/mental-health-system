@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers\Professional;
 use App\Http\Controllers\Controller;
+
+// models
 use App\Models\Event;
 use App\Models\Appointment;
+
+// illuminate
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+// inertia
 use Inertia\Inertia;
-use DB;
+
 
 class AppointmentController extends Controller
 {
@@ -21,20 +29,24 @@ class AppointmentController extends Controller
 
     public function index()
     {
-        // $data = DB::table('appointments')
-        // -> select('appointments.*')
-        // -> join
-        // -> where('appointments.event_id','=',Auth::id())
-        // -> orderBy('created_at','desc')
-        // -> paginate(100);
+        $events = DB::table('events')
+        ->join('appointments', 'events.id', '=', 'appointments.event_id')
+        ->select('events.*', 'appointments.id as appointment_id', 'appointments.user_id as appointment_user_id', 'appointments.reason as appointment_reason', 'appointments.status as appointment_status', 'appointments.start_date as appointment_start_date', 'appointments.end_date as appointment_end_date', 'appointments.start_time as appointment_start_time', 'appointments.end_time as appointment_end_time')
+        ->where('events.user_id', '=', Auth::Id())
+        ->where('appointments.status', '!=', Appointment::STATUS_BOOKED)
+        ->where('appointments.status', '!=', Appointment::STATUS_DISAPPROVED)
+        ->orderBy('created_at','desc')
+        ->paginate(100);
 
-        //  ->leftjoin('users', 'users.id', '=', 'appointments.user_id')
-        // ->leftjoin('events', 'events.id', '=', 'appointments.event_id')
-        // ->select('appointments.*', 'events.professional_id', 'users.name as user_id', 'events.title as event_id')
-        // ->where('events.professional_id', '=', Auth::id())
-        // ->where('appointments.status', '!=', 'Unpaid')
-        // ->orderBy('appointments.start_datetime','asc')
-        // ->paginate(10);
+        
+        return Inertia::render('Professional/Appointment/Index', [
+            'events' => $events,
+            'can' => [
+                'create' => Auth::user()->can('professional appointment create'),
+                'edit' => Auth::user()->can('professional appointment edit'),
+                'delete' => Auth::user()->can('professional appointment delete'),
+            ]
+        ]);
     }
 
 }

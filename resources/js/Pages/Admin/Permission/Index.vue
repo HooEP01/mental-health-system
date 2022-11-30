@@ -1,75 +1,104 @@
-<script setup>
+<script>
+// Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/inertia-vue3';
-const props = defineProps({
-    permissions: {
-        type: Object,
-        default: () => ({}),
+import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
+import AdminSideBar from '@/Components/SideBar/AdminSideBar.vue';
+// Import inertia
+import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia';
+// Option API
+export default {
+    components: {
+        BreezeAuthenticatedLayout,
+        ContainerWithSideBar,
+        AdminSideBar,
+        Inertia,
+        Link,
+        Head,
     },
-    can: {
-        type: Object,
-        default: () => ({}),
+    props: {
+        permissions: Object, default: () => ({}),
+        can: Object, default: () => ({}),
     },
-})
+}
 </script>
+
+
 <template>
-    <Head title="Permission" />
+    <!-- Header -->
+    <Head title="Administrator Permission Show" />
+    <!--/ Header -->
+    
+    <!-- Breeze Authenticated layout -->
     <BreezeAuthenticatedLayout>
+        <!-- #Header -->
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Permission
-            </h2>
+            Administrator 
         </template>
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="flex bg-gray-800 justify-between items=center p-5">
-                        <div class="flex space-x-2 items-center text-white">
-                            Permission Settings Page! Here you can list, create, update or delete permission!
-                        </div>
-                        <div class="flex space-x-2 items-center" v-if="can.create">
-                            <a href="#"
-                                class="px-4 py-2 bg-green-500 uppercase text-white rounded focus:outline-none flex items-center"><span
-                                    class="iconify mr-1" data-icon="gridicons:create" data-inline="false"></span> Create
-                                Permission</a>
+        <!--/ #Header -->
+
+        <!-- #Content -->
+        <template #content>
+            <!-- Container With Sidebar -->
+            <ContainerWithSideBar>
+                <!-- #Title -->
+                <template #title>
+                    View Admin Permissions
+                </template>
+                <!--/ #Title -->
+
+                <!-- #Subtitle -->
+                <template #subtitle>
+                    This information will be displayed publicly so be careful what you share.
+                </template>
+                <!--/ #Subtitle -->
+
+                <!-- #Tool -->
+                <template #tool>
+                    <AdminSideBar />
+                </template>
+                <!--/ #Tool -->
+
+                <!-- #Main -->
+                <template #main>
+                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
+                        <div class="px-4 sm:px-0">
+                            <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                    <!-- Table -->
+                                    <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase">
+                                            <tr class="bg-white border-b border-gray-400">
+                                                <th scope="col" class="py-3 px-6">#</th>
+                                                <th scope="col" class="py-3 px-6">Name</th>
+                                                <th scope="col" class="py-3 px-6">Guard Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(permission, index) in permissions.data" :key="permission.id" class="bg-white border-b border-gray-400">             
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    {{ permission.name }}
+                                                </td>
+                                                <td data-label="Description" class="py-4 px-6">
+                                                    {{ permission.guard_name }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!--/ Table -->
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-2">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="py-3 px-6">Name</th>
-                                <th v-if="can.edit || can.delete" scope="col" class="py-3 px-6">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="permission in permissions.data" :key="permission.id"
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td data-label="Name" class="py-4 px-6">
-                                    {{ permission.name }}
-                                </td>
-                                <td v-if="can.edit || can.delete" class="py-4 px-6">
-                                    <div type="justify-start lg:justify-end" no-wrap>
-                                        <BreezeButton
-                                            class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer"
-                                            v-if="can.edit">
-                                            Edit
-                                        </BreezeButton>
-                                        <BreezeButton
-                                            class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer"
-                                            v-if="can.delete">
-                                            Delete
-                                        </BreezeButton>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                </template>
+                <!--/ #Main -->
+            </ContainerWithSideBar>
+             <!--/ Container With Sidebar -->
+        </template>
+        <!--/ #Content -->
     </BreezeAuthenticatedLayout>
+    <!--/ Breeze Authenticated layout -->
 </template>

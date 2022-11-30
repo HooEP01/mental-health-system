@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(\App\Models\User::class, 'user_id');
             $table->string('category', 255);
+            $table->string('session_length', 255);
             $table->string('title', 1000);
             $table->string('attendance', 100)->nullable();
             $table->string('price', 100)->nullable();

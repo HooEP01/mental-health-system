@@ -40,10 +40,10 @@ class ContentController extends Controller
     public function index()
     {   
         $contents = DB::table('contents')
-        -> select('contents.*')
-        -> where('contents.user_id', '=', Auth::Id())
-        -> orderBy('created_at', 'desc')
-        -> paginate (100);
+        ->select('contents.*')
+        ->where('contents.user_id', '=', Auth::Id())
+        ->orderBy('created_at', 'desc')
+        ->paginate (100);
  
         return Inertia::render('Professional/Content/Index', [
             'contents' => $contents,
@@ -96,7 +96,10 @@ class ContentController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Professional/Content/Create');
+        return Inertia::render('Professional/Content/Create', [
+            'categories' => Content::CATEGORIES,
+            'statuses' => Content::STATUSES,
+        ]);
     }
 
     /**
@@ -119,13 +122,15 @@ class ContentController extends Controller
         ->get();
 
         foreach($questions as $question) {
-            $question->data =  json_decode($question->data);
+            $question->data = json_decode($question->data);
         }
 
         return Inertia::render('Professional/Content/Edit', [
 
             'content' => $content,
             'questions' => $questions,
+            'categories' => Content::CATEGORIES,
+            'statuses' => Content::STATUSES,
             'can' => [
                 'create' => Auth::user()->can('professional content create'),
                 'edit' => Auth::user()->can('professional content edit'),
@@ -219,12 +224,9 @@ class ContentController extends Controller
                 $this->storeQuestion($question);
             }
         }
-        // update existing questions
-        $questionMap = collect($request->questions)->keyBy('id');
-        foreach ($content->questions as $question) {
-            if (isset($questionMap[$question->content_id])) {
-                $this->updateQuestion($question, $questionMap[$question->id]);
-            }
+        // update questions
+        foreach ($request->questions as $question) {
+            $this->updateQuestion($question);
         }
         // save content
         $content->save();
@@ -234,9 +236,10 @@ class ContentController extends Controller
 
     private function storeQuestion($question)
     {
-        $data = "";
-        if(!empty($question['data'])) 
+        $data = "{}";
+        if(!empty($question['data'])) {
             $data = json_encode($question['data']);
+        }
             
         return ContentQuestion::create([
             'content_id'=>$question['content_id'],
@@ -247,16 +250,21 @@ class ContentController extends Controller
         ]);        
     }
 
-    private function updateQuestion(ContentQuestion $question, $questionMap)
+    private function updateQuestion($question)
     {
-        $data = "";
-        if(!empty($questionMap['data'])) 
-            $question->data = json_encode($questionMap['data']);
+        $contentQuestion = ContentQuestion::find($question['id']);
 
-        $question->question = $data['question'];
-        $question->category=$data['category'];
-        $question->description=$data['description'];
+        if(!empty($question['data'])) {
+            $contentQuestion->data = json_encode($question['data']);
+        }else{
+            $data = '{}';
+            $contentQuestion->data = $data;
+        }
+            
+        $contentQuestion->question = $question['question'];
+        $contentQuestion->category = $question['category'];
+        $contentQuestion->description = $question['description'];
         
-        return $question->save();
+        return $contentQuestion->save();
     }
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('status', 100)->nullable();
             $table->string('image', 255)->nullable();
             $table->string('audio', 255)->nullable();
+            $table->text('data')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });

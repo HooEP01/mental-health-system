@@ -35,6 +35,12 @@ class RolePermissionSeeder extends Seeder
             'professional event list', 'professional event create', 'professional event edit', 'professional event delete',
             'professional appointment list', 'professional appointment create', 'professional appointment edit', 'professional appointment delete',
             'professional payment list', 'professional payment create', 'professional payment edit', 'professional payment delete',
+            'professional task list', 'professional task create', 'professional task edit', 'professional task delete',
+            'professional chat list', 'professional chat create', 'professional chat edit', 'professional chat delete',
+            'professional appointment content list', 'professional appointment content create', 'professional appointment content edit', 'professional appointment content delete',
+            'professional appointment answer list', 'professional appointment answer create', 'professional appointment answer edit', 'professional appointment answer delete',
+            'professional appointment task list', 'professional appointment task create', 'professional appointment task edit', 'professional appointment task delete',
+            'professional event task list', 'professional event task create', 'professional event task edit', 'professional event task delete',
 
             'user profile list', 'user profile create', 'user profile edit', 'user profile delete',
             'user content list', 'user content create', 'user content edit', 'user content delete',
@@ -42,7 +48,9 @@ class RolePermissionSeeder extends Seeder
             'user event list', 'user event create', 'user event edit', 'user event delete',
             'user appointment list', 'user appointment create', 'user appointment edit', 'user appointment delete',
             'user payment list', 'user payment create', 'user payment edit', 'user payment delete',
-            
+            'user chat list', 'user chat create', 'user chat edit', 'user chat delete',
+            'user appointment content list', 'user appointment content create', 'user appointment content edit', 'user appointment content delete',
+            'user appointment answer list', 'user appointment answer create', 'user appointment answer edit', 'user appointment answer delete',
         ];        
         
         foreach ($permissions as $permission) {
@@ -88,6 +96,16 @@ class RolePermissionSeeder extends Seeder
         $role1->givePermissionTo('user payment edit');
         $role1->givePermissionTo('user payment delete');
 
+        $role1->givePermissionTo('user chat list');
+        $role1->givePermissionTo('user chat create');
+        $role1->givePermissionTo('user chat edit');
+        $role1->givePermissionTo('user chat delete');
+
+        $role1->givePermissionTo('user appointment content list');
+        $role1->givePermissionTo('user appointment content create');
+        $role1->givePermissionTo('user appointment content edit');
+        $role1->givePermissionTo('user appointment content delete');
+
 
         // role 2
         $role2->givePermissionTo('user profile list');
@@ -120,6 +138,17 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('user payment edit');
         $role2->givePermissionTo('user payment delete');
 
+        $role2->givePermissionTo('user chat list');
+        $role2->givePermissionTo('user chat create');
+        $role2->givePermissionTo('user chat edit');
+        $role2->givePermissionTo('user chat delete');
+
+        $role2->givePermissionTo('user appointment content list');
+        $role2->givePermissionTo('user appointment content create');
+        $role2->givePermissionTo('user appointment content edit');
+        $role2->givePermissionTo('user appointment content delete');
+
+
         $role2->givePermissionTo('professional profile list');
         $role2->givePermissionTo('professional profile create');
         $role2->givePermissionTo('professional profile edit');
@@ -150,6 +179,32 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('professional payment edit');
         $role2->givePermissionTo('professional payment delete');
 
+        $role2->givePermissionTo('professional task list');
+        $role2->givePermissionTo('professional task create');
+        $role2->givePermissionTo('professional task edit');
+        $role2->givePermissionTo('professional task delete');
+
+        $role2->givePermissionTo('professional chat list');
+        $role2->givePermissionTo('professional chat create');
+        $role2->givePermissionTo('professional chat edit');
+        $role2->givePermissionTo('professional chat delete');
+
+        $role2->givePermissionTo('professional appointment content list');
+        $role2->givePermissionTo('professional appointment content create');
+        $role2->givePermissionTo('professional appointment content edit');
+        $role2->givePermissionTo('professional appointment content delete');
+
+        $role2->givePermissionTo('professional appointment task list');
+        $role2->givePermissionTo('professional appointment task create');
+        $role2->givePermissionTo('professional appointment task edit');
+        $role2->givePermissionTo('professional appointment task delete');
+
+        $role2->givePermissionTo('professional event task list');
+        $role2->givePermissionTo('professional event task create');
+        $role2->givePermissionTo('professional event task edit');
+        $role2->givePermissionTo('professional event task delete');
+
+
         
         // role 3
         foreach ($permissions as $permission) {
@@ -166,18 +221,21 @@ class RolePermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Professional User',
             'email' => 'professional@gmail.com',
+            'professional_status' => 'Approve',
         ]);
         $user->assignRole($role2);
         
         $user = \App\Models\User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@gmail.com',
+            'professional_status' => 'Approve',
         ]);  
         $user->assignRole($role3);
 
         $user = \App\Models\User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
+            'professional_status' => 'Approve',
         ]);
         $user->assignRole($role4);        
         

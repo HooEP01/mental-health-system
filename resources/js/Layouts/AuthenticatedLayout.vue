@@ -11,7 +11,6 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import BreezeNavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { canSplit } from 'prosemirror-transform';
 
 // get permission list set from Middleware/HandleInertiaRequests.php
 const can = computed(() => usePage().props.value.auth.can)
@@ -23,10 +22,10 @@ const showingNavigationDropdown = ref(false);
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-white">
 
             <!-- Nav -->
-            <nav class="bg-white border-b border-gray-100">
+            <nav class="bg-white">
 
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,8 +48,8 @@ const showingNavigationDropdown = ref(false);
                                 </BreezeNavLink>
 
                                 <!-- Journey -->
-                                <BreezeNavLink v-if="can.appointment" :href="route('appointment.index')"
-                                    :active="route().current('appointment.index')">
+                                <BreezeNavLink v-if="can.answer" :href="route('answer.index')"
+                                    :active="route().current('answer.index')">
                                     Journey
                                 </BreezeNavLink>
 
@@ -90,7 +89,7 @@ const showingNavigationDropdown = ref(false);
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold rounded-md text-slate-900 bg-white hover:text-slate-900 focus:outline-none transition ease-in-out duration-150">
                                                 {{ $page.props.auth.user.name }}
                                                 <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
@@ -193,16 +192,16 @@ const showingNavigationDropdown = ref(false);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
+            <header class="bg-white border-b border-gray-400" v-if="$slots.header">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                         <slot name="header" />
                     </h2>
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main>
+            <main class="bg-white">
                 <div class="py-12">
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
                         <div class="md:grid md:grid-cols-4 md:gap-3">

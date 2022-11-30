@@ -9,13 +9,20 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    const STATUS_BOOKED = "Booked";
+    const STATUS_PAID = "Paid";
+    const STATUS_APPROVED = 'Approved';
+    const STATUS_DISAPPROVED = 'Disapproved';
+    
     protected $fillable = [
         'event_id',
         'user_id',
         'reason',
         'status',
-        'start_datetime',
-        'end_datetime',
+        'start_date',
+        'end_date',
+        'start_time',
+        'end_time',
     ];
 
     public function event()

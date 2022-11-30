@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
+
+// models
 use App\Models\User;
+
+// illuminate
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+// inertia
 use Inertia\Inertia;
-use DB;
+
 
 
 class ProfileController extends Controller
@@ -36,9 +43,11 @@ class ProfileController extends Controller
         -> where('users.id', '=', Auth::Id())
         -> orderBy('created_at','desc')
         -> first();
- 
+
         return Inertia::render('User/Profile/Index', [
             'user' => $user,
+            'genders' => USER::GENDERS,
+            'relationship_statuses' => USER::RELATIONSHIP_STATUSES,
             'can' => [
                 'create' => Auth::user()->can('user post create'),
                 'edit' => Auth::user()->can('user post edit'),
@@ -47,6 +56,12 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Display a user's information
+     *
+     * @param $name 
+     * @return \Illuminate\Http\Response
+     */
     public function show($name)
     {
         if($name == 'professional'){
@@ -57,16 +72,19 @@ class ProfileController extends Controller
 
     public function store(Request $request)
     {
-
-        $status = $request->professional_status;
-        if($status == "setup" || $status == "pending"){
+        if($request->professional_status == 'none'){
+            return $this->userUpdate($request);
+        }else{
             $image_path = '';
             if ($request->hasFile('image')) {
                 $image_path = $request->file('image')->store('image', 'public');
             }
             return $this->professionalUpdate($request, $image_path);
         }
+    }
 
+    private function userUpdate(Request $request)
+    {
         $id = Auth::Id();
         $data = User::find($id);
 
@@ -76,9 +94,7 @@ class ProfileController extends Controller
         $data->gender = $request->gender;
         $data->relationship_status = $request->relationship_status;
         $data->contact_number = $request->contact_number;
-
         $data->save();
-
         return $this->index();
     }
 
@@ -108,7 +124,7 @@ class ProfileController extends Controller
         $data->image = $image_path;
         $data->professional_title = $request->professional_title;
         $data->professional_description = $request->professional_description;
-        $data->professional_status = "pending";
+        $data->professional_status = USER::PROFESSINAL_STATUS_PENDING;
         $data->save();
 
         return $this->professional();

@@ -1,17 +1,14 @@
 <script>
-
-// import layout file
+// Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import ResourceSideBar from '@/Components/SideBar/ResourceSideBar.vue';
-import QuestionViewer from "@/Components/editor/QuestionViewer.vue";
-
-// import inertia file
+import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
+// Import inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 import { ref } from "vue";
-
-
+// Option API
 export default {
     components: {
         BreezeAuthenticatedLayout,
@@ -24,35 +21,30 @@ export default {
         Link,
         ref,
     },
-
     props: {
         content: Object, default: () => ({}),
+        questions: Object, default:() => ({}),
         can: Object, default: () => ({}),
     },
 
     setup(props) {
-        
+        // Answer
         const answers = ref({});
-
-        // form
+        // Form
         const form = useForm({
             id: null,
             content_id: props.content.id,
             questions: [],
             answers: null,
         });
-
-        // store function
+        // Answer Store
         function submit() {
             this.form.answers = answers;
             Inertia.post(route('answer.store'), form)
         }
-
         return { answers, form, submit };
     },
-
 }
-
 </script>
 
 
@@ -64,83 +56,90 @@ export default {
     
 
 <template>
+    <!-- Header -->
+    <Head title="User Content Show" />
+    <!--/ Header -->
 
-    <!-- header -->
-
-    <Head title="Content Show" />
-
-    <!-- breeze authenticated layout -->
+    <!-- Breeze Authenticated layout -->
     <BreezeAuthenticatedLayout>
-
+        <!-- #Header -->
         <template #header>
-            Professional
+            Resource
         </template>
+        <!--/ #Header -->
 
+         <!-- #Content -->
         <template #content>
-            <!-- side navigation bar -->
+            <!-- Container With Sidebar -->
             <ContainerWithSideBar>
-
+                <!-- #Title -->
                 <template #title>
-                    {{ content.category }}
+                    Show This {{ content.category }}
                 </template>
+                <!--/ #Title -->
 
+                <!-- #Subtitle -->
                 <template #subtitle>
-                    
-                    <img v-if="content.image" :src="'/storage/' + content.image" class="w-199 h-100 object-cover" />
-
+                    This information will be displayed publicly so be careful what you share.
+                    <div class="pt-4">
+                        <div v-if="content.image" class="sm:overflow-hidden sm:rounded-md">
+                            <img :src="'/storage/' + content.image" class="w-199 h-100 object-cover" />
+                        </div>
+                    </div>
                 </template>
+                <!--/ #Subtitle -->
 
+                <!-- #Tool -->
                 <template #tool>
-                    <!-- professional side bar -->
-                    <ResourceSideBar>
-                        <!-- null -->
-                    </ResourceSideBar>
-
+                    <ResourceSideBar />
                 </template>
+                <!--/ #Tool -->
 
+                <!-- #Main -->
                 <template #main>
-
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
-                        <!-- content -->
-                        <div class="shadow sm:overflow-hidden sm:rounded-md">
+                        <!-- Content Show Card -->
+                        <div class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                
-                                <h1>{{ content.title }}</h1>
-                                <div v-html="content.description" class="prose w-full"></div>
+                                <h1 class="text-3xl text-slate-900 font-bold">{{ content.title }}</h1>
+                                <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
-
-                        <!-- content question -->
-                        <div class="shadow sm:overflow-hidden sm:rounded-md mt-4">
-
-                            <!-- form -->
+                        <!--/ Content Show Card -->
+                        
+                        <!-- Content Question Show Card -->
+                        <div v-if="questions.length" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                            <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 
-                                <!-- question viewer -->
-                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                    <p>Question</p>
-                                    <div v-for="(question, ind) of content.questions" :key="question.id">
+                                <!-- Question Viewer -->
+                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                    <h1 class="text-3xl font-bold">Question</h1>
+                                    <div v-for="(question, ind) of questions" :key="question.id">
                                         <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
                                     </div>
                                 </div>
+                                <!--/ Question Viewer -->
 
-                                <!-- submit -->
-                                <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save</button>
+                                <!-- Submit -->
+                                <div class="bg-white px-4 py-3 text-right sm:px-6">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <box-icon class='mr-2' name='cube'></box-icon> 
+                                        <span class="inline-block align-top text-base mr-2">Save Your Answer</span>
+                                    </button>
                                 </div>
+                                <!--/ Submit -->
                             </form>
-
+                            <!--/ Form -->
                         </div>
-
+                        <!--/ Content Question Show Card -->
                     </div>
-
                 </template>
-
+              <!--/ #Main -->
             </ContainerWithSideBar>
-            <!-- end side navigation bar -->
+            <!--/ Container With Sidebar -->
         </template>
-
+        <!--/ #Content -->
     </BreezeAuthenticatedLayout>
-    <!-- end main layout -->
-
+    <!--/ Breeze Authenticated layout -->
 </template>

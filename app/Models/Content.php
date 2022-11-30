@@ -11,11 +11,13 @@ class Content extends Model
 {
     use HasFactory, HasSlug;
 
-    const TYPE_TEXT = 'text';
-    const TYPE_TEXTAREA = 'textarea';
-    const TYPE_SELECT = 'select';
-    const TYPE_RADIO = 'radio';
-    const TYPE_CHECKBOX = 'checkbox';
+    const TYPE = ['text', 'textarea', 'select', 'radio', 'checkbox'];
+    const CATEGORIES = ['Article', 'Case Study', 'Survey', 'Journal', 'Report'];
+    const STATUSES = ['Draft','Complete'];
+    const STATUS_APPROVE = 'Approve';
+    const STATUS_DISAPPROVE = 'Disapprove';
+
+    const PROFESSIONAL_CATEGORY = 'Report';
 
     protected $fillable = [
         'user_id', 
@@ -25,6 +27,7 @@ class Content extends Model
         'status', 
         'image', 
         'audio',
+        'question_data',
         'slug', 
     ];
 

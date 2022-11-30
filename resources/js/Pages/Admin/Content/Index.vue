@@ -1,142 +1,142 @@
-<script setup>
-
-// import layout
+<script>
+// Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import AdminSideBar from '@/Components/SideBar/AdminSideBar.vue';
-
-// import inertia
+// Import inertia
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
-
-const props = defineProps({
-    contents: {
-        type: Object,
-        default: () => ({}),
+// Option API
+export default {
+    components: {
+        BreezeAuthenticatedLayout,
+        ContainerWithSideBar,
+        AdminSideBar,
+        Inertia,
+        Link,
+        Head,
     },
-    can: {
-        type: Object,
-        default: () => ({}),
+    props: {
+        contents: Object, default: () => ({}),
+        can: Object, default: () => ({}),
     },
-})
+}
 </script>
 
+
 <template>
+    <!-- Header -->
+    <Head title="Administrator Content Show" />
+    <!--/ Header -->
 
-
-<Head title="Admin Content" />
+    <!-- Breeze Authenticated layout -->
     <BreezeAuthenticatedLayout>
+        <!-- #Header -->
         <template #header>
-            Administrator
+            Administrator 
         </template>
+        <!--/ #Header -->
 
+        <!-- #Content -->
         <template #content>
-
+            <!-- Container With Sidebar -->
             <ContainerWithSideBar>
-
+                <!-- #Title -->
                 <template #title>
-                    View Your Content
+                    View Admin Contents
                 </template>
+                <!--/ #Title -->
 
+                <!-- #Subtitle -->
                 <template #subtitle>
                     This information will be displayed publicly so be careful what you share.
                 </template>
+                <!--/ #Subtitle -->
 
-                <!-- <template #feature>
-                    create content
-                    <Link v-if="can.create" :href="route('contents.create')"
-                        class="inline-flex items-center text-left w-full bg-transparent hover:bg-green-100 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                    <box-icon class='mr-2' name='message-square-add'></box-icon>
-                    <span class="inline-block align-top">Create New Content</span>
-                    </Link>
-                </template> -->
-
+                <!-- #Tool -->
                 <template #tool>
-                    <!-- admin side bar -->
-                    <AdminSideBar>
-                        <!-- null -->
-                    </AdminSideBar>
+                    <AdminSideBar />
                 </template>
+                <!--/ #Tool -->
 
+                <!-- #Main -->
                 <template #main>
-
-                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
-
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="py-3 px-6">Title</th>
-                                <th scope="col" class="py-3 px-6">Description</th>
-                                <th scope="col" class="py-3 px-6">User Name</th>
-                                <th scope="col" class="py-3 px-6">Status</th>
-                                <th scope="col" class="py-3 px-6">View</th>
-                                <th scope="col" class="py-3 px-6">Action</th>
-                                <!-- <th v-if="can.edit || can.delete" scope="col" class="py-3 px-6">Actions</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="content in contents.data" :key="content.id"
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td data-label="Title" class="py-4 px-6">
-                                    {{ content.title }}
-                                </td>
-                                <td data-label="Description" class="py-4 px-6">
-                                    <p v-html="content.description" class="mt-1 text-sm text-gray-500 line-clamp-3"></p>
-                                </td>
-                                <td data-label="User_id" class="py-4 px-6">
-                                    {{ content.name.toUpperCase() }}
-                                </td>
-                                <td data-label="Status" class="py-4 px-6">
-                                    {{ content.status.toUpperCase() }}
-                                </td>
-                                <td data-label="View" class="py-4 px-6">
-                                    
-                                </td>
-                                <td data-label="Action" class="py-4 px-6">
-                                    <Link v-if="can.edit && content.status != 'approve'" :href="route('contents_view.edit', content.id)"
-                                        class="inline-flex items-center text-left w-full bg-green-100 hover:bg-green-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                                        <span class="inline-block align-top">Approve</span>
-                                    </Link>
-                                    <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)"
-                                        class="inline-flex items-center text-left w-full bg-red-100 hover:bg-red-200 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                                        <span class="inline-block align-top">Disapprove</span>
-                                    </Link>
-                                </td>
-
-
-
-
-
-                                <!-- <td v-if="can.edit || can.delete" class="py-4 px-6 w-48">
-                                    <div type="justify-start lg:justify-end" no-wrap>
-                                        <BreezeButton
-                                            class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer"
-                                            v-if="can.edit">
-                                            Edit
-                                        </BreezeButton>
-                                        <BreezeButton
-                                            class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer"
-                                            v-if="can.delete">
-                                            Delete
-                                        </BreezeButton>
-                                    </div>
-                                </td> -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+                    <!-- if empty -->
+                    <div v-if="(!contents.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
+                        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
+                            <strong class="font-bold">Content Is Not Available!</strong>
+                            <span class="block sm:inline"> Search For Other Keyword Now.</span>
+                        </div>
                     </div>
-                
+                    <div v-else class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
+                        <div class="px-4 sm:px-0">
+                            <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                    <!-- Table -->
+                                    <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase">
+                                            <tr class="bg-white border-b border-gray-400">
+                                                <th scope="col" class="py-3 px-6">#</th>
+                                                <th scope="col" class="py-3 px-6">Title</th>
+                                                <th scope="col" class="py-3 px-6">Description</th>
+                                                <th scope="col" class="py-3 px-6">Name</th>
+                                                <th scope="col" class="py-3 px-6">Status</th>
+                                                <th scope="col" class="py-3 px-6">View</th>
+                                                <th scope="col" class="py-3 px-6">Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr v-for="(content, index) in contents.data" :key="content.id"
+                                                class="bg-white border-b border-gray-400">
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    {{ content.title }}
+                                                </td>
+                                                <td data-label="Description" class="py-4 px-6">
+                                                    <p v-html="content.description" class="mt-1 text-sm text-gray-500 line-clamp-3"></p>
+                                                </td>
+                                                <td data-label="User_id" class="py-4 px-6">
+                                                    {{ content.name }}
+                                                </td>
+                                                <td data-label="Status" class="py-4 px-6">
+                                                    {{ content.status }}
+                                                </td>
+                                                <td data-label="View" class="py-4 px-6">
+                                                    <Link v-if="can.edit" :href="route('contents_view.show', content.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='show-alt'></box-icon>
+                                                        <span class="mr-1 inline-block align-top">View</span>
+                                                    </Link>
+                                                </td>
+                                                <td data-label="Action" class="py-4 px-6">
+                                                    <Link v-if="can.edit && content.status != 'Approve'" :href="route('contents_view.edit', content.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                        <span class="inline-block align-top">Approve</span>
+                                                    </Link>
+                                                    <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-red-500 hover:bg-red-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                        <span class="inline-block align-top">Disapprove</span>
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!--/ Table -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </template>
-
+                <!--/ #Main -->
             </ContainerWithSideBar>
-        
+             <!--/ Container With Sidebar -->
         </template>
-
+        <!--/ #Content -->
     </BreezeAuthenticatedLayout>
-
+    <!--/ Breeze Authenticated layout -->
 </template>

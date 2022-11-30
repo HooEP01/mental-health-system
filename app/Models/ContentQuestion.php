@@ -11,6 +11,7 @@ class ContentQuestion extends Model
 
     protected $fillable = [
         'content_id',
+        'index',
         'category',
         'question',
         'description',

@@ -2,36 +2,52 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\Content;
+
+// models
 use App\Models\User;
+use App\Models\Content;
+use App\Models\ContentQuestion;
+
+// illuminate
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+// inertia
 use Inertia\Inertia;
-use DB;
+
 
 class ContentController extends Controller
 {
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('can:admin content list', ['only' => ['index', 'show']]);
         $this->middleware('can:admin content create', ['only' => ['create', 'store']]);
         $this->middleware('can:admin content edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:admin content delete', ['only' => ['destroy']]);
-    }    /**
+    }    
+    
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $data = DB::table('contents')
+        $contents = DB::table('contents')
         -> join('users', 'contents.user_id', '=' ,'users.id')
         -> select('contents.*', 'users.name', 'users.first_name', 'users.last_name', 'users.professional_title')
         -> orderBy('created_at','desc')
         -> paginate(100);
         
         return Inertia::render('Admin/Content/Index', [
-            'contents' => $data,
+            'contents' => $contents,
             'can' => [
                 'create' => Auth::user()->can('admin content create'),
                 'edit' => Auth::user()->can('admin content edit'),
@@ -40,22 +56,74 @@ class ContentController extends Controller
         ]);
     }
 
-    public function show()
+    /**
+     * Display a content with a list of questions
+     *
+     * @param \App\Models\Content $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
     {
+        $content = DB::table('contents')
+        ->select('contents.*')
+        ->where('contents.id', '=', $id)
+        ->first();
+
+        $questions = DB::table('content_questions')
+        ->select('content_questions.*')
+        ->where('content_questions.content_id', '=', $id)
+        ->get();
+
+        $user = DB::table('users')
+        ->select('users.*')
+        ->where('users.id', '=', $content->user_id)
+        ->first();
+
+        foreach($questions as $question) {
+            $question->data =  json_decode($question->data);
+        }
+
+        return Inertia::render('Admin/Content/Show', [
+            'content' => $content,
+            'questions' => $questions,
+            'user' => $user,
+            'can' => [
+                'create' => Auth::user()->can('admin content create'),
+                'edit' => Auth::user()->can('admin content edit'),
+                'delete' => Auth::user()->can('admin content delete'),
+            ]
+        ]);
+    }
+
+    /**
+     * Display a content status
+     *
+     * @param \App\Models\Content $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $content = Content::find($id);
+        
+        if($content->status != Content::STATUS_APPROVE){
+            $content->status = Content::STATUS_APPROVE;
+        }else{
+            $content->status = Content::STATUS_DISAPPROVE;
+        }
+        $content->save();
+
         return $this->index();
     }
 
-    public function edit($id)
+    /**
+     * Remove the specified content from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
     {
-        $data = Content::find($id);
-
-        if($data->status != "approve"){
-            $data->status = "approve";
-        }else{
-            $data->status = "complete";
-        }
-
-        $data->save();
+        $content = Content::find($id);
+        $content->delete();
 
         return $this->index();
     }
