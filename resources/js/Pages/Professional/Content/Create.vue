@@ -4,9 +4,10 @@ import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
 import QuestionEditor from "@/Components/Editor/QuestionEditor.vue";
+import QuestionFormatEditor from "@/Components/Editor/QuestionFormatEditor.vue";
 import Tiptap from '@/Components/Tiptap.vue'
 // Import Inertia
-import { useForm, Head } from '@inertiajs/inertia-vue3';
+import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 // Import Uuid
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 export default {
     components: {
         BreezeAuthenticatedLayout,
+        QuestionFormatEditor,
         ContainerWithSideBar,
         ProfessionalSideBar,
         QuestionEditor,
@@ -21,15 +23,19 @@ export default {
         Inertia,
         useForm,
         Head,
+        Link,
     },
     props: {
-        categories: Object,
-        statuses: Object,
-        tiptapDescription: String,
+        categories: Object, default: () => ({}),
+        statuses: Object, default: () => ({}),
+        formats: Object, default: () => ({}),
+        tiptapDescription: String, default: () => ({}),
     },
     data() {
         return {
             image_url: null,
+            format_boolean: false,
+            audio_name: null,
         }
     },
     setup(props) {
@@ -38,11 +44,14 @@ export default {
             content_id: null,
             title: null,
             image: null,
+            audio: null,
             slug: null,
             category: null,
             status: null,
             description: null,
             questions: [],
+            format_category: null, 
+            formats: [],
         });
         // Contents Store 
         function submit() {
@@ -60,11 +69,64 @@ export default {
                 this.form.image = this.$refs.photo.files[0];
             }
         },
+
+        // Preview Audio
+        previewAudio(e) {
+            const audio = e.target.files[0].name;
+            this.audio_name = audio;
+            if (this.$refs.audio) {
+                this.form.audio = this.$refs.audio.files[0];
+            }
+        },
+
+        changeFormatCategory() {
+            if(this.form.format_category === "Unit") {
+                this.format_boolean = true;
+            }else{
+                this.format_boolean = false;
+            }
+        },
+
+        // Create format
+        addFormat(index) {
+            // question format
+            const newFormat = {
+                id: uuidv4(),
+                unit: null,
+                description: null,
+                data: {},
+            };
+
+            // locate it at the bottom of old formats
+            this.form.formats.splice(index, 0, newFormat);
+        },
+        // Destroy Question
+        deleteFormat(format) {
+            this.form.formats = this.form.formats.filter((q) => q !== format);
+        },
+        // Retain Options Value 
+        formatChange(format) {
+            // Important to explicitelly assign question.data.options, because otherwise it is a Proxy object
+            // and it is lost in JSON.stringify()
+            if (format.data.options) {
+                format.data.options = [...format.data.options];
+            }
+            this.form.formats = this.form.formats.map((q) => {
+                if (q.id === format.id) {
+                    return JSON.parse(JSON.stringify(format));
+                }
+                return q;
+            });
+        },
+
+
+
         // Create Question
         addQuestion(index) {
             // question
             const newQuestion = {
                 id: uuidv4(),
+                index: 0,
                 content_id: null,
                 category: "text",
                 question: "",
@@ -73,6 +135,12 @@ export default {
             };
             // locate it at the bottom of old questions
             this.form.questions.splice(index, 0, newQuestion);
+            let count = 0;
+            for(let i = 0; i < this.form.questions.length; i++){
+                this.form.questions[i].index = count;
+                console.log(this.form.questions[i]);
+                count++;
+            }
         },
         // Destroy Question
         deleteQuestion(question) {
@@ -106,7 +174,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Content
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -116,7 +189,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Create Professional Content
+                    Create New Content
                 </template>
                 <!--/ #Title -->
 
@@ -126,10 +199,20 @@ export default {
                 </template>
                 <!--/ #Subtitle -->
 
-                <!-- #Tool -->
-                <template #tool>
-                    <ProfessionalSideBar/>
+                <!-- #Feature -->
+                <template #feature>
+                    <li class="flow-root">
+                        <Link :href="route('contents.index')" class="inline-flex items-center text-left w-full fill-white bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' name='arrow-back'></box-icon> <span class="inline-block align-top">Back To Home</span>
+                        </Link>
+                    </li>
                 </template>
+                <!--/ #Feature -->
+
+                <!-- #Tool -->
+                <!-- <template #tool>
+                    <ProfessionalSideBar/>
+                </template> -->
                 <!--/ #Tool -->
 
                 <!-- #Main -->
@@ -139,7 +222,8 @@ export default {
                         <form @submit.prevent="submit">
                             <div class="sm:overflow-hidden sm:rounded-md">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                    <h1 class="text-xl font-bold text-indigo-500">Create Content</h1>
+                                    <!-- Name  -->
+                                    <h1 class="text-xl font-bold text-indigo-500">Create New Content</h1>
                                     
                                     <!-- Title -->
                                     <div class="col-span-6">
@@ -192,7 +276,18 @@ export default {
                                             </select>
                                         </div>
                                         <!--/ Status -->
+
+                                        <!-- Audio -->
+                                        <div class="col-span-6 sm:col-span-3">
+                                            <label for="status" class="block text-sm font-medium text-slate-600">Audio</label>
+                                            <label for="audio" class="mt-1 block w-full rounded-md border border-gray-400 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <span>Upload a Audio {{ audio_name }}</span>
+                                                <input @change="previewAudio" ref="audio" type="file" id="audio" name="audio" class="sr-only">
+                                            </label>
+                                        </div>
+                                        <!--/ Audio -->
                                     </div>
+                                        
                                     <!--/ Select -->
 
                                     <!-- Description -->
@@ -207,20 +302,71 @@ export default {
                                     <!--/ Description -->
 
                                     <!-- Question -->
-                                    <h1 class="text-xl font-bold text-indigo-500">Create Questions</h1>
+                                    <h1 class="text-xl font-bold text-indigo-500">Create Format</h1>
+                                    
+                                    <!-- Format -->
                                     <div>
                                         <div class="mt-1">
-                                            <!-- add new question button -->
-                                            <button type="button" @click="addQuestion()" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">
-                                                <box-icon class="mr-2" name='message-square-add'></box-icon>
-                                                <span class="inline-block align-top text-base mr-2">Create Question</span>
-                                            </button>
+                                            <div class="grid grid-cols-6 gap-6">
+                                                <!-- Format Category -->
+                                                <div class="col-span-6 sm:col-span-3">
+                                                    <select v-model="form.format_category" @change="changeFormatCategory()" id="format" name="format" autocomplete="format-name" required class="mt-1 block w-full rounded-md border border-gray-400 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                        <option v-for="format in formats" :key="format" :value="format">{{format.toUpperCase()}}</option>
+                                                    </select>
+                                                </div>
+                                                <!--/ Format Category -->
+
+                                                <div v-if="format_boolean" class="col-span-6 sm:col-span-3">
+                                                    <div class="text-right">
+                                                        <button type="button" @click="addFormat()" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">
+                                                            <box-icon class="mr-2" name='message-square-add'></box-icon>
+                                                            <span class="inline-block align-top text-base mr-2">Create Format</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+                                    <!--/ Format -->
+
+                                    <!-- Question Format Editor -->
+                                        <div v-for="(format, index) in form.formats" :key="format.id">
+                                            <QuestionFormatEditor v-if="format_boolean" :format="format" :index="index" @change="formatChange" @addFormat="addFormat" @deleteFormat="deleteFormat"/>
+                                        </div>
+                                   
+                                    <!--/ Question Format Editor -->
+
+                                    <!-- Question -->
+                                    <h1 class="text-xl font-bold text-indigo-500">Create Question</h1>
+
+                                    <!-- Question -->
+                                    <div>
+                                        <div class="mt-1">
+                                            <div class="grid grid-cols-6 gap-6">
+                                                <!-- Format Category -->
+                                                <div class="col-span-6 sm:col-span-3">
+                                                    <button type="button"  @click="addQuestion()" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">
+                                                            <box-icon class="mr-2" name='message-square-add'></box-icon>
+                                                            <span class="inline-block align-top text-base mr-2">Create Question</span>
+                                                    </button>
+                                                </div>
+                                                <!--/ Format Category -->
+
+                                                <div class="col-span-6 sm:col-span-3">
+                                                    <div class="text-right mt-5">
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/ Question -->
+
+
                                     <!-- show all questions -->
                                     <div v-for="(question, index) in form.questions" :key="question.id">
                                         <!-- question editor -->
-                                        <QuestionEditor :question="question" :index="index" @change="questionChange" @addQuestion="addQuestion" @deleteQuestion="deleteQuestion" />
+                                        <QuestionEditor :formats="form.formats" :question="question" :index="index" @change="questionChange" @addQuestion="addQuestion" @deleteQuestion="deleteQuestion" />
                                     </div>
                                     <!--/ Question -->
                                 </div>

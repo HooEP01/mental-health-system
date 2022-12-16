@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\ContentQuestion::class, 'content_question_id');
             $table->foreignIdFor(\App\Models\ContentAnswer::class, 'content_answer_id');
             $table->text('answer');
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }

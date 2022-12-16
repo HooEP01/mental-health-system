@@ -38,9 +38,14 @@ Route::get('/', function () {
 })->name('home');
 
 // dashboard
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', 
+    [App\Http\Controllers\DashboardController::class, 'index']
+)->middleware(['auth', 'verified'])->name('dashboard');
+
+
+
+
+
 
 require __DIR__.'/auth.php';
 
@@ -57,8 +62,8 @@ Route::group([
     Route::resource('appointment', 'AppointmentController');
     Route::resource('payment', 'PaymentController');
     Route::resource('chat', 'ChatController');
-    Route::resource('appointment.content', 'AppointmentContentController')->shallow();
-    Route::resource('appointment.answer', 'AppointmentAnswerController')->shallow();
+    Route::resource('appointment.task', 'AppointmentTaskController');
+    Route::resource('appointment.answer', 'AppointmentAnswerController');
 });
 
 // professional level
@@ -73,12 +78,13 @@ Route::group([
     Route::resource('events', 'EventController');
     Route::resource('appointments', 'AppointmentController');
     Route::resource('payments', 'PaymentController');
-    Route::resource('tasks', 'TaskController');
+    Route::resource('user', 'UserController');
     Route::resource('chats', 'ChatController');
     Route::resource('appointments.contents', 'AppointmentContentController');
-    Route::resource('appointments.answers', 'AppointmentAnswerController')->shallow();
-    Route::resource('appointments.tasks', 'AppointmentTaskController')->shallow();
-    Route::resource('events.tasks', 'EventTaskController')->shallow();
+    Route::resource('appointments.answers', 'AppointmentAnswerController'); 
+    Route::resource('appointments.tasks', 'AppointmentTaskController');
+    Route::resource('events.tasks', 'EventTaskController');
+    Route::resource('events.contents', 'EventContentController');
 });
 
 // admin level

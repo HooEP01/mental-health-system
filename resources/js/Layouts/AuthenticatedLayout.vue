@@ -25,7 +25,7 @@ const showingNavigationDropdown = ref(false);
         <div class="min-h-screen bg-white">
 
             <!-- Nav -->
-            <nav class="bg-white">
+            <nav class="bg-slate-50">
 
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -192,9 +192,9 @@ const showingNavigationDropdown = ref(false);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white border-b border-gray-400" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+            <header class="bg-slate-50 " v-if="$slots.header">
+                <div class="max-w-7xl mx-auto pt-6 px-4 sm:px-6 lg:px-8">
+                    <h2 class="font-bold text-4xl text-slate-900 leading-tight">
                         <slot name="header" />
                     </h2>
                 </div>

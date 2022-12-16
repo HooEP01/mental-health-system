@@ -14,10 +14,11 @@ const emit = defineEmits(["change", "addSchedule", "deleteSchedule"]);
 
 // Re-create the whole schedule data to avoid unintentional reference change
 const model = ref(JSON.parse(JSON.stringify(props.schedule)));
+console.log(model);
 
 // Get question category
 const schedulePeriodical = ["day", "week", "2 weeks", "4 weeks"];
-const scheduleDays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const scheduleDays = [{uuid: uuidv4(), name: "Monday"}, {uuid: uuidv4(), name: "Tuesday"}, {uuid: uuidv4(), name: "Wednesday"}, {uuid: uuidv4(), name: "Thursday"}, {uuid: uuidv4(), name: "Friday"}, {uuid: uuidv4(), name: "Saturday"}, {uuid: uuidv4(), name: "Sunday"}];
 const timeIntervals = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 const scheduleWeeks = [{uuid: uuidv4(), week: 1, title: "Week 1"}, {uuid: uuidv4(), week: 2, title: "Week 2"}, {uuid: uuidv4(), week: 3, title: "Week 3"}, {uuid: uuidv4(), week: 4, title: "Week 4"}];
 
@@ -97,10 +98,10 @@ function shouldHaveOptions() {
 }
 
 // Add option
-function addOption(num) {
+function addOption(theNum, theDay) {
   setOptions([
     ...getOptions(),
-    { uuid: uuidv4(), week: num, day: "", start_time: "", end_time: "", },
+    { uuid: uuidv4(), week: theNum, day: theDay, start_time: "", end_time: "", },
   ]);
   dataChange();
   sorted();
@@ -166,7 +167,11 @@ function dateTimeChange() {
 }
 
 function optionWeekFilter(week) {
-    return this.model.data.options.filter(option => option.week === week);
+    return this.model.data.options.filter(option => parseInt(option.week) === week);
+}
+
+function optionDayFilter(week, day) {
+  return this.model.data.options.filter(option => option.day === day && parseInt(option.week) === week) ?? "";
 }
 </script>
 
@@ -187,7 +192,7 @@ function optionWeekFilter(week) {
       <!--/ Add new schedule -->
 
       <!-- Delete schedule -->
-      <button type="button" @click="deleteSchedule()" class="flex items-center rounded-md text-xs py-1 px-3 mr-2 fill-white text-white bg-red-400 hover:bg-red-500">
+      <button type="button" @click="deleteSchedule()" class="flex items-center rounded-md text-xs py-1 px-3 fill-white text-white bg-red-400 hover:bg-red-500">
         <box-icon class="mr-2" name='message-square-minus'></box-icon>
         <span class="inline-block align-top text-base mr-2">Delete Schedule</span>
       </button>
@@ -242,45 +247,46 @@ function optionWeekFilter(week) {
 
   <!-- Data -->
   <div>
-    <div v-if="shouldHaveOptions()" class="mt-4">
-      <div v-for="(scheduleWeek, index) in scheduleWeeksNum(model.periodical)" :key="scheduleWeek.uuid">
+    <div v-if="shouldHaveOptions()">
+      <div v-for="(scheduleWeek, index) in scheduleWeeksNum(model.periodical)" :key="scheduleWeek.uuid" class="mt-4">
 
         <h4 class="text-sm font-base text-gray-700 mb-2 flex justify-between items-center">
           {{ scheduleWeek.title }}
-
-          <!-- Add new option -->
-          <button type="button" @click="addOption(scheduleWeek.week)" class=" flex items-center text-xs py-1 px-2 rounded-md text-white fill-white bg-indigo-500 hover:bg-indigo-600">
-              <box-icon class="mr-2" name='message-square-add'></box-icon>
-              <span class="inline-block align-top text-base mr-2">Create Option</span>
-          </button>
-          <!--/ Add new option -->
         </h4>
 
         <!-- Option list -->
         <div class="grid gap-3 grid-cols-12">
-          <div v-for="(option, index) in optionWeekFilter(scheduleWeek.week)" :key="option.uuid" class="flex items-center mb-1 mt-3 col-span-6">
-              <span class="w-6 text-sm"> {{ index + 1 }}. </span>
+          <div v-for="(scheduleDay, index) in scheduleDays" :key="scheduleDay.uuid" class="mb-1 mt-3 col-span-12">
+            
+            <div class="grid gap-3 grid-cols-12">
+              <div class="mt-3 col-span-12">
+                <button type="button" @click="addOption(scheduleWeek.week, scheduleDay.name)" class="w-40 flex items-center text-xs py-1 px-2 rounded-md text-white fill-white bg-indigo-500 hover:bg-indigo-600">
+                  <box-icon class="mr-2" name='message-square-add'></box-icon>
+                  <span class="inline-block align-top text-base mr-2">{{ scheduleDay.name }}</span>
+                </button>
+              </div>
 
-              
-              <select v-model="option.day"  @change="dataChange" class="mt-1 ml-2 block w-full py-2 px-3 border border-gray-400 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option v-for="scheduleDay in scheduleDays" :value="scheduleDay">{{scheduleDay}}</option>
-              </select>
-              
-              <select v-model="option.start_time"  @change="dataChange" class="mt-1 ml-2 block w-full py-2 px-3 border border-gray-400 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option v-for="timeInterval in timeIntervals" :value="timeInterval">{{timeInterval}}</option>
-              </select>
-
-              <select v-model="option.end_time"  @change="dataChange" class="mt-1 ml-2 block w-full py-2 px-3 border border-gray-400 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option v-for="timeInterval in timeIntervals" :value="timeInterval">{{timeInterval}}</option>
-              </select>
-        
-              <!-- Delete Option -->
-              <button type="button" @click="removeOption(option)" class="h-6 w-6 rounded-full flex items-center justify-center border border-transparent transition-colors hover:border-red-100">
-                  <box-icon class="fill-red-500" name='trash'></box-icon>
-              </button>
-              <!--/ Delete Option -->
+              <div v-for="(option, index) in optionDayFilter(scheduleWeek.week, scheduleDay.name)" :key="option.uuid" class="mt-3 col-span-3">
+                
+                <div class="grid gap-3 grid-cols-12">
+                  <div class="mt-3 col-span-9">
+                    <input type="time" v-model="option.start_time"  @change="dataChange" placeholder="start time" class="mt-1 block w-full py-2 px-3 border border-gray-400 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                    <input type="time" v-model="option.end_time"  @change="dataChange" placeholder="end time" class="mt-1 block w-full py-2 px-3 border border-gray-400 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                  </div>
+                  <div class="mt-3 col-span-3">
+                    <button type="button" @click="removeOption(option)" class="h-6 w-6 rounded-full flex items-center justify-center border border-transparent transition-colors hover:border-red-100">
+                      <box-icon class="fill-red-500" name='trash'></box-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-    
+      
+          </div>
+          
+
+
+        
           </div>
         </div>
         <!--/ Option list -->

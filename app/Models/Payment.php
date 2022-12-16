@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+
     use HasFactory;
 
-    
+    const STATUS_SUCCEEDED = "Succeeded";
 
     protected $fillable = [
         'appointment_id',

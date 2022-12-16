@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ContentQuestion extends Model
 {
     use HasFactory;
+    const INDEX = 0;
 
     protected $fillable = [
         'content_id',
@@ -16,8 +17,6 @@ class ContentQuestion extends Model
         'question',
         'description',
         'data',
-        'image',
-        'audio',
     ];
 
     public function content()

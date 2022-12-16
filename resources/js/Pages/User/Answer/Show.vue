@@ -2,8 +2,11 @@
 // Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
+import QuestionFormatViewer from "@/Components/Editor/QuestionFormatViewer.vue";
 import JourneySideBar from '@/Components/SideBar/JourneySideBar.vue';
 import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
+import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
+import NavTabButton from '@/Components/NavTabButton.vue';
 // Import Inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -13,13 +16,22 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
+        QuestionFormatViewer,
         JourneySideBar,
         QuestionViewer,
+        NavTabButton,
+        NavTabBar,
         Inertia,
         useForm,
         Head,
         Link,
         ref,
+        
+    },
+    data() {
+        return {
+            tab: 'question',
+        };
     },
     props: {
         content: Object, default: () => ({}),
@@ -31,26 +43,29 @@ export default {
     },
     setup(props) {
         // Answers
-        const answers = props.question_answers_array;
+        const theAnswers = JSON.parse(JSON.stringify(props.question_answers_array));
         // Form
         const form = useForm({
             answer_id: props.answer.id,
             content_id: props.content.id,
-            questions: [],
             answers: null,
         });
         // Answer Store
         function submit() {
-            this.form.answers = answers;
-            Inertia.post(route('answer.store'), form)
+            this.form.answers = theAnswers;
+            Inertia.post(route('answer.store'), form);
         }
-        return { answers, form, submit };
+        return { theAnswers, form, submit };
     },
     methods: {
         // Destroy Content
         destroy(id) {
             Inertia.delete(route('answer.destroy', id));
         },
+        // Active Tab
+        activeTab(name) {
+            this.tab = name;
+        }
     }
 }
 </script>
@@ -72,7 +87,53 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Journey
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Journey</p>
+                Answer: {{ content.title }}
+            </div>
+            <!--/ Title Header -->
+
+             <!-- NavTabBar -->
+             <NavTabBar>
+                <!-- Back Tab -->
+                <li class="mr-6">
+                    <Link :href="route('answer.index')">
+                        <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
+                                <box-icon class='mr-2' name='arrow-back'></box-icon>
+                                <span class="inline-block align-top"> Back </span>
+                        </NavTabButton>
+                    </Link>
+                </li>
+                <!--/ Back Tab -->
+
+                <!-- Content Tab -->
+                <li class="mr-6">
+                    <NavTabButton @click="activeTab('content')" :active="tab === 'content'" class="inline-block p-4 rounded-t-lg border-b-2"> 
+                        <box-icon class='mr-2' name='book-heart'></box-icon>
+                        <span class="inline-block align-top">{{ content.category }}</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Content Tab -->
+
+                <!-- Question Tab -->
+                <li class="mr-6" v-if="questions.length">
+                    <NavTabButton @click="activeTab('question')" :active="tab === 'question'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <span class="inline-block align-top">Question</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Question Tab -->
+
+                <li class="mr-2" v-if="content.format_category === 'Unit'">
+                    <NavTabButton @click="activeTab('format')" :active="tab === 'format'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <span class="inline-block align-top">Result</span>
+                    </NavTabButton>
+                </li>
+            </NavTabBar>
+            <!--/ NavTabBar -->       
+
         </template>
         <!--/ #Header -->
 
@@ -82,7 +143,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Show Your {{ content.category }}'s Answer
+                    Show {{ content.category }} Answer
                 </template>
                 <!--/ #Title -->
 
@@ -95,13 +156,7 @@ export default {
                         </div>
                         <ul class="list-disc pt-4">
                             <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-yellow-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Status {{ content.status }}</span>
-                                </p>
-                            </li>
-                            <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-black bg-transparent text-gray-800  font-semibold py-3 px-4 border border-transparent rounded">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' type='solid' name='edit'></box-icon>
                                     <span class="inline-block align-top text-base">{{ answer.updated_at }}</span>
                                 </p>
@@ -131,33 +186,32 @@ export default {
                 <!--/ #Feature -->
 
                 <!-- #Tool -->
-                <template #tool>
+                <!-- <template #tool>
                     <JourneySideBar />
-                </template>
+                </template> -->
                 <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <!-- Content Show Card -->
-                        <div class="sm:overflow-hidden sm:rounded-md">
+                        <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <h1 class="text-3xl text-slate-900 font-bold">{{ content.title }}</h1>
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
                         <!--/ Content Show Card -->
 
                         <!-- Content Question Show Card -->
-                        <div v-if="questions.length" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                        <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 
                                 <!-- Question Viewer -->
-                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
                                     <div v-for="(question, ind) of questions" :key="question.id">
-                                        <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
+                                        <QuestionViewer v-model="theAnswers[question.id]" :question="question" :index="ind" />
                                     </div>
                                 </div>
                                 <!--/ Question Viewer -->
@@ -174,6 +228,17 @@ export default {
                             <!--/ Form -->
                         </div>
                         <!--/ Content Question Show Card -->
+
+                        <!-- Content Format Result Show Card -->
+                        <div v-if="questions.length && content.format_category === 'Unit' && tab === 'format'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                            <div class="space-y-6 bg-white sm:p-6">
+                                <!-- Question Viewer -->
+                                <h1 class="text-3xl font-bold">Result</h1>
+                                <QuestionFormatViewer :answers="question_answer" :content="content" />
+                                <!--/ Question Viewer -->
+                            </div>
+                        </div>
+                        <!-- Content Format Result Show Card -->
                     </div>
                 </template>
                 <!--/ #Main -->

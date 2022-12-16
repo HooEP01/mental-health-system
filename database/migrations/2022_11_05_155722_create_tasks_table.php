@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Appointment::class, 'appointment_id')->nullable();
             $table->foreignIdFor(\App\Models\Content::class, 'content_id')->nullable();
             $table->string('title', 1000);
+            $table->string('catergory', 1000);
             $table->text('description')->nullable();
             $table->timestamps();
         });

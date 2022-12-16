@@ -35,7 +35,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Resource
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Resource</p>
+                Event
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -45,7 +50,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    View User Events
+                    Show Event
                 </template>
                 <!--/ #Title -->
                 

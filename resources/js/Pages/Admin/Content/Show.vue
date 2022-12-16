@@ -4,6 +4,8 @@ import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import AdminSideBar from '@/Components/SideBar/AdminSideBar.vue';
 import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
+import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
+import NavTabButton from '@/Components/NavTabButton.vue';
 // Import inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -14,12 +16,19 @@ export default {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
         AdminSideBar,
+        NavTabButton,
         QuestionViewer,
+        NavTabBar,
         Inertia,
         useForm,
         Head,
         Link,
         ref,
+    },
+    data() {
+        return {
+            tab: 'content',
+        };
     },
     props: {
         content: Object, default: () => ({}),
@@ -49,6 +58,10 @@ export default {
         destroy(id) {
             Inertia.delete(route('contents_view.destroy', id));
         },
+        // Active Tab
+        activeTab(name) {
+            this.tab = name;
+        }
     }
 }
 </script>
@@ -57,6 +70,9 @@ export default {
 <style setup>
 .prose {
     max-width: none;
+}
+audio {
+    background-color: #000000;
 }
 </style>
     
@@ -71,7 +87,45 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Administrator
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Administrator</p>
+                Content: {{ content.title }}
+            </div>
+            <!--/ Title Header -->
+
+             <!-- NavTabBar -->
+             <NavTabBar>
+                <!-- Back Tab -->
+                <li class="mr-6">
+                    <Link :href="route('contents.index')">
+                        <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
+                                <box-icon class='mr-2' name='arrow-back'></box-icon>
+                                <span class="inline-block align-top"> Back </span>
+                        </NavTabButton>
+                    </Link>
+                </li>
+                <!--/ Back Tab -->
+
+                <!-- Content Tab -->
+                <li class="mr-6">
+                    <NavTabButton @click="activeTab('content')" :active="tab === 'content'" class="inline-block p-4 rounded-t-lg border-b-2"> 
+                        <box-icon class='mr-2' name='book-heart'></box-icon>
+                        <span class="inline-block align-top">{{ content.category }}</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Content Tab -->
+
+                <!-- Question Tab -->
+                <li class="mr-6" v-if="questions.length">
+                    <NavTabButton @click="activeTab('question')" :active="tab === 'question'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <span class="inline-block align-top">Question</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Question Tab -->
+            </NavTabBar>
+            <!--/ NavTabBar -->   
         </template>
         <!--/ #Header -->
 
@@ -94,7 +148,7 @@ export default {
                         </div>
                         <ul class="list-disc pt-4">
                             <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-yellow-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
                                     <span class="inline-block align-top text-base">Status {{ content.status }}</span>
                                 </p>
@@ -108,11 +162,18 @@ export default {
                 <template #feature>
                     <!-- edit content -->
                     <li class="flow-root">
-                        <Link v-if="can.edit && content.status != 'Approve'" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
+                        <Link v-if="can.edit" :href="route('contents.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
+                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
+                        <span class="inline-block align-top">Edit This Content</span>
+                        </Link>
+                    </li>
+                    <!-- edit content -->
+                    <li class="flow-root">
+                        <Link v-if="can.edit && content.status != 'Approve'" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-400 hover:fill-white text-white bg-indigo-300 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-edit'></box-icon>
                         <span class="inline-block align-top">Approve This Content</span>
                         </Link>
-                        <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-red-600 hover:fill-white text-white bg-red-500 font-semibold py-3 px-4 border border-transparent rounded">
+                        <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-red-500 hover:fill-white text-white bg-red-400 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-edit'></box-icon>
                         <span class="inline-block align-top">Disapprove Content</span>
                         </Link>
@@ -129,25 +190,24 @@ export default {
                 <!--/ #Feature -->
 
                 <!-- #Tool -->
-                <template #tool>
+                <!-- <template #tool>
                     <AdminSideBar />
-                </template>
+                </template> -->
                 <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <!-- Content Show Card -->
-                        <div class="sm:overflow-hidden sm:rounded-md">
+                        <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <h1 class="text-3xl text-slate-900 font-bold">{{ content.title }}</h1>
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
                         <!--/ Content Show Card -->
 
                         <!-- Content Question Show Card -->
-                        <div v-if="questions.length" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                        <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 

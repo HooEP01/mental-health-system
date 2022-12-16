@@ -1,23 +1,27 @@
 <script setup>
 // Import Uuid
+import Dropdown from '@/Components/Dropdown.vue';
+import { eventListeners } from '@popperjs/core';
 import { v4 as uuidv4 } from "uuid";
 import { ref, toRef } from "vue";
 
 // Props
-const { schedules, index, modelValue } = defineProps({
+const { schedules, appointments, index, events, modelValue } = defineProps({
+    appointments: Object,
     schedules: Object,
+    events: Object,
     index: Number,
     modelValue: [String, Array],
 });
 
 const sorter = {
-    "monday": 1,
-    "tuesday": 2,
-    "wednesday": 3,
-    "thursday": 4,
-    "friday": 5,
-    "saturday": 6,
-    "sunday": 7
+    "Monday": 1,
+    "Tuesday": 2,
+    "Wednesday": 3,
+    "Thursday": 4,
+    "Friday": 5,
+    "Saturday": 6,
+    "Sunday": 7
 }
 
 const periodicalSorter = {
@@ -69,7 +73,7 @@ for (let schedule of schedules) {
             let currentDataDay = sorter[data.day];
 
             currentStartTime.setDate(currentStartTime.getDate() + currentDataDay - currentStartDay);
-
+            
             // get start hours: format 11:00 => 11
             let currentStartHour = currentStartTime.getHours();
             // get end hours
@@ -79,28 +83,45 @@ for (let schedule of schedules) {
             // Week (1,2,3,4)
             let week = data.week;
 
+            let session_length = parseInt(events.session_length);
+            let session_interval = session_length / 60;
+  
+
             // run hours each with 1 hour interval
-            for (let j = currentStartHour; j < currentEndHour; j++) {
+            for (let j = currentStartHour; j < currentEndHour; j = j + session_interval) {
 
                 if (week != 0) {
                     currentStartTime.setDate(currentStartTime.getDate() + ((week - 1) * 7))
                 }
 
-                // increment time by 1
-                currentStartTime.setHours(currentStartTime.getHours() + 1);
 
                 // get the date time
                 let theDatetime = new Date(currentStartTime);
+                let theEndDateTime = new Date(currentStartTime);
+                theEndDateTime.setMinutes(theEndDateTime.getMinutes() + session_length);
+
                 let theDate = formatDate(theDatetime);
                 let theTime = formatTime(theDatetime);
+                let theEndTime = formatTime(theEndDateTime);
 
                 // push value to models
                 models.push({
                     uuid: uuidv4(),
-                    date: theDate,
-                    time: theTime,
+                    start_date: theDate,
+                    end_date: theDate,
+                    start_time: theTime,
+                    end_time: theEndTime,
                     day: data.day,
                 });
+
+                // increment time by 1
+
+                if(session_length % 60 == 0) {
+                    currentStartTime.setHours(currentStartTime.getHours() + 1);   
+                }else{
+                    currentStartTime.setMinutes(currentStartTime.getMinutes() + session_length);
+                }
+                
             }
 
         }
@@ -111,13 +132,10 @@ for (let schedule of schedules) {
     }
 }
 
-console.log(models)
+let count = ref(0);
+let result = ref([]);
+let total = [...new Map(models.map((m) => [m.start_date, m])).values()];
 
-const result = [...new Map(models.map((m) => [m.date, m])).values()];
-
-
-
-console.log('result', result)
 
 function formatDate(theDateTime) {
     // Month
@@ -130,27 +148,51 @@ function formatDate(theDateTime) {
 
 function formatTime(theDateTime) {
     let hour = (theDateTime.getHours() > 9)? theDateTime.getHours() : '0'+ (theDateTime.getHours());
-    return hour+":00";
+    let minutes = (theDateTime.getMinutes() > 9)? theDateTime.getMinutes(): '0'+ (theDateTime.getMinutes());
+    return hour+":"+minutes;
 }
 
 
 function filterDate(arr) {
-    
-    return models.filter((opt) => opt.date === arr);
-}
-
-
-
-function sortDate() {
+    return models.filter((opt) => opt.start_date === arr);
 
 }
 
-function sortTime() {
-
+function filterResult(int) {
+    let resultStart = 0 + (4*int);
+    let resultEnd = 4 + (4*int);
+    result = [...new Map(models.map((m) => [m.start_date, m])).values()].slice(resultStart, resultEnd);
+    return result;
 }
 
-function selectedModel(model) {
-    emits("update:modelValue", model);
+
+function filterAppointment(model) {
+    let app = appointments.find(( opt ) => opt.event_id === events.id && (opt.start_time).slice(0,-3) === model.start_time && opt.start_date === model.start_date);
+    return (app)? true: false;
+}
+
+function filterAppointmentEvents(model) {
+    let app = appointments.find((opt) => {
+        let opt_start_time = (opt.start_time).slice(0,-3);
+        let opt_end_time = (opt.end_time).slice(0,-3)
+        if(opt.event_id != events.id) {
+            if(opt.start_date == model.start_date) {
+                if(opt_start_time >= model.start_time && opt_end_time <= model.end_time || 
+                   opt_start_time <= model.start_time && opt_end_time >= model.end_time || 
+                   opt_start_time <= model.start_time && opt_end_time < model.end_time && opt_end_time > model.start_time || 
+                   opt_start_time > model.start_time && opt_end_time >= model.end_time && opt_start_time < model.end_time
+                   ) {
+                    return opt;
+                }
+            }
+        }
+    });
+ 
+    return (app)? true: false;
+} 
+
+function selectedModel(theModel) {
+    emits("update:modelValue", theModel);
 }
 
 // Emits
@@ -160,23 +202,82 @@ const emits = defineEmits(["update:modelValue"]);
 
 
 <template>
+    <div class="bg-slate-50 sm:overflow-hidden sm:rounded-md"> 
+
+        <div class="flex justify-between">
+        <div class="px-6 py-6 font-bold">
+            Session Length: {{ events.session_length }} minutes
+            <br/>
+            <div v-if="events.attendance != 1">
+                Attendance Per Session: {{ events.attendance }} Max
+            </div>
+            
+        </div>
+        <div></div>
+        <div class="place-content-end px-6 py-4">
+            <!-- <button @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                <span class="sr-only">Open dropdown</span>
+                <box-icon type='solid' name='calendar-event'></box-icon>
+            </button> -->
+            
+            <button v-if="count != 0" @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                <span class="sr-only">Open dropdown</span>
+                <box-icon name='chevron-left'></box-icon>
+            </button>
+            <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                <span class="sr-only">Open dropdown</span>
+                <box-icon name='chevron-left'></box-icon>
+            </button>
+            <button v-if="total.length / 5 > count + 1" @click="count++" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                <span class="sr-only">Open dropdown</span>
+                <box-icon name='chevron-right'></box-icon>
+            </button>
+            <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                <span class="sr-only">Open dropdown</span>
+                <box-icon name='chevron-right'></box-icon>
+            </button>
+        </div>
+       
+        
+      </div>
+
     <fieldset class="mb-4">
-        <div class="md:grid md:grid-cols-5 md:gap-3">
-            <div v-for="r in result">
+        <div class="md:grid md:grid-cols-4 md:gap-3">
+            <div v-for="r in filterResult(count)">
                 <div class="">
                     <p class="text-xl font-bold text-indigo-500 text-center">{{ r.day.toUpperCase() }}</p> 
-                    <p class="text-sm text-slate-600 text-center">{{ r.date }}</p>
+                    <p class="text-sm text-slate-600 text-center">{{ r.start_date }}</p>
                 </div>
                 <div class="md:col-span-1 relative">
-                    <div v-for="model in filterDate(r.date)" :key="model.uuid" class="mt-2">
-                        <button type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-black hover:fill-white text-gray-900 hover:text-white bg-transparent hover:bg-indigo-500">
-                            <!-- <box-icon class="mr-2" name='message-square-add'></box-icon> -->
-                            <span class="inline-block align-top text-lg mr-2">{{ model.time }}</span>
-                        </button>
+                    <div v-for="model in filterDate(r.start_date)" :key="model.uuid" class="mt-2">
+
+                        <div v-if="filterAppointment(model)">
+                            <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-red-500">
+                                <box-icon class="mr-2" name='time'></box-icon>
+                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
+                            </button>
+                        </div>
+                        <div v-else-if="filterAppointmentEvents(model)">
+                            <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-slate-500">
+                                <box-icon class="mr-2" name='time'></box-icon>
+                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
+                            </button>
+                        </div>
+                        <div v-else>
+                            <button v-if="(modelValue.uuid === model.uuid)" type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-gray-900 text-white bg-indigo-500">
+                                <box-icon class="mr-2" name='time'></box-icon>
+                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}  </span>
+                            </button>
+                            <button v-else type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-black hover:fill-white text-gray-900 hover:text-white bg-transparent hover:bg-indigo-500">
+                                <box-icon class="mr-2" name='time'></box-icon>
+                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
         </div>
     </fieldset>
+    </div>
 </template>

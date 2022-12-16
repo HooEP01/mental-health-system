@@ -4,8 +4,11 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 
 // models
+use App\Models\User;
 use App\Models\Event;
 use App\Models\Schedule;
+use App\Models\Appointment;
+use App\Models\Task;
 
 // illuminate
 use Illuminate\Http\Request;
@@ -41,7 +44,7 @@ class EventController extends Controller
     {
         $events = DB::table('events')
         -> select('events.*')
-        -> where('events.status','=', 'Approve')
+        -> where('events.status','=', Event::STATUS_APPROVE)
         -> orderBy('created_at','desc')
         -> paginate(100);
  
@@ -66,21 +69,43 @@ class EventController extends Controller
         $event = DB::table('events')
         -> select('events.*')
         -> where('events.id', '=', $id)
-        -> where('events.status','=', 'Approve')
+        -> where('events.status','=', Event::STATUS_APPROVE)
         -> first();
+
+        $professional = User::find($event->user_id);
 
         $schedules = DB::table('schedules')
         -> select('schedules.*')
         -> where('schedules.event_id', '=', $id)
         -> get();
-
         foreach($schedules as $schedule) {
             $schedule->data = json_decode($schedule->data);
         }
 
+        $appointments = DB::table('appointments')
+        -> select('appointments.*')
+        -> where('appointments.event_id', '=', $event->id)
+        -> when(function($query) {
+            $query-> where('appointments.status', '=', Appointment::STATUS_PAID)
+                  -> orWhere('appointments.status', '=', Appointment::STATUS_APPROVE);
+            })
+        -> orderBy('appointments.start_date','asc')
+        -> orderBy('appointments.start_time', 'asc')
+        -> get();
+
+        $tasks = DB::table('tasks')
+        -> join('contents', 'tasks.content_id', '=', 'contents.id')
+        -> select('tasks.*', 'contents.title as content_title')
+        -> where('tasks.event_id', '=', $id)
+        -> where('tasks.category', '!=', Task::CATEGORY_DELETE)
+        -> get();
+
         return Inertia::render('User/Event/Show', [
             'event' => $event,
             'schedules' => $schedules,
+            'appointments' => $appointments,
+            'tasks' => $tasks,
+            'professional' => $professional,
             'can' => [
                 'create' => Auth::user()->can('user event create'),
                 'edit' => Auth::user()->can('user event edit'),

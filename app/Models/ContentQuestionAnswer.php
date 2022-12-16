@@ -13,6 +13,7 @@ class ContentQuestionAnswer extends Model
         'content_question_id',
         'content_answer_id',
         'answer',
+        'comment',
     ];
 
     public function content_question()

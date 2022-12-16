@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 
-
 class ProfileController extends Controller
 {
     /**
@@ -95,7 +94,7 @@ class ProfileController extends Controller
         $data->relationship_status = $request->relationship_status;
         $data->contact_number = $request->contact_number;
         $data->save();
-        return $this->index();
+        return redirect()->route('profile.index');
     }
 
     private function professional()
@@ -127,7 +126,7 @@ class ProfileController extends Controller
         $data->professional_status = USER::PROFESSINAL_STATUS_PENDING;
         $data->save();
 
-        return $this->professional();
+        return redirect()->route('profile.show', ['professional']);
     }
 
 

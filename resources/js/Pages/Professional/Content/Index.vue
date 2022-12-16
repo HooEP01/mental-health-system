@@ -3,6 +3,7 @@
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+import Pagination from '@/Components/Pagination.vue';
 // Import inertia
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -12,6 +13,7 @@ export default {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
         ProfessionalSideBar,
+        Pagination,
         Inertia,
         Link,
         Head,
@@ -33,7 +35,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Content
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -43,7 +50,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Professional Content
+                    Show Content
                 </template>
                 <!--/ #Title -->
                 
@@ -95,12 +102,19 @@ export default {
                                         </a>
                                     </h3>
                                     <p v-html="content.description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
+                                    <p v-if="content.questionCount" class="mt-1 text-sm text-gray-600"> {{ content.questionCount }} Questions
+                                        <span v-if="content.format_category === 'Unit'" class="mt-1 text-sm text-gray-600"> * </span>
+                                    </p>
+                                    
                                 </div>
                             </div>
                             </Link>
                         </div>
                         <!-- Content Card -->
+                        <pagination class="mt-6 col-span-3" :links="contents.links" />
                     </div>
+
+                    
                 </template>
                 <!--/ #Main -->
             </ContainerWithSideBar>

@@ -2,6 +2,7 @@
 // Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
+import TransactionSideBar from '@/Components/SideBar/TransactionSideBar.vue';
 // Import inertia
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -10,6 +11,7 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
+        TransactionSideBar,
         Inertia,
         Link,
         Head,
@@ -31,7 +33,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Transaction 
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Transaction</p>
+                Payment
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -41,7 +48,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    View User Transaction
+                    Show Payment
                 </template>
                 <!--/ #Title -->
 
@@ -52,21 +59,21 @@ export default {
                 <!--/ #Subtitle -->
 
                 <!-- #Tool -->
-                <!-- <template #tool>
-                    <AdminSideBar />
-                </template> -->
+                <template #tool>
+                    <TransactionSideBar />
+                </template> 
                 <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>
                     <!-- if empty -->
-                    <div v-if="(!payments.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
+                    <!-- <div v-if="(!payments.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
                         <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
                             <strong class="font-bold">Payment Is Not Available!</strong>
                             <span class="block sm:inline"> Search For Other Keyword Now.</span>
                         </div>
-                    </div>
-                    <div v-else class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
+                    </div> -->
+                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <div class="px-4 sm:px-0">
                             <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
@@ -91,8 +98,7 @@ export default {
                                                     {{ index + 1 }}
                                                 </td>
                                                 <td data-label="Title" class="py-4 px-6">
-                                                    <!-- {{ content.title }} -->
-                                                    {{ payment.event.title }}
+                                                    <Link :href="route('event.show', payment.event.id)" class="font-semibold">{{ payment.event.title }}</Link>
                                                 </td>
                                                 <td data-label="Description" class="py-4 px-6">
                                                     {{ payment.start_date }}
@@ -103,27 +109,22 @@ export default {
                                                     <!-- {{ content.name }} -->
                                                 </td>
                                                 <td data-label="Status" class="py-4 px-6">
-                                                    {{ payment.status }}
+                                                    {{ payment.status.toUpperCase() }}
                                                 </td>
                                                 <td data-label="Amount" class="py-4 px-6">
                                                     {{ payment.amount }}
-                                                    <!-- <Link v-if="can.edit" :href="route('contents_view.show', content.id)"
-                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">
-                                                        <box-icon class='mr-1' name='show-alt'></box-icon>
-                                                        <span class="mr-1 inline-block align-top">View</span>
-                                                    </Link> -->
                                                 </td>
                                                 <td data-label="Action" class="py-4 px-6">
-                                                    <!-- <Link v-if="can.edit && content.status != 'Approve'" :href="route('contents_view.edit', content.id)"
+                                                    <Link v-if="can.edit && payment.status == 'Succeeded'" :href="route('appointment.show', payment.appointment_id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class='mr-1' name='message-square-edit'></box-icon>
-                                                        <span class="inline-block align-top">Approve</span>
+                                                        <span class="inline-block align-top">Complete</span>
                                                     </Link>
-                                                    <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)"
+                                                    <Link v-else-if="can.edit" :href="route('payment.create', payment.appointment_id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-red-500 hover:bg-red-600 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class='mr-1' name='message-square-edit'></box-icon>
-                                                        <span class="inline-block align-top">Disapprove</span>
-                                                    </Link> -->
+                                                        <span class="inline-block align-top">Paid</span>
+                                                    </Link>
                                                 </td>
                                             </tr>
                                         </tbody>

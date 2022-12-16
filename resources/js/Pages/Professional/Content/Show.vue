@@ -2,7 +2,7 @@
 // Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
-import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
+import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
 import NavTabButton from '@/Components/NavTabButton.vue';
 import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
 // Import inertia
@@ -14,9 +14,9 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
-        ProfessionalSideBar,
         NavTabButton,
         QuestionViewer,
+        NavTabBar,
         Inertia,
         useForm,
         Head,
@@ -68,6 +68,10 @@ export default {
 .prose {
     max-width: none;
 }
+
+audio {
+    background-color: #000000;
+}
 </style>
     
 
@@ -80,7 +84,47 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Content: {{ content.title }}
+            </div>
+            <!--/ Title Header -->
+
+            <!-- NavTabBar -->
+            <NavTabBar>
+                <!-- Back Tab -->
+                <li class="mr-6">
+                    <Link :href="route('contents.index')">
+                        <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
+                                <box-icon class='mr-2' name='arrow-back'></box-icon>
+                                <span class="inline-block align-top"> Back </span>
+                        </NavTabButton>
+                    </Link>
+                </li>
+                <!--/ Back Tab -->
+
+                <!-- Content Tab -->
+                <li class="mr-6">
+                    <NavTabButton @click="activeTab('content')" :active="tab === 'content'" class="inline-block p-4 rounded-t-lg border-b-2"> 
+                        <box-icon class='mr-2' name='book-heart'></box-icon>
+                        <span class="inline-block align-top">{{ content.category }}</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Content Tab -->
+
+                <!-- Question Tab -->
+                <li class="mr-6" v-if="questions.length">
+                    <NavTabButton @click="activeTab('question')" :active="tab === 'question'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <span class="inline-block align-top">Question</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Question Tab -->
+            </NavTabBar>
+            <!--/ NavTabBar -->             
+                       
         </template>
         <!--/ #Header -->
 
@@ -103,7 +147,7 @@ export default {
                         </div>
                         <ul class="list-disc pt-4">
                             <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-yellow-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
                                     <span class="inline-block align-top text-base">Status {{ content.status }}</span>
                                 </p>
@@ -125,7 +169,7 @@ export default {
                     <!-- destroy content -->
                     <li class="flow-root">
                         <Link v-if="can.delete" @click="destroy(content.id)"
-                            class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-500 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                            class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-400 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-minus'></box-icon>
                         <span class="inline-block align-top">Delete This Content</span>
                         </Link>
@@ -133,37 +177,18 @@ export default {
                 </template>
                 <!--/ #Feature -->
 
-                <!-- #Tool -->
-                <template #tool>
-                    <ProfessionalSideBar />
-                </template>
-                <!--/ #Tool -->
-
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         
-                        <div v-if="questions.length" class="mb-4 border-b border-gray-200 dark:border-gray-700">
-                            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
-                                <li class="mr-2">
-                                    <NavTabButton @click="activeTab('content')" :active="tab === 'content'" class="inline-block p-4 rounded-t-lg border-b-2"> 
-                                        <box-icon class='mr-2' name='book-heart'></box-icon>
-                                        <span class="inline-block align-top">{{ content.category }}</span>
-                                    </NavTabButton>
-                                </li>
-                                <li class="mr-2" >
-                                    <NavTabButton @click="activeTab('question')" :active="tab === 'question'" class="inline-block p-4 rounded-t-lg border-b-2">
-                                        <box-icon class='mr-2' name='book-add'></box-icon>
-                                        <span class="inline-block align-top">Question</span>
-                                    </NavTabButton>
-                                </li>
-                            </ul>
-                        </div>
 
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <h1 class="text-3xl text-slate-900 font-bold">{{ content.title }}</h1>
+                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
+                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
+                                </audio>
+
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
@@ -175,7 +200,7 @@ export default {
                             <form @submit.prevent="submit" class="container mx-auto">
 
                                 <!-- Question Viewer -->
-                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div  class="space-y-6 bg-white sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
                                     <div v-for="(question, ind) of questions" :key="question.id">
                                         <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />

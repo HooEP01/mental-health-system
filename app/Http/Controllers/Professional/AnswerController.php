@@ -45,11 +45,20 @@ class AnswerController extends Controller
     {
         $answers = DB::table('content_answers')
         -> join('contents', 'content_answers.content_id', '=', 'contents.id')
-        -> select('content_answers.*', 'contents.title', 'contents.description', 'contents.image', 'contents.category')
+        -> select('content_answers.*', 'contents.title', 'contents.description', 'contents.image', 'contents.category', 'contents.format_category', 'contents.id as content_id')
         -> where('content_answers.user_id','=', Auth::id())
         -> where('contents.category', '=', Content::PROFESSIONAL_CATEGORY)
         -> orderBy('updated_at','desc')
         -> paginate(100);
+
+        foreach($answers as $answer){
+            $question = DB::table('content_questions')
+            ->select('content_questions.*')
+            ->where('content_questions.content_id', '=', $answer->content_id)
+            ->count();
+
+            $answer->questionCount = $question;
+        }
  
         return Inertia::render('Professional/Answer/Index', [
             'answers' => $answers,
@@ -72,13 +81,14 @@ class AnswerController extends Controller
         $answer = DB::table('content_answers')
         -> select('content_answers.*')
         -> where('content_answers.id', '=', $id)
-        -> where('content_answers.user_id', '=', Auth::Id())
         -> first();
 
         $content = DB::table('contents')
         -> select('contents.*')
         -> where('contents.id', '=', $answer->content_id)
         -> first();
+
+        $content->formats = json_decode($content->formats);
 
         $questions = DB::table('content_questions')
         -> select('content_questions.*')
@@ -91,6 +101,7 @@ class AnswerController extends Controller
         -> where('content_question_answers.content_answer_id', '=', $id)
         -> get();
 
+
         // decode json
         foreach($questions as $question) {
             $question->data =  json_decode($question->data);
@@ -99,7 +110,7 @@ class AnswerController extends Controller
         $question_answers_array = [];
 
         foreach($question_answers as $question_answer) {
-            if($question_answer->content_question_category == 'checkbox'){
+            if($question_answer->content_question_category !== 'text' && $question_answer->content_question_category !== 'textarea'){
                 $question_answer->answer =  json_decode($question_answer->answer);
             }
 
@@ -126,13 +137,10 @@ class AnswerController extends Controller
     public function store(Request $request)
     {
         if($request->answer_id != null){
-            $this->updateAnswer($request);
-            return $this->show($request->answer_id);
+            return $this->updateAnswer($request);
         }else{
-            $this->storeAnswer($request);
+            return $this->storeAnswer($request);
         }
-
-        return $this->index();
     }
 
     /**
@@ -152,7 +160,7 @@ class AnswerController extends Controller
         $contentAnswer = ContentAnswer::create([
             'content_id' => $request->content_id,
             'user_id' => Auth::Id(),
-            'status' => 'hidden',
+            'status' => ContentAnswer::STATUS_ANSWERED,
             'start_date' => date('Y-m-d H:i:s'),
             'end_date' => date('Y-m-d H:i:s'),
         ]);
@@ -167,6 +175,7 @@ class AnswerController extends Controller
             ]);
 
         }
+        return redirect()->route('answers.show', [$contentAnswer->id]);
 
     }
 
@@ -178,9 +187,21 @@ class AnswerController extends Controller
 
         foreach ($request->answers as $question_id => $answer){
             $questionAnswer = ContentQuestionAnswer::where(['content_question_id' => $question_id, 'content_answer_id' => $request->answer_id])->first();
-            $questionAnswer->answer = is_array($answer) ? json_encode($answer) : $answer;
-            $questionAnswer->save();
+            if($questionAnswer){
+                $questionAnswer->answer = is_array($answer) ? json_encode($answer) : $answer;
+                $questionAnswer->save();
+            }else{
+                $questionAnswer = ContentQuestionAnswer::create([
+                    'content_question_id'=>$question_id,
+                    'content_answer_id'=>$request->answer_id,
+                    'answer'=>is_array($answer) ? json_encode($answer) : $answer,
+                ]);
+            }
+            
+           
         }
+
+        redirect()->route('answers.show', [$request->answer_id]);
     }
 
 

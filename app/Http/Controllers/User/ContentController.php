@@ -40,9 +40,18 @@ class ContentController extends Controller
     {
         $contents = DB::table('contents')
         -> select('contents.*')
-        -> where('contents.status','=','Approve') 
+        -> where('contents.status','=', Content::STATUS_APPROVE) 
         -> orderBy('created_at','desc')
         -> paginate(100);
+
+        foreach($contents as $content){
+            $question = DB::table('content_questions')
+            ->select('content_questions.*')
+            ->where('content_questions.content_id', '=', $content->id)
+            ->count();
+
+            $content->questionCount = $question;
+        }
  
         return Inertia::render('User/Content/Index', [
             'contents' => $contents,

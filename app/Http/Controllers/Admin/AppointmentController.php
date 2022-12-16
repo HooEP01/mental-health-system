@@ -61,7 +61,7 @@ class AppointmentController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Display a appointment status
      *
      * @param \App\Models\Appointment $id

@@ -6,7 +6,7 @@ import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
 import ScheduleEditor from "@/Components/Editor/ScheduleEditor.vue";
 import Tiptap from '@/Components/Tiptap.vue'
 // Import Inertia
-import { useForm, Head } from '@inertiajs/inertia-vue3';
+import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 // Import Uuid
 import { v4 as uuidv4 } from "uuid";
@@ -20,6 +20,7 @@ export default {
         Tiptap,
         Inertia,
         useForm,
+        Link,
         Head,
     },
     props: {
@@ -124,7 +125,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+           <!-- Title Header -->
+           <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Event
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -134,7 +140,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Create Professional Event
+                    Create New Event
                 </template>
                 <!--/ #Title -->
 
@@ -144,10 +150,20 @@ export default {
                 </template>
                 <!--/ #Subtitle -->
 
-                <!-- #Tool -->
-                <template #tool>
-                    <ProfessionalSideBar/>
+                <!-- #Feature -->
+                <template #feature>
+                    <li class="flow-root">
+                        <Link :href="route('events.index')" class="inline-flex items-center text-left w-full fill-white bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' name='arrow-back'></box-icon> <span class="inline-block align-top">Back To Home</span>
+                        </Link>
+                    </li>
                 </template>
+                <!--/ #Feature -->
+
+                <!-- #Tool -->
+                <!-- <template #tool>
+                    <ProfessionalSideBar/>
+                </template> -->
                 <!--/ #Tool -->
 
                 <!-- #Main -->

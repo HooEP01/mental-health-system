@@ -44,6 +44,7 @@ class User extends Authenticatable
         'relationship_status',
         'contact_number',
         'image',
+        'file',
         'professional_title',
         'professional_description',
         'professional_status',

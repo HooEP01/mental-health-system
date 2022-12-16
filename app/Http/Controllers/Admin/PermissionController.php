@@ -7,10 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Permission;
 
 // illuminate
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 // inertia
 use Inertia\Inertia;
@@ -38,10 +38,15 @@ class PermissionController extends Controller
      */
     public function index()
     {
+
+        $keyword = Request::input('search');
+       
         $permissions = DB::table('permissions')
         -> select('permissions.*')
+        -> where('permissions.name', 'like', '%' .$keyword. '%')
         -> orderBy('created_at','desc')
-        -> paginate(200);
+        -> paginate(20)
+        -> withPath('/admin/permissions_view?search=' .$keyword);
 
         return Inertia::render('Admin/Permission/Index', [
             'permissions' => $permissions,

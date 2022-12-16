@@ -17,9 +17,36 @@ export default {
         Head,
     },
     props: {
-        events: Object, default: () => ({}),
+        appointments: Object, default: () => ({}),
+        search: Object, default: () => ({}),
         can: Object, default: () => ({}),
     },
+    data() {
+        return {
+            search: '',
+            status: '',
+            
+            statuses: [ "All", "Approve", "Paid", "Disapprove" ],
+        }
+    },
+    watch: {
+        search(value){
+            Inertia.get(route('appointments.index'), 
+            { search: value, status: this.status, page: 1 }, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+    },
+    methods: {
+        changeStatus(){
+            Inertia.get(route('appointments.index'), 
+            { search: this.search, status: this.status, page: 1 }, {
+                preserveState: true,
+                replace: true,
+            });
+        },
+    }
 }
 </script>
 
@@ -32,7 +59,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Appointment
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -70,37 +102,97 @@ export default {
 
                 <!-- #Main -->
                 <template #main>
+
                     <!-- if empty -->
-                    <div v-if="(!events.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">Appointment Is Not Available!</strong>
-                            <span class="block sm:inline"> Search For Other Keyword Now.</span>
-                        </div>
-                    </div>
-                    <div class="px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <!-- Content Card -->
-                        <div v-for="event in events.data" :key="event.id" class="group relative sm:overflow-hidden sm:rounded-md">
-                            <Link :href="route('events.show', event.id)">
-                            <div class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-grey-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-                                <img v-if="event.image" :src="'/storage/' + event.image" alt="image" class="h-full w-full object-cover object-center lg:h-full lg:w-full" />
-                                <img v-else src="https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg" alt="images" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
-                            </div>
-                            <div class="mt-4 flex justify-between p-2 bg-white">
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-900 line-clamp-1">
-                                        <a>
-                                            <span aria-hidden="true" class="absolute"></span>
-                                            {{ event.title }}
-                                        </a>
-                                    </h3>
-                                    <p v-html="event.description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
-                                    <p class="mt-1 text-sm text-gray-600"> MYR {{ event.price}} </p>
+                    <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
+                        <div class="px-4 sm:px-0">
+                            <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
+                                <div class="pace-y-6 bg-white px-4 py-5 sm:p-6">
+
+                                    <div class="py-3 text-right">
+                                        
+                                        <select v-model="status" @change="changeStatus()" id="status" name="status" class="mt-1 mr-3 w-30 rounded-md border border-gray-400 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                            <option v-for="status in statuses" :key="status" :value="status">{{status.toUpperCase()}}</option>
+                                        </select>
+
+                                        <input v-model="search" type="text" name="title" id="title" autocomplete="title" placeholder="Search" required class="inline-flex justify-center mt-1 block w-30 rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                    <!-- Table -->
+                                    <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase">
+                                            <tr class="bg-white border-b border-gray-400">
+                                                <th scope="col" class="py-3 px-6">#</th>
+                                                <th scope="col" class="py-3 px-6">Title</th>
+                                                <th scope="col" class="py-3 px-6">Name</th>
+                                                <th scope="col" class="py-3 px-6">Date</th>
+                                                <th scope="col" class="py-3 px-6">Time</th>
+                                                <th scope="col" class="py-3 px-6">Reason</th>
+                                                <th scope="col" class="py-3 px-6">Status</th>
+                                                <th scope="col" class="py-3 px-6">View</th>
+                                                <th scope="col" class="py-3 px-6">Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr v-for="(appointment, index) in appointments.data" :key="appointment.id"
+                                                class="bg-white border-b border-gray-400">
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td data-label="Title" class="py-4 px-6">
+                                                    <Link :href="route('events.show', appointment.event_id)">
+                                                        {{ appointment.event_title }}
+                                                    </Link>
+                                                </td>
+                                                <td data-label="User_id" class="py-4 px-6">
+                                                    {{ appointment.name }}
+                                                </td>
+                                                <td data-label="User_id" class="py-4 px-6">
+                                                    {{ appointment.start_date }}
+                                                </td>
+                                                <td data-label="User_id" class="py-4 px-6">
+                                                    {{ appointment.start_time }}
+                                                </td>
+                                                <td data-label="Description" class="py-4 px-6">
+                                                    <p v-html="appointment.reason" class="mt-1 text-sm text-gray-500 line-clamp-3"></p>
+                                                </td>
+                                                
+                                                
+                                                <td data-label="Status" class="py-4 px-6">
+                                                    {{ appointment.status }}
+                                                </td>
+                                                <td data-label="View" class="py-4 px-6">
+                                                    <Link v-if="can.edit" :href="route('appointments.show', appointment.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='show-alt'></box-icon>
+                                                        <span class="mr-1 inline-block align-top">View</span>
+                                                    </Link>
+                                                </td>
+                                                <td data-label="Action" class="py-4 px-6">
+                                                    <Link v-if="can.edit && appointment.status != 'Approve'" :href="route('appointments.edit', appointment.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                        <span class="inline-block align-top">Approve</span>
+                                                    </Link>
+                                                    <Link v-else-if="can.edit" :href="route('appointments.edit', appointment.id)"
+                                                        class="inline-flex items-center text-left fill-white text-white w-full bg-red-500 hover:bg-red-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                        <span class="inline-block align-top">Disapprove</span>
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!--/ Table -->
+                                    </div>
+
                                 </div>
                             </div>
-                            </Link>
                         </div>
-                        <!-- Content Card -->
                     </div>
+
                 </template>
                 <!--/ #Main -->
             </ContainerWithSideBar>

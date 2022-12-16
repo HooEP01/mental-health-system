@@ -1,16 +1,16 @@
-  
 <script setup>
-// Import Uuid
+// Import
 import { v4 as uuidv4 } from "uuid";
-// Import Vue
 import { ref } from "@vue/reactivity";
 
 const props = defineProps({
   question: Object,
+  formats: Object,
   index: Number,
 });
 
 const emit = defineEmits(["change", "addQuestion", "deleteQuestion"]);
+const point = ref();
 
 // Re-create the whole question data to avoid unintentional reference change
 const model = ref(JSON.parse(JSON.stringify(props.question)));
@@ -39,7 +39,7 @@ function shouldHaveOptions() {
 function addOption() {
   setOptions([
     ...getOptions(),
-    { uuid: uuidv4(), text: "" },
+    { uuid: uuidv4(), text: "", format: []},
   ]);
   dataChange();
 }
@@ -73,6 +73,41 @@ function addQuestion() {
 function deleteQuestion() {
   emit("deleteQuestion", props.question);
 }
+
+function formatChange(optionID, format, event) {
+
+    setFormats( optionID, [
+        ...getFormats(optionID) || [],
+        { id: format.id, unit: format.unit, point: event },
+      ]
+    );
+
+  dataChange();
+}
+
+function getFormats(id) {
+  return model.value.data.options.find(({ uuid }) => uuid === id).format;
+}
+
+function setFormats(id, formats) {
+  return model.value.data.options.find(({ uuid }) => uuid === id).format = formats;
+}
+
+function existOptionFormat(option, format) {
+  let currentFormat;
+  if(option.format){
+   currentFormat = option.format.find(({ id }) => id === format.id);
+  }else{
+    currentFormat = false;
+  }
+  
+
+  if( currentFormat ) {
+    return true;
+  } else {
+    return false;
+  }
+}
 </script>
   
 
@@ -92,7 +127,7 @@ function deleteQuestion() {
       <!--/ Add new question -->
 
       <!-- Delete question -->
-      <button type="button" @click="deleteQuestion()" class="flex items-center rounded-md text-xs py-1 px-3 mr-2 fill-white text-white bg-red-400 hover:bg-red-500">
+      <button type="button" @click="deleteQuestion()" class="flex items-center rounded-md text-xs py-1 px-3 fill-white text-white bg-red-400 hover:bg-red-500">
         <box-icon class="mr-2" name='message-square-minus'></box-icon>
         <span class="inline-block align-top text-base mr-2">Delete Question</span>
       </button>
@@ -101,6 +136,7 @@ function deleteQuestion() {
   </div>
   <!--/ Question index -->
   <div class="grid gap-3 grid-cols-12">
+
     <!-- Question -->
     <div class="mt-3 col-span-9">
       <label :for="'question_text_' + model.data" class="block text-sm font-medium text-gray-700">Question Text</label>
@@ -129,6 +165,8 @@ function deleteQuestion() {
   </div>
   <!--/ Question Description -->
 
+
+
   <!-- Data -->
   <div>
     <div v-if="shouldHaveOptions()" class="mt-2">
@@ -144,14 +182,40 @@ function deleteQuestion() {
       </h4>
 
       <!-- Option list -->
-      <div v-for="(option, index) in model.data.options" :key="option.uuid" class="flex items-center mb-1">
-        <span class="w-6 text-sm"> {{ index + 1 }}. </span>
-        <input type="text" tabindex="1" v-model="option.text" @change="dataChange" class="w-full rounded-sm py-1 px-2 text-xs border border-gray-400 focus:border-indigo-500
-            " />
+      <div v-for="(option, index) in model.data.options" :key="option.uuid" class="grid grid-cols-12 gap-4">
+
+        <div class="col-span-12 mt-4">
+          <div class="flex items-center">
+            <p class="w-6 text-sm"> {{ index + 1 }}. </p>
+            <textarea type="text" tabindex="1" v-model="option.text" @change="dataChange" class="h-10 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-400 rounded-md"/>
+          </div>
+        </div>
+
+        <!-- Format -->
+        <div v-for="format in props.formats" :key="format.id" class="col-span-2">
+          <div v-if="existOptionFormat(option, format)">
+            <div class="flex items-center">
+              <input type="number" v-model="option.format.find(({ id }) => id === format.id).point" @change="formatChange(option.uuid, format)" :name="'format_' + format.id" :id="'format_' + format.id" class="h-10 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-400 rounded-md" />
+              <label :for="('format_' + format.id)" class="text-sm ml-2">{{ upperCaseFirst(format.unit) }}</label>
+            </div>
+          </div>
+
+          <div v-else>
+            <div class="flex items-center">
+              <input type="number" @change="formatChange(option.uuid, format, $event.target.value)" :name="'format_' + format.id" :id="'format_' + format.id" class="h-10 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-400 rounded-md" />
+              <label :for="('format_' + format.id)" class="text-sm ml-2">{{ upperCaseFirst(format.unit) }}</label>
+            </div>
+          </div>
+
+        </div>
+        <!--/ Format -->
+        
         <!-- Delete Option -->
-        <button type="button" @click="removeOption(option)" class="h-6 w-6 rounded-full flex items-center justify-center border border-transparent transition-colors hover:border-red-100">
-            <box-icon class="fill-red-500" name='trash'></box-icon>
-        </button>
+        <div class="col-span-1">
+          <button type="button" @click="removeOption(option)" class="h-6 w-6 rounded-full flex items-center justify-center border border-transparent transition-colors hover:border-red-100">
+              <box-icon class="fill-red-500" name='trash'></box-icon>
+          </button>
+        </div>
         <!--/ Delete Option -->
       </div>
       <!--/ Option list -->

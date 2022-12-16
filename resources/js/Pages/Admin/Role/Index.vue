@@ -33,7 +33,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Administrator 
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Administrator</p>
+                Role
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 

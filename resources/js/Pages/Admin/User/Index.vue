@@ -33,7 +33,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Administrator 
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Administrator</p>
+                User
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -101,7 +106,7 @@ export default {
                                                     <Link v-if="can.edit" :href="route('users_view.edit', user.id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class='mr-1' name='message-square-edit'></box-icon>
-                                                        <span class="inline-block align-top">Approve</span>
+                                                        <span class="inline-block align-top">Edit</span>
                                                     </Link>
                                                 </td>
                                             </tr>

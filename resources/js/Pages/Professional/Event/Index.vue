@@ -35,7 +35,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Event
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 

@@ -34,7 +34,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Professional
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Professional</p>
+                Answer
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -86,11 +91,15 @@ export default {
                                         </a>
                                     </h3>
                                     <p v-html="content.description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
+                                    <p v-if="content.questionCount" class="mt-1 text-sm text-gray-600"> {{ content.questionCount }} Questions
+                                        <span v-if="content.format_category === 'Unit'" class="mt-1 text-sm text-gray-600"> * </span>
+                                    </p>
                                     <ul class="list-disc pt-2">
                                         <li class="flow-root">
                                             <p class="inline-flex items-center text-left w-full fill-black bg-white text-gray-800  font-base text-sm border border-transparent rounded">
                                                 <span class="inline-block align-top text-sm">{{ content.updated_at }}</span>
                                             </p>
+                                            
                                         </li>
                                     </ul>
                                 </div>

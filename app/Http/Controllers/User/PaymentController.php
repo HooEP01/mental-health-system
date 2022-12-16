@@ -16,24 +16,18 @@ use Illuminate\Support\Facades\DB;
 
 // inertia
 use Inertia\Inertia;
-
-use Stripe;
 use App\Http\Requests;
-
 use Validator;
 use URL;
 use Session;
 use Redirect;
 use Input;
 use Stripe\Error\Card;
+use Stripe;
 
 class PaymentController extends Controller
 {
-    /**
-     * Instantiate a new controller instance.
-     *
-     * @return void
-     */
+
     public function __construct()
     {
         $this->middleware('can:user payment list', ['only' => ['index', 'show']]);
@@ -47,7 +41,7 @@ class PaymentController extends Controller
         $payments = DB::table('payments')
         ->join('appointments', 'payments.appointment_id', '=', 'appointments.id')
         ->select('payments.*', 'appointments.start_date', 'appointments.start_time', 'appointments.event_id')
-        ->where('payments.user_id', '=', Auth::Id())
+        ->where('payments.user_id', '=', Auth::id())
         ->orderBy('created_at', 'desc')
         ->paginate (100);
 
@@ -57,11 +51,10 @@ class PaymentController extends Controller
 
         return Inertia::render('User/Payment/Index', [
             'payments' => $payments,
-
             'can' => [
-                'create' => Auth::user()->can('user appointment create'),
-                'edit' => Auth::user()->can('user appointment edit'),
-                'delete' => Auth::user()->can('user appointment delete'),
+                'create' => Auth::user()->can('user payment create'),
+                'edit' => Auth::user()->can('user payment edit'),
+                'delete' => Auth::user()->can('user payment delete'),
             ]
         ]);
     }
@@ -71,7 +64,7 @@ class PaymentController extends Controller
         $appointment = DB::table('appointments')
         ->join('events', 'appointments.event_id', '=', 'events.id')
         ->select('appointments.*', 'events.price as event_price')
-        ->where('appointments.user_id', '=', Auth::Id())
+        ->where('appointments.user_id', '=', Auth::id())
         ->where('appointments.id', '=', $id)
         ->orderBy('created_at', 'desc')
         ->paginate (100);;
@@ -79,9 +72,9 @@ class PaymentController extends Controller
         return Inertia::render('User/Payment/Create', [
             'appointment' => $appointment,
             'can' => [
-                'create' => Auth::user()->can('user appointment create'),
-                'edit' => Auth::user()->can('user appointment edit'),
-                'delete' => Auth::user()->can('user appointment delete'),
+                'create' => Auth::user()->can('user payment create'),
+                'edit' => Auth::user()->can('user payment edit'),
+                'delete' => Auth::user()->can('user payment delete'),
             ]
         ]);
     }
@@ -95,12 +88,10 @@ class PaymentController extends Controller
     {
         $payment_id = $request->payment_id;
         if($payment_id != null){
-            // $this->updateContent($request);
-        }else{
-            $this->storePayment($request);
-        }
 
-        return $this->index();
+        }else{
+            return $this->storePayment($request);
+        }
     }
 
     private function storePayment(Request $request)
@@ -124,29 +115,22 @@ class PaymentController extends Controller
             'description' => 'This is a description',
         ]);
 
-        // Stripe\Charge::create ([
-        //     "amount" => 100 * 100,
-        //     "currency" => "myr",
-        //     "source" => $request->stripeToken,
-        //     "description" => "This is a description" 
-        // ]);
-
         if($charge['status'] == 'succeeded') { 
         
             $payment = Payment::create([
-            'appointment_id'=>$request->appointment_id,
-            'amount'=>$request->amount,
-            'status'=>"succeeded",
-            'method'=>"card",
-            'user_id'=>Auth::Id(),
-        ]);
+                'appointment_id'=>$request->appointment_id,
+                'amount'=>$request->amount,
+                'status'=>Payment::STATUS_SUCCEEDED,
+                'method'=>"card",
+                'user_id'=>Auth::Id(),
+            ]);
 
-        $appointment = Appointment::find($request->appointment_id);
-        $appointment->status = APPOINTMENT::STATUS_PAID;
-        $appointment->save();
+            $appointment = Appointment::find($request->appointment_id);
+            $appointment->status = APPOINTMENT::STATUS_PAID;
+            $appointment->save();
         }
 
-        return redirect()->route('content.index');
+        return redirect()->route('appointment.index');
     }
 
     

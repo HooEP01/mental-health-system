@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('relationship_status', 100)->nullable();
             $table->string('contact_number', 100)->nullable();
             $table->string('image', 1000)->nullable();
+            $table->string('file', 1000)->nullable();
             $table->string('professional_title', 1000)->nullable();
             $table->text('professional_description')->nullable();
             $table->string('professional_status', 100)->nullable();

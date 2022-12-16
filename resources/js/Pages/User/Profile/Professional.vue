@@ -70,7 +70,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Profile
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Profile</p>
+                Professional
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 

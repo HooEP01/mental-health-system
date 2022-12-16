@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     use HasFactory;
+    const CATEGORIES = ['User', 'Professional'];
+    const CATEGORY_USER = 'User';
+    const CATEGORY_PROFESSIONAL = 'Professional';
+    const CATEGORY_DELETE = 'Delete';
 
     protected $fillable = [
         'event_id',
         'appointment_id',
         'content_id',
         'title', 
+        'category',
         'description',
     ];
 

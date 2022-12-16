@@ -2,7 +2,8 @@
 // Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
-import ResourceSideBar from '@/Components/SideBar/ResourceSideBar.vue';
+import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
+import NavTabButton from '@/Components/NavTabButton.vue';
 import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
 // Import inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
@@ -13,13 +14,19 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
-        ResourceSideBar,
+        NavTabButton,
         QuestionViewer,
+        NavTabBar,
         Inertia,
         useForm,
         Head,
         Link,
         ref,
+    },
+    data() {
+        return {
+            tab: 'content',
+        };
     },
     props: {
         content: Object, default: () => ({}),
@@ -44,6 +51,13 @@ export default {
         }
         return { answers, form, submit };
     },
+
+    methods: {
+        // Active Tab
+        activeTab(name) {
+            this.tab = name;
+        }
+    }
 }
 </script>
 
@@ -51,6 +65,9 @@ export default {
 <style setup>
 .prose {
     max-width: none;
+}
+audio {
+    background-color: #000000;
 }
 </style>
     
@@ -64,7 +81,46 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Resource
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Resource</p>
+                Content: {{ content.title }}
+            </div>
+            <!--/ Title Header -->
+
+            <!-- NavTabBar -->
+            <NavTabBar>
+                <!-- Back Tab -->
+                <li class="mr-6">
+                    <Link :href="route('content.index')">
+                        <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
+                                <box-icon class='mr-2' name='arrow-back'></box-icon>
+                                <span class="inline-block align-top"> Back </span>
+                        </NavTabButton>
+                    </Link>
+                </li>
+                <!--/ Back Tab -->
+
+                <!-- Content Tab -->
+                <li class="mr-6">
+                    <NavTabButton @click="activeTab('content')" :active="tab === 'content'" class="inline-block p-4 rounded-t-lg border-b-2"> 
+                        <box-icon class='mr-2' name='book-heart'></box-icon>
+                        <span class="inline-block align-top">{{ content.category }}</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Content Tab -->
+
+                <!-- Question Tab -->
+                <li class="mr-6" v-if="questions.length">
+                    <NavTabButton @click="activeTab('question')" :active="tab === 'question'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <span class="inline-block align-top">Question</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Question Tab -->
+            </NavTabBar>
+            <!--/ NavTabBar -->             
+
         </template>
         <!--/ #Header -->
 
@@ -74,7 +130,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Show This {{ content.category }}
+                    Show {{ content.category }}
                 </template>
                 <!--/ #Title -->
 
@@ -90,25 +146,24 @@ export default {
                 <!--/ #Subtitle -->
 
                 <!-- #Tool -->
-                <template #tool>
+                <!-- <template #tool>
                     <ResourceSideBar />
-                </template>
+                </template> -->
                 <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <!-- Content Show Card -->
-                        <div class="sm:overflow-hidden sm:rounded-md">
+                        <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <h1 class="text-3xl text-slate-900 font-bold">{{ content.title }}</h1>
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
                         <!--/ Content Show Card -->
                         
                         <!-- Content Question Show Card -->
-                        <div v-if="questions.length" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                        <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
 

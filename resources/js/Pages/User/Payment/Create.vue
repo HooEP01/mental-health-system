@@ -72,7 +72,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Payment
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Transaction</p>
+                Payment: {{ event.title }}
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -82,32 +87,45 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Create User Payment
+                    Create New Payment
                 </template>
                 <!--/ #Title -->
 
                 <!-- #Subtitle -->
                 <template #subtitle>
                     This information will be displayed publicly so be careful what you share.
-                </template>
-                <!--/ #Subtitle -->
-
-                <!-- #Feature -->
-                <template #feature>
                     <div class="pt-4">
                         <div v-if="event.image" class="sm:overflow-hidden sm:rounded-md">
                             <img :src="'/storage/' + event.image" class="w-199 h-100 object-cover" />
                         </div>
                         <ul class="list-disc pt-4">
                             <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-yellow-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Status {{ event.status }}</span>
+                                    <span class="inline-block align-top text-base">Start Date {{ appointment.start_date }}</span>
+                                </p>
+                            </li>
+                            <li class="flow-root mt-2">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                    <box-icon class='mr-2' name='cube'></box-icon> 
+                                    <span class="inline-block align-top text-base">Start Time {{ appointment.start_time }}</span>
+                                </p>
+                            </li>
+                            <li class="flow-root mt-2">
+                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                    <box-icon class='mr-2' name='cube'></box-icon> 
+                                    <span class="inline-block align-top text-base">Session {{ event.session_length }} minutes</span>
                                 </p>
                             </li>
                         </ul>
                     </div>
                 </template>
+                <!--/ #Subtitle -->
+
+                <!-- #Feature -->
+                <!-- <template #feature>
+                    
+                </template> -->
                 <!--/ #Feature -->
 
                 <!-- #Main -->

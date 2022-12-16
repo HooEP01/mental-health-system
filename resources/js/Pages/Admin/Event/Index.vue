@@ -33,7 +33,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Administrator 
+           <!-- Title Header -->
+           <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Administrator</p>
+                Event
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -71,7 +76,8 @@ export default {
                     <div v-else class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <div class="px-4 sm:px-0">
                             <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
-                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="overflow-x-auto space-y-6 bg-white px-4 py-5 sm:p-6">
+                              
                                     <!-- Table -->
                                     <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
                                         <thead class="text-xs text-gray-700 uppercase">
@@ -109,11 +115,11 @@ export default {
                                                     {{ event.status }}
                                                 </td>
                                                 <td data-label="View" class="py-4 px-6">
-                                                    <!-- <Link v-if="can.edit" :href="route('contents_view.show', content.id)"
+                                                    <Link v-if="can.edit" :href="route('events.show', event.id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class='mr-1' name='show-alt'></box-icon>
                                                         <span class="mr-1 inline-block align-top">View</span>
-                                                    </Link> -->
+                                                    </Link>
                                                 </td>
                                                 <td data-label="Action" class="py-4 px-6">
                                                     <Link v-if="can.edit && event.status != 'Approve'" :href="route('events_view.edit', event.id)"

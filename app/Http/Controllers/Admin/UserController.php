@@ -5,6 +5,11 @@ use App\Http\Controllers\Controller;
 
 // models
 use App\Models\User;
+use App\Models\ContentAnswer;
+use App\Models\Appointment;
+use App\Models\Content;
+use App\Models\Event;
+use App\Models\Task;
 
 // illuminate
 use Illuminate\Http\Request;
@@ -82,10 +87,51 @@ class UserController extends Controller
         -> orderBy('created_at','desc')
         -> paginate(100);
 
+        $answers = DB::table('content_answers')
+        -> join('contents', 'content_answers.content_id', '=', 'contents.id')
+        -> select('content_answers.*', 'contents.title', 'contents.description', 'contents.image', 'contents.category', 'contents.format_category', 'contents.id as content_id')
+        -> where('content_answers.user_id','=', $id)
+        -> orderBy('updated_at','desc')
+        -> paginate(100);
+ 
+        foreach($answers as $answer){
+            $question = DB::table('content_questions')
+            ->select('content_questions.*')
+            ->where('content_questions.content_id', '=', $answer->content_id)
+            ->count();
+            $answer->questionCount = $question;
+        }
+
+        $appointments = DB::table('appointments')
+        -> join('events','appointments.event_id', '=','events.id')
+        -> join('users', 'appointments.user_id', '=', 'users.id')
+        -> select('appointments.*', 'events.id as event_id', 'events.image as event_image', 'events.user_id as professional_id', 'users.first_name', 'users.last_name', 'users.name', 'users.email', 'users.birthday', 'users.relationship_status', 'users.contact_number')
+        -> where('appointments.user_id', '=', $id)
+        -> get();
+
+        foreach($appointments as $appointment){
+            $tasks = DB::table('tasks')
+            -> join('content_answers', 'tasks.id', '=', 'content_answers.task_id')
+            -> join('contents', 'tasks.content_id', '=', 'contents.id')
+            -> select('tasks.*', 'contents.title as content_title', 'content_answers.id as content_answer_id')
+            -> where('tasks.event_id', '=', $appointment->event_id)
+            -> where('content_answers.appointment_id', '=', $appointment->id)
+            -> where('content_answers.user_id', '=', $id)
+            -> where('tasks.category', '=', Task::CATEGORY_USER)
+            -> get();
+            $appointment->task = $tasks;
+        }
+
+        
+
+        
+
         return Inertia::render('Admin/User/Edit', [
             'user' => $model,
             'roles' => $roles,
             'professional_statuses' => USER::PROFESSIONAL_STATUSES_ADMINISTRATOR,
+            'answers' => $answers,
+            'appointments' => $appointments,
             'can' => [
                 'create' => Auth::user()->can('user create'),
                 'edit' => Auth::user()->can('user edit'),

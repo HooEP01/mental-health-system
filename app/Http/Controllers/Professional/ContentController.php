@@ -43,7 +43,17 @@ class ContentController extends Controller
         ->select('contents.*')
         ->where('contents.user_id', '=', Auth::Id())
         ->orderBy('created_at', 'desc')
-        ->paginate (100);
+        ->paginate(9);
+
+        foreach($contents as $content){
+            $question = DB::table('content_questions')
+            ->select('content_questions.*')
+            ->where('content_questions.content_id', '=', $content->id)
+            ->count();
+
+            $content->questionCount = $question;
+        }
+        
  
         return Inertia::render('Professional/Content/Index', [
             'contents' => $contents,
@@ -69,9 +79,12 @@ class ContentController extends Controller
         ->where('contents.user_id', '=', Auth::Id())
         ->first();
 
+        $content->formats = json_decode($content->formats);
+
         $questions = DB::table('content_questions')
         ->select('content_questions.*')
         ->where('content_questions.content_id', '=', $id)
+        ->orderBy('content_questions.index', 'asc')
         ->get();
 
         foreach($questions as $question) {
@@ -99,6 +112,7 @@ class ContentController extends Controller
         return Inertia::render('Professional/Content/Create', [
             'categories' => Content::CATEGORIES,
             'statuses' => Content::STATUSES,
+            'formats' => Content::FORMATS,
         ]);
     }
 
@@ -116,14 +130,18 @@ class ContentController extends Controller
         ->where('contents.user_id', '=', Auth::Id())
         ->first();
 
+        $content->formats = json_decode($content->formats);
+
         $questions = DB::table('content_questions')
         ->select('content_questions.*')
         ->where('content_questions.content_id', '=', $id)
+        ->orderBy('content_questions.index', 'asc')
         ->get();
 
         foreach($questions as $question) {
             $question->data = json_decode($question->data);
         }
+
 
         return Inertia::render('Professional/Content/Edit', [
 
@@ -131,6 +149,7 @@ class ContentController extends Controller
             'questions' => $questions,
             'categories' => Content::CATEGORIES,
             'statuses' => Content::STATUSES,
+            'formats' => Content::FORMATS,
             'can' => [
                 'create' => Auth::user()->can('professional content create'),
                 'edit' => Auth::user()->can('professional content edit'),
@@ -149,11 +168,11 @@ class ContentController extends Controller
         $content_id = $request->content_id;
         if($content_id != null){
             $this->updateContent($request);
+            return redirect()->route('contents.show', [$content_id]);
         }else{
-            $this->storeContent($request);
+            return $this->storeContent($request);
+            // return $this->index();
         }
-
-        return $this->index();
     }
 
     /**
@@ -166,7 +185,7 @@ class ContentController extends Controller
         $content = Content::find($id);
         $content->delete();
 
-        return $this->index();
+        return redirect()->route('contents.index');
     }
 
     private function storeContent(Request $request)
@@ -176,15 +195,31 @@ class ContentController extends Controller
             $image_path = $request->file('image')->store('image', 'public');
         }
 
+        $audio_path = "";
+        if ($request->hasFile('audio')) {
+            $audio_path = $request->file('audio')->store('audio', 'public');
+        }
+
         $user_id = Auth::Id();
+
+        $formats = "{}";
+        if(!empty($request->formats)) {
+            $formats = json_encode($request->formats);
+        }
+
         $data = Content::create([
             'user_id'=>$user_id,
             'image'=>$image_path,
+            'audio'=>$audio_path,
             'title'=>$request->title,
             'category'=>$request->category,
             'status'=>$request->status,
             'description'=>$request->description,
+            'format_category'=>$request->format_category,
+            'formats'=>$formats,
         ]);
+        
+
 
         if($request->questions != null) {
             foreach ($request->questions as $question) {
@@ -193,6 +228,7 @@ class ContentController extends Controller
             }
         }
 
+        return redirect()->route('contents.show', [$data->id]);
     }
 
     private function updateContent(Request $request)
@@ -202,31 +238,60 @@ class ContentController extends Controller
             $image_path = $request->file('image')->store('image', 'public');
             $content->image = $image_path;
         }
+
+        if ($request->hasFile('audio')) {
+            $audio_path = $request->file('audio')->store('audio', 'public');
+            $content->audio = $audio_path;
+        }
+
+        if(!empty($request->formats)) {
+            $formats = json_encode($request->formats);
+            $content->formats = $formats;
+        }
+
         $content->title = $request->title;
         $content->category = $request->category;
         $content->status = $request->status;
         $content->description = $request->description;
+        $content->format_category = $request->format_category;
 
-        // get ids of exist questions
-        $existIds = $content->questions()->pluck('id')->toArray();
-        // get ids of new questions
-        $newIds = Arr::pluck($request->questions, 'id');
-        // question to destroy
-        $toDestroy = array_diff($existIds, $newIds);
-        // question to store
-        $toStore = array_diff($newIds, $existIds);
+        if(!empty($request->questions)){            
 
-        ContentQuestion::destroy($toDestroy);
-        // store questions
-        foreach ($request->questions as $question) {
-            if (in_array($question['id'], $toStore)) {
-                $question['content_id'] = $request->content_id;
-                $this->storeQuestion($question);
+            // get ids of exist questions
+            $existIds = $content->questions()->pluck('id')->toArray();
+            // get ids of new questions
+            $newIds = Arr::pluck($request->questions, 'id');
+            // question to destroy
+            $toDestroy = array_diff($existIds, $newIds);
+            // question to store
+            $toStore = array_diff($newIds, $existIds);
+
+            ContentQuestion::destroy($toDestroy);
+
+            // store questions
+            foreach ($request->questions as $question) {
+                if (in_array($question['id'], $toStore)) {
+                    $question['content_id'] = $request->content_id;
+                    $this->storeQuestion($question);
+                }
             }
-        }
-        // update questions
-        foreach ($request->questions as $question) {
-            $this->updateQuestion($question);
+            // update questions
+
+            foreach ($request->questions as $question) {
+                if(in_array($question['id'], $existIds)){
+                    $this->updateQuestion($question);
+                }
+            }
+
+
+        } else {
+            $questions = DB::table('content_questions')
+            ->select('content_questions.*')
+            ->where('content_questions.content_id', '=', $content->id)
+            ->get();
+            foreach($questions as $question){
+                ContentQuestion::destroy($question->id);
+            }
         }
         // save content
         $content->save();
@@ -243,6 +308,7 @@ class ContentController extends Controller
             
         return ContentQuestion::create([
             'content_id'=>$question['content_id'],
+            'index'=>$question['index'],
             'question'=>$question['question'],
             'category'=>$question['category'],
             'description'=>$question['description'],
@@ -254,13 +320,18 @@ class ContentController extends Controller
     {
         $contentQuestion = ContentQuestion::find($question['id']);
 
-        if(!empty($question['data'])) {
-            $contentQuestion->data = json_encode($question['data']);
-        }else{
-            $data = '{}';
-            $contentQuestion->data = $data;
+        $data = $question['data'] ?? "";
+        if($data != ""){
+            if(is_array($question['data']) || !($question['data'] == "{}") ) {
+                if(!empty($question['data'])){
+                    $contentQuestion->data = json_encode($question['data']);
+                }
+            }else{
+                $contentQuestion->data = "{}";
+            }
         }
-            
+        
+        $contentQuestion->index = $question['index'];
         $contentQuestion->question = $question['question'];
         $contentQuestion->category = $question['category'];
         $contentQuestion->description = $question['description'];

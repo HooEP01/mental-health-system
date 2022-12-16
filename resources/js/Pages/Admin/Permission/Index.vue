@@ -3,6 +3,7 @@
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import AdminSideBar from '@/Components/SideBar/AdminSideBar.vue';
+import Pagination from '@/Components/Pagination.vue';
 // Import inertia
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -11,6 +12,7 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
+        Pagination,
         AdminSideBar,
         Inertia,
         Link,
@@ -19,7 +21,22 @@ export default {
     props: {
         permissions: Object, default: () => ({}),
         can: Object, default: () => ({}),
+        search: Object, default: () => ({}),
     },
+    data() {
+        return {
+            search: '',
+        }
+    },
+    watch: {
+        search(value){
+            Inertia.get(route('permissions_view.index'), 
+            { search: value, page: 1 }, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+    }
 }
 </script>
 
@@ -33,7 +50,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Administrator 
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Administrator</p>
+                Permission
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -43,7 +65,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    View Admin Permissions
+                    Show Permission
                 </template>
                 <!--/ #Title -->
 
@@ -65,6 +87,13 @@ export default {
                         <div class="px-4 sm:px-0">
                             <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+
+
+                                    <div class="py-3 text-right">
+                                        <input v-model="search" type="text" name="title" id="title" autocomplete="title" placeholder="Search" required class="inline-flex justify-center mt-1 block w-30 rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    </div>
+
+
                                     <!-- Table -->
                                     <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
                                         <thead class="text-xs text-gray-700 uppercase">
@@ -89,6 +118,7 @@ export default {
                                         </tbody>
                                     </table>
                                     <!--/ Table -->
+                                    <pagination class="mt-6" :links="permissions.links" />
                                 </div>
                             </div>
                         </div>

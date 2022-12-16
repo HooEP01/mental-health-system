@@ -33,7 +33,12 @@ export default {
     <BreezeAuthenticatedLayout>
         <!-- #Header -->
         <template #header>
-            Resource
+            <!-- Title Header -->
+            <div class="pb-6 mb-2">
+                <p class="text-base font-normal">Resource</p>
+                Content
+            </div>
+            <!--/ Title Header -->
         </template>
         <!--/ #Header -->
 
@@ -43,7 +48,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    View All Content
+                    Show Content
                 </template>
                 <!--/ #Title -->
 
@@ -85,6 +90,9 @@ export default {
                                         </a>
                                     </h3>
                                     <p v-html="content.description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
+                                    <p v-if="content.questionCount" class="mt-1 text-sm text-gray-600"> {{ content.questionCount }} Questions
+                                        <span v-if="content.format_category === 'Unit'" class="mt-1 text-sm text-gray-600"> * </span>
+                                    </p>
                                 </div>
                             </div>
                             </Link>

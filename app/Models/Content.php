@@ -13,9 +13,13 @@ class Content extends Model
 
     const TYPE = ['text', 'textarea', 'select', 'radio', 'checkbox'];
     const CATEGORIES = ['Article', 'Case Study', 'Survey', 'Journal', 'Report'];
+    const FORMATS = ['Basic', 'Unit'];
+
     const STATUSES = ['Draft','Complete'];
     const STATUS_APPROVE = 'Approve';
     const STATUS_DISAPPROVE = 'Disapprove';
+    const STATUS_COMPLETE = 'Complete';
+    const STATUS_DRAFT = 'Draft';
 
     const PROFESSIONAL_CATEGORY = 'Report';
 
@@ -27,7 +31,8 @@ class Content extends Model
         'status', 
         'image', 
         'audio',
-        'question_data',
+        'format_category',
+        'formats',
         'slug', 
     ];
 
