@@ -10,6 +10,7 @@ class Event extends Model
     use HasFactory;
 
     const CATEGORIES = ['Individual', 'Group', 'Seminar'];
+
     const CATEGORY_INDIVIDUAL = 'Individual';
     const CATEGORY_GROUP = 'Group';
     const CATEGORY_SEMINAR = 'Seminar';

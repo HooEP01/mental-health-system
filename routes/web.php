@@ -78,7 +78,7 @@ Route::group([
     Route::resource('events', 'EventController');
     Route::resource('appointments', 'AppointmentController');
     Route::resource('payments', 'PaymentController');
-    Route::resource('user', 'UserController');
+    Route::resource('appointments.users', 'AppointmentUserController');
     Route::resource('chats', 'ChatController');
     Route::resource('appointments.contents', 'AppointmentContentController');
     Route::resource('appointments.answers', 'AppointmentAnswerController'); 

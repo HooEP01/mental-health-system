@@ -98,10 +98,10 @@ audio {
              <NavTabBar>
                 <!-- Back Tab -->
                 <li class="mr-6">
-                    <Link :href="route('contents.index')">
+                    <Link :href="route('contents_view.index')">
                         <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
-                                <box-icon class='mr-2' name='arrow-back'></box-icon>
-                                <span class="inline-block align-top"> Back </span>
+                            <box-icon class='mr-2' name='arrow-back'></box-icon>
+                            <span class="inline-block align-top"> Back </span>
                         </NavTabButton>
                     </Link>
                 </li>
@@ -170,30 +170,16 @@ audio {
                     <!-- edit content -->
                     <li class="flow-root">
                         <Link v-if="can.edit && content.status != 'Approve'" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-400 hover:fill-white text-white bg-indigo-300 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                        <span class="inline-block align-top">Approve This Content</span>
+                            <box-icon class='mr-2' name='message-square-edit'></box-icon>
+                            <span class="inline-block align-top">Approve This Content</span>
                         </Link>
                         <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-red-500 hover:fill-white text-white bg-red-400 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                        <span class="inline-block align-top">Disapprove Content</span>
-                        </Link>
-                    </li>
-                    <!-- destroy content -->
-                    <li class="flow-root">
-                        <Link v-if="can.delete" @click="destroy(content.id)"
-                            class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-500 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                        <span class="inline-block align-top">Delete This Content</span>
+                            <box-icon class='mr-2' name='message-square-edit'></box-icon>
+                            <span class="inline-block align-top">Reject Content</span>
                         </Link>
                     </li>
                 </template>
                 <!--/ #Feature -->
-
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <AdminSideBar />
-                </template> -->
-                <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>

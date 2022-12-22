@@ -181,14 +181,9 @@ audio {
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         
-
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
-                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
-                                </audio>
-
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
@@ -198,7 +193,6 @@ audio {
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
-
                                 <!-- Question Viewer -->
                                 <div  class="space-y-6 bg-white sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
@@ -210,7 +204,7 @@ audio {
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Save Your Answer</span>
                                     </button>

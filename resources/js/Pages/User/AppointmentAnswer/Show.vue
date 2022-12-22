@@ -45,21 +45,20 @@ export default {
     },
     setup(props) {
         // Answers
-        const answers = props.question_answers_array;
+        const theAnswers = JSON.parse(JSON.stringify(props.question_answers_array));
         // Form
         const form = useForm({
             appointment_id: props.appointment.id,
             answer_id: props.answer.id,
             content_id: props.content.id,
-            questions: [],
             answers: null,
         });
         // Answer Store
         function submit() {
-            this.form.answers = answers;
-            Inertia.post(route('answer.store'), form)
+            this.form.answers = theAnswers;
+            Inertia.post(route('appointment.answer.store', props.appointment.id), form)
         }
-        return { answers, form, submit };
+        return { theAnswers, form, submit };
     },
     methods: {
         // Destroy Content
@@ -214,14 +213,14 @@ export default {
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
                                     <div v-for="(question, ind) of questions" :key="question.id">
-                                        <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
+                                        <QuestionViewer v-model="theAnswers[question.id]" :question="question" :index="ind" />
                                     </div>
                                 </div>
                                 <!--/ Question Viewer -->
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Update Your Answer</span>
                                     </button>

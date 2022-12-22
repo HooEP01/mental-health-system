@@ -51,9 +51,10 @@ class PaymentController extends Controller
         -> join('events', 'appointments.event_id', '=', 'events.id')
         -> select('appointments.*', 'events.id as event_id', 'events.title as event_title')
         -> where('events.user_id', '=', Auth::id())
-        -> when(function($query) {
-            $query-> where('appointments.status', '=', Appointment::STATUS_PAID)
-                  -> orWhere('appointments.status', '=', Appointment::STATUS_APPROVE);
+        -> where('appointments.status', '=', Appointment::STATUS_PAID)
+        -> orWhere(function($query) {
+            $query-> where('events.user_id', '=', Auth::id())
+                  -> where('appointments.status', '=', Appointment::STATUS_APPROVE);
             })
         -> orderBy('updated_at', 'desc')
         -> paginate(100);

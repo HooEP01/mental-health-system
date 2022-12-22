@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 // inertia
 use Inertia\Inertia;
 
-
 class ContentController extends Controller
 {
     /**
@@ -41,7 +40,7 @@ class ContentController extends Controller
     {   
         $contents = DB::table('contents')
         ->select('contents.*')
-        ->where('contents.user_id', '=', Auth::Id())
+        ->where('contents.user_id', '=', Auth::id())
         ->orderBy('created_at', 'desc')
         ->paginate(9);
 
@@ -142,9 +141,7 @@ class ContentController extends Controller
             $question->data = json_decode($question->data);
         }
 
-
         return Inertia::render('Professional/Content/Edit', [
-
             'content' => $content,
             'questions' => $questions,
             'categories' => Content::CATEGORIES,
@@ -166,12 +163,10 @@ class ContentController extends Controller
     public function store(Request $request)
     {
         $content_id = $request->content_id;
-        if($content_id != null){
-            $this->updateContent($request);
-            return redirect()->route('contents.show', [$content_id]);
+        if($content_id){
+            return $this->updateContent($request);
         }else{
             return $this->storeContent($request);
-            // return $this->index();
         }
     }
 
@@ -184,7 +179,6 @@ class ContentController extends Controller
     {
         $content = Content::find($id);
         $content->delete();
-
         return redirect()->route('contents.index');
     }
 
@@ -195,22 +189,14 @@ class ContentController extends Controller
             $image_path = $request->file('image')->store('image', 'public');
         }
 
-        $audio_path = "";
-        if ($request->hasFile('audio')) {
-            $audio_path = $request->file('audio')->store('audio', 'public');
-        }
-
-        $user_id = Auth::Id();
-
         $formats = "{}";
         if(!empty($request->formats)) {
             $formats = json_encode($request->formats);
         }
 
         $data = Content::create([
-            'user_id'=>$user_id,
+            'user_id'=>Auth::Id(),
             'image'=>$image_path,
-            'audio'=>$audio_path,
             'title'=>$request->title,
             'category'=>$request->category,
             'status'=>$request->status,
@@ -219,9 +205,7 @@ class ContentController extends Controller
             'formats'=>$formats,
         ]);
         
-
-
-        if($request->questions != null) {
+        if($request->questions) {
             foreach ($request->questions as $question) {
                 $question['content_id'] = $data->id;
                 $this->storeQuestion($question);
@@ -237,11 +221,6 @@ class ContentController extends Controller
         if ($request->hasFile('image')) {
             $image_path = $request->file('image')->store('image', 'public');
             $content->image = $image_path;
-        }
-
-        if ($request->hasFile('audio')) {
-            $audio_path = $request->file('audio')->store('audio', 'public');
-            $content->audio = $audio_path;
         }
 
         if(!empty($request->formats)) {
@@ -295,14 +274,13 @@ class ContentController extends Controller
         }
         // save content
         $content->save();
-
-        return $this->index();
+        return redirect()->route('contents.show', [$request->content_id]);
     }
 
     private function storeQuestion($question)
     {
-        $data = "{}";
-        if(!empty($question['data'])) {
+        $data = $question['data'] ?? "";
+        if($data != "") {
             $data = json_encode($question['data']);
         }
             
@@ -322,13 +300,9 @@ class ContentController extends Controller
 
         $data = $question['data'] ?? "";
         if($data != ""){
-            if(is_array($question['data']) || !($question['data'] == "{}") ) {
-                if(!empty($question['data'])){
-                    $contentQuestion->data = json_encode($question['data']);
-                }
-            }else{
-                $contentQuestion->data = "{}";
-            }
+            $contentQuestion->data = json_encode($question['data']);
+        }else{
+            $contentQuestion->data = "{}";
         }
         
         $contentQuestion->index = $question['index'];

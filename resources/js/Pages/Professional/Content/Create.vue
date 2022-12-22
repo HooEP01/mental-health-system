@@ -35,7 +35,6 @@ export default {
         return {
             image_url: null,
             format_boolean: false,
-            audio_name: null,
         }
     },
     setup(props) {
@@ -44,7 +43,6 @@ export default {
             content_id: null,
             title: null,
             image: null,
-            audio: null,
             slug: null,
             category: null,
             status: null,
@@ -67,15 +65,6 @@ export default {
             this.image_url = URL.createObjectURL(file);
             if (this.$refs.photo) {
                 this.form.image = this.$refs.photo.files[0];
-            }
-        },
-
-        // Preview Audio
-        previewAudio(e) {
-            const audio = e.target.files[0].name;
-            this.audio_name = audio;
-            if (this.$refs.audio) {
-                this.form.audio = this.$refs.audio.files[0];
             }
         },
 
@@ -118,8 +107,6 @@ export default {
                 return q;
             });
         },
-
-
 
         // Create Question
         addQuestion(index) {
@@ -209,12 +196,6 @@ export default {
                 </template>
                 <!--/ #Feature -->
 
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <ProfessionalSideBar/>
-                </template> -->
-                <!--/ #Tool -->
-
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
@@ -276,18 +257,7 @@ export default {
                                             </select>
                                         </div>
                                         <!--/ Status -->
-
-                                        <!-- Audio -->
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label for="status" class="block text-sm font-medium text-slate-600">Audio</label>
-                                            <label for="audio" class="mt-1 block w-full rounded-md border border-gray-400 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <span>Upload a Audio {{ audio_name }}</span>
-                                                <input @change="previewAudio" ref="audio" type="file" id="audio" name="audio" class="sr-only">
-                                            </label>
-                                        </div>
-                                        <!--/ Audio -->
                                     </div>
-                                        
                                     <!--/ Select -->
 
                                     <!-- Description -->
@@ -330,10 +300,9 @@ export default {
                                     <!--/ Format -->
 
                                     <!-- Question Format Editor -->
-                                        <div v-for="(format, index) in form.formats" :key="format.id">
-                                            <QuestionFormatEditor v-if="format_boolean" :format="format" :index="index" @change="formatChange" @addFormat="addFormat" @deleteFormat="deleteFormat"/>
-                                        </div>
-                                   
+                                    <div v-for="(format, index) in form.formats" :key="format.id">
+                                        <QuestionFormatEditor v-if="format_boolean" :format="format" :index="index" @change="formatChange" @addFormat="addFormat" @deleteFormat="deleteFormat"/>
+                                    </div>
                                     <!--/ Question Format Editor -->
 
                                     <!-- Question -->
@@ -370,12 +339,6 @@ export default {
                                     </div>
                                     <!--/ Question -->
                                 </div>
-                                
-                                <!-- No question -->
-                                <div v-if="!form.questions.length" class="px-4 py-3 text-left sm:px-6">
-                                    You don't have any questions created
-                                </div>
-                                <!--/ No question -->
 
                                 <!-- Submit -->
                                 <div class="px-4 py-3 text-right sm:px-6">

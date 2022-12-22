@@ -41,6 +41,7 @@ export default {
         professional: Object, default:() => ({}),
         firstTab: Object, default:() => ({}), 
         can: Object, default: () => ({}),
+        appointmentsID: Object, default: () => ({}),
     },
     setup(props) {
         // Answer
@@ -188,7 +189,7 @@ export default {
                             <li class="flow-root">
                                 <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Status {{ event.status }}</span>
+                                    <span class="inline-block align-top text-base">{{ appointment.start_date }} {{ appointment.start_time }}</span>
                                 </p>
                             </li>
                         </ul>
@@ -230,7 +231,7 @@ export default {
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                 <h1 class="text-3xl font-bold">Task</h1>
                                 <div class="col-span-6 sm:col-span-3">
-                                    <button type="button"  @click="createTask(appointment.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">
+                                    <button type="button"  @click="createTask(appointment.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-violet-500 hover:bg-violet-600">
                                         <box-icon class="mr-2" name='message-square-add'></box-icon>
                                         <span class="inline-block align-top text-base mr-2">Create Appointment Task</span>
                                     </button>
@@ -267,7 +268,7 @@ export default {
                                                 </Link>
                                             </div>
                                             <div v-if="task.answer.length" class="grid grid-cols-12 mt-2 gap-2">
-                                                <div v-for="(answer, index) of task.answer" class="col-span-3 sm:col-span-3">
+                                                <div v-for="(answer, index) of task.answer" class="col-span-4 sm:col-span-4">
                                                     <div v-if="answer.status == 'Answered'">
                                                         <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-600 hover:fill-white text-white bg-emerald-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class="mr-2" name='spreadsheet'></box-icon>
@@ -324,24 +325,26 @@ export default {
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
                                             <p>{{ task.content_title }}</p>
-                                            <div  v-for="(appoint, index) in appointments" :key="appointment.id" class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link @click="showTask(appoint.id, task.id)" class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
-                                                    <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                    <span class="inline-block align-top"> {{ appoint.name }}</span>
-                                                </Link>
+                                            <div class="grid grid-cols-12 mt-2 gap-2">
+                                                <div v-for="(appoint, index) in appointments" :key="appointment.id" class="col-span-4 sm:col-span-4">
+                                                    <Link @click="showTask(appoint.id, task.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                        <box-icon class="mr-2" name='spreadsheet'></box-icon>
+                                                        <span class="inline-block align-top"> {{ appoint.name }}</span>
+                                                    </Link>
+                                                </div>
                                             </div>
                                             <div v-if="task.answer.length" class="grid grid-cols-12 mt-2 gap-2">
-                                                <div v-for="(answer, index) of task.answer" class="col-span-3 sm:col-span-3">
+                                                <div v-for="(answer, index) of task.answer" class="col-span-4 sm:col-span-4">
                                                     <div v-if="answer.status == 'Answered'">
                                                         <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-600 hover:fill-white text-white bg-emerald-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                            <span class="inline-block align-top">{{ answer.user_name }}: {{ index + 1 }}</span>
+                                                            <span class="inline-block align-top">{{ index + 1 }}. {{ answer.user_name }}</span>
                                                         </Link>
                                                     </div>
                                                     <div v-else-if="answer.status == 'Commented'">
                                                         <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-700 hover:fill-white text-white bg-emerald-600 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                            <span class="inline-block align-top">{{ answer.user_name }}: {{ index + 1 }}</span>
+                                                            <span class="inline-block align-top">{{ index + 1 }}. {{ answer.user_name }}</span>
                                                         </Link>
                                                     </div>
                                                    
@@ -361,27 +364,7 @@ export default {
                                     <div class="flex justify-between">
                                         <div class="px-6 py-6 font-bold">
                                             {{ 1 }}. {{ professional.professional_title }} {{ professional.first_name }} {{ professional.last_name }}
-                                        </div>
-                                        <div></div>
-                                        <Dropdown class="flex justify-end px-4 pt-4">
-                                            <template #trigger>
-                                                <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                    <span class="sr-only">Open dropdown</span>
-                                                    <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                </button>
-                                            </template>
-
-                                            <template #content>
-                                                <ul class="py-1" aria-labelledby="dropdownButton">
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
-                                                    </li>
-                                                </ul>
-                                            </template>
-                                        </Dropdown>
+                                        </div>                                   
                                     </div>
                                     <div class="flex flex-col items-left px-6 pb-6">
                                         <span class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
@@ -405,6 +388,7 @@ export default {
                                                     <th scope="col" class="py-3 px-6">User</th>
                                                     <th scope="col" class="py-3 px-6">Name</th>
                                                     <th scope="col" class="py-3 px-6">Reason</th>
+                                                    <th scope="col" class="py-3 px-6">View</th>
                                                     <th scope="col" class="py-3 px-6">Action</th>
                                                 </tr>
                                             </thead>
@@ -425,16 +409,26 @@ export default {
                                                         <p class="mt-1 text-sm text-gray-500 line-clamp-5">{{ appoint.reason }}</p>
                                                     </td>
                                          
-                                                    
-            
                                                     <td data-label="View" class="py-4 px-6">
-                                                        <!-- <Link v-if="can.edit" :href="route('appintments_view.show', content.id)"
+                                                        <Link :href="route('appointments.users.show', [appoint.id, appoint.user_id])"
                                                             class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class='mr-1' name='show-alt'></box-icon>
                                                             <span class="mr-1 inline-block align-top">View</span>
-                                                        </Link> -->
+                                                        </Link>
                                                     </td>
-                                                
+                                                    
+                                                    <td data-label="View" class="py-4 px-6">
+                                                        <Link v-if="appoint.status != 'Approve'" :href="route('appointments.edit', appoint.id)"
+                                                            class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                            <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                            <span class="inline-block align-top">Approve</span>
+                                                        </Link>
+                                                        <Link v-else :href="route('appointments.edit', appoint.id)"
+                                                            class="inline-flex items-center text-left fill-white text-white w-full bg-red-500 hover:bg-red-600 font-semibold py-3 px-4 border border-transparent rounded">
+                                                            <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                            <span class="inline-block align-top">Ban</span>
+                                                        </Link>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

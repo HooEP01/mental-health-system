@@ -47,18 +47,9 @@ class AnswerController extends Controller
         -> join('contents', 'content_answers.content_id', '=', 'contents.id')
         -> select('content_answers.*', 'contents.title', 'contents.description', 'contents.image', 'contents.category', 'contents.format_category', 'contents.id as content_id')
         -> where('content_answers.user_id','=', Auth::id())
-        -> where('contents.category', '=', Content::PROFESSIONAL_CATEGORY)
+        // -> where('contents.category', '=', Content::PROFESSIONAL_CATEGORY)
         -> orderBy('updated_at','desc')
-        -> paginate(100);
-
-        foreach($answers as $answer){
-            $question = DB::table('content_questions')
-            ->select('content_questions.*')
-            ->where('content_questions.content_id', '=', $answer->content_id)
-            ->count();
-
-            $answer->questionCount = $question;
-        }
+        -> paginate(9);
  
         return Inertia::render('Professional/Answer/Index', [
             'answers' => $answers,
@@ -87,13 +78,15 @@ class AnswerController extends Controller
         -> select('contents.*')
         -> where('contents.id', '=', $answer->content_id)
         -> first();
-
         $content->formats = json_decode($content->formats);
 
         $questions = DB::table('content_questions')
         -> select('content_questions.*')
         -> where('content_questions.content_id', '=', $answer->content_id)
         -> get();
+        foreach($questions as $question) {
+            $question->data = json_decode($question->data);
+        }
 
         $question_answers = DB::table('content_question_answers')
         -> join('content_questions', 'content_question_answers.content_question_id', '=', 'content_questions.id')
@@ -101,21 +94,12 @@ class AnswerController extends Controller
         -> where('content_question_answers.content_answer_id', '=', $id)
         -> get();
 
-
-        // decode json
-        foreach($questions as $question) {
-            $question->data =  json_decode($question->data);
-        }
-
         $question_answers_array = [];
-
         foreach($question_answers as $question_answer) {
             if($question_answer->content_question_category !== 'text' && $question_answer->content_question_category !== 'textarea'){
                 $question_answer->answer =  json_decode($question_answer->answer);
             }
-
             $question_answers_array[$question_answer->content_question_id] = $question_answer->answer;
-
         }
 
         return Inertia::render('Professional/Answer/Show', [
@@ -136,7 +120,7 @@ class AnswerController extends Controller
 
     public function store(Request $request)
     {
-        if($request->answer_id != null){
+        if($request->answer_id){
             return $this->updateAnswer($request);
         }else{
             return $this->storeAnswer($request);
@@ -152,7 +136,7 @@ class AnswerController extends Controller
     {
         $contentAnswer = ContentAnswer::find($id);
         $contentAnswer->delete();
-        return $this->index();
+        return redirect()->route('answers.index');
     }
 
     private function storeAnswer(Request $request)
@@ -167,7 +151,6 @@ class AnswerController extends Controller
 
         foreach ($request->answers as $question_id => $answer){
             $question = ContentQuestion::where(['id' => $question_id, 'content_id' => $request->content_id])->get();
-
             $questionAnswer = ContentQuestionAnswer::create([
                 'content_question_id'=>$question_id,
                 'content_answer_id'=>$contentAnswer->id,
@@ -183,6 +166,7 @@ class AnswerController extends Controller
     {
         $contentAnswer = ContentAnswer::find($request->answer_id);
         $contentAnswer->user_id = Auth::Id();
+        $contentAnswer->updated_at = date('Y-m-d H:i:s');
         $contentAnswer->save();
 
         foreach ($request->answers as $question_id => $answer){
@@ -197,8 +181,6 @@ class AnswerController extends Controller
                     'answer'=>is_array($answer) ? json_encode($answer) : $answer,
                 ]);
             }
-            
-           
         }
 
         redirect()->route('answers.show', [$request->answer_id]);

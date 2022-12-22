@@ -50,7 +50,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Show Content
+                    Professional Content
                 </template>
                 <!--/ #Title -->
                 
@@ -78,13 +78,6 @@ export default {
 
                 <!-- #Main -->
                 <template #main>
-                    <!-- if empty -->
-                    <div v-if="(!contents.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">Content Is Not Available!</strong>
-                            <span class="block sm:inline"> Search For Other Keyword Now.</span>
-                        </div>
-                    </div>
                     <div class="px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
                         <!-- Content Card -->
                         <div v-for="content in contents.data" :key="content.id" class="group relative sm:overflow-hidden sm:rounded-md">

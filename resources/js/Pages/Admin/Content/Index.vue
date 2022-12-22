@@ -126,7 +126,7 @@ export default {
                                                     <Link v-else-if="can.edit" :href="route('contents_view.edit', content.id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-red-500 hover:bg-red-600 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class='mr-1' name='message-square-edit'></box-icon>
-                                                        <span class="inline-block align-top">Disapprove</span>
+                                                        <span class="inline-block align-top">Reject</span>
                                                     </Link>
                                                 </td>
                                             </tr>

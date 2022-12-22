@@ -30,8 +30,6 @@ export default {
 }
 </script>
 
-
-
 <template>
     <!-- Header -->
     <Head title="User Content Show" />
@@ -74,13 +72,6 @@ export default {
 
                 <!-- #Main -->
                 <template #main>
-                    <!-- if empty -->
-                    <div v-if="(!appointments.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">Appointment Is Not Available!</strong>
-                            <span class="block sm:inline"> Search For Other Keyword Now.</span>
-                        </div>
-                    </div>
                     <div class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
                         <!-- Content Card -->
                         <div v-for="appointment in appointments.data" :key="appointment.id" class="group relative sm:overflow-hidden sm:rounded-md">
@@ -92,23 +83,16 @@ export default {
                             <div class="mt-4 flex justify-between p-2 bg-white">
                                 <div>
                                     <h3 class="text-base font-bold text-gray-900 line-clamp-1">
-                                        <a>
-                                            <span aria-hidden="true" class="absolute"></span>
-                                            {{ appointment.event_title }}
-                                        </a>
+                                        {{ appointment.event_title }}
                                     </h3>
-                                    <p v-html="appointment.event_description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
-                                    <!-- <p v-if="content.questionCount" class="mt-1 text-sm text-gray-600"> {{ content.questionCount }} Questions
-                                        <span v-if="content.format_category === 'Unit'" class="mt-1 text-sm text-gray-600"> * </span>
-                                    </p> -->
-                                    <p class="mt-1 text-sm text-gray-600">By {{ appointment.professional_title }} {{ appointment.first_name }} {{ appointment.last_name }} | {{ appointment.status }}</p>
-                                    <ul class="list-disc pt-2">
+                                    <ul class="list-disc">
                                         <li class="flow-root">
                                             <p class="inline-flex items-center text-left w-full fill-black bg-white text-gray-800  font-base text-sm border border-transparent rounded">
-                                                <span class="inline-block align-top text-sm">Start At {{ appointment.start_date }} {{ appointment.start_time }}</span>
+                                                <span class="inline-block align-top text-sm font-semibold">Start At {{ appointment.start_date }} {{ appointment.start_time }}</span>
                                             </p>
                                         </li>
                                     </ul>
+                                    <p class="mt-1 text-sm text-gray-600">By {{ appointment.professional_title }} {{ appointment.first_name }} {{ appointment.last_name }} | {{ appointment.status }}</p>
                                 </div>
                             </div>
                             </Link>

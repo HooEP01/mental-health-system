@@ -49,13 +49,14 @@ for(let i = 0; i < content.formats.length; i++){
   let totalPoints = 0;
   let optionText = "";
   for(let j = 0; j < filterPoints.length; j++){
-    totalPoints += parseInt(filterPoints[j].point);
+    // check if filterPoints[j].point has value?
+    if(filterPoints[j].point) {
+      totalPoints += parseInt(filterPoints[j].point);
+    }
   }
-
   
   if(  !(Array.isArray(content.formats[i].data)) ){
     for(let k = 0; k < content.formats[i].data.options.length; k++){
-      // console.log(content.formats[i].data.options[k].max);
       if(content.formats[i].data.options[k].max >= totalPoints && content.formats[i].data.options[k].min <= totalPoints) {
         optionText = content.formats[i].data.options[k].text;
       }
@@ -108,7 +109,7 @@ console.log(results)
         <p class="text-base font-medium text-slate-600"> {{ result.description }} </p>
 
         <p class="mt-2">Result </p>
-        <p class="text-base font-medium text-slate-600"> {{ result.text }} </p>
+        <p class="text-base font-medium text-slate-600">{{ result.point }}{{ result.text }} </p>
       </div>
     </div>
   </div>

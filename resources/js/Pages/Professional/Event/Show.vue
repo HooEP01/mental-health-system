@@ -87,13 +87,11 @@ export default {
 }
 </script>
 
-
 <style setup>
 .prose {
     max-width: none;
 }
 </style>
-    
 
 <template>
     <!-- Header -->
@@ -237,36 +235,31 @@ export default {
 
                         <!-- Event Schedule Show Card -->
                         <div v-if="schedules.length && tab === 'appointment'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
-
-                                <!-- Question Viewer -->
-                                <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                    <h1 class="text-3xl font-bold">Schedule</h1>
-                                    <ScheduleViewer v-model="form.scheduleDateTime" :schedules="schedules" :events="event" :appointments="appointments" :index="index" />
-                                </div>
-                                <!--/ Question Viewer -->
-
-                          
+                            <!-- Question Viewer -->
+                            <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <h1 class="text-3xl font-bold">Schedule</h1>
+                                <ScheduleViewer v-model="form.scheduleDateTime" :schedules="schedules" :events="event" :appointments="appointments" :index="index" />
+                            </div>
+                            <!--/ Question Viewer -->                  
                         </div>
                         <!--/ Event Schedule Show Card -->
 
                         <div v-if="tab === 'task'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <!-- Form -->
-                                <!-- <form @submit.prevent="submit" class="container mx-auto"> -->
                                 <h1 class="text-3xl font-bold">Task</h1>
 
                                 <div class="col-span-6 sm:col-span-3">
-                                    <button type="button" @click="createTask(event.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">
+                                    <button type="button" @click="createTask(event.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-violet-500 hover:bg-violet-600">
                                         <box-icon class="mr-2" name='message-square-add'></box-icon>
                                         <span class="inline-block align-top text-base mr-2">Create Event Task</span>
                                     </button>
                                 </div>
 
-                                <div v-for="(task, index) of tasks" :key="task.id">
+                                <div v-for="task of tasks" :key="task.id">
                                     <div class="bg-violet-50 sm:overflow-hidden sm:rounded-md">
                                         <div class="flex justify-between">
                                             <div class="px-6 py-6 font-bold">
-                                                {{ index + 1 }}. {{ task.title }}
+                                                {{ task.title }}
                                             </div>
                                             <div></div>
                                             <Dropdown class="flex justify-end px-4 pt-4">
@@ -300,9 +293,6 @@ export default {
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- </form> -->
-                                <!--/ Form -->
                             </div>
                         </div>
 
@@ -315,14 +305,14 @@ export default {
                                         <span class="inline-block align-top text-base mr-2">Create Event Task</span>
                                     </button>
                                 </div>
-                                <div v-for="(task, index) of tasks_professional" :key="task.id">
+                                <div v-for="(task, index) of tasks_professional" :key="tasks_professional.id">
                                     <div class="bg-teal-50 sm:overflow-hidden sm:rounded-md">
                                         <div class="flex justify-between">
                                             <div class="px-6 py-6 font-bold">
-                                                {{ index + 1 }}. {{ task.title }}
+                                                {{ task.title }}
                                             </div>
                                             <div></div>
-                                            <Dropdown v-if="task.appointment_id != null" class="flex justify-end px-4 pt-4">
+                                            <Dropdown class="flex justify-end px-4 pt-4">
                                                 <template #trigger>
                                                     <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
                                                         <span class="sr-only">Open dropdown</span>
@@ -332,8 +322,12 @@ export default {
 
                                                 <template #content>
                                                     <ul class="py-1" aria-labelledby="dropdownButton">
-                                                        <li><a :href="route('appointments.tasks.edit', [task.appointment_id, task.id])" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a></li>
-                                                        <li><a @click="destroyTask(task.appointment_id, task.id)" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a></li>
+                                                        <li>
+                                                        <a :href="route('events.tasks.edit', [event.id, task.id])" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+                                                        </li>
+                                                        <li>
+                                                            <a @click="destroyTask(event.id, task.id)" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+                                                        </li>
                                                     </ul>
                                                 </template>
                                             </Dropdown>
@@ -389,13 +383,7 @@ export default {
                                             </svg>
                                         </span>
                                         <p class="text-base font-medium text-slate-600 mt-3">{{ professional.professional_description }}</p>
-                                        <!-- <p class="mt-3">Task To Complete</p>
-                                        <div class="flex mt-2 space-x-3 md:mt-2">
-                                            <Link @click="showTask(event.id, task.id)"  class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
-                                                <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                <span class="inline-block align-top">{{ task.content_title }}</span>
-                                            </Link>
-                                        </div> -->
+    
                                     </div>
                                 </div>
                             </div>

@@ -38,12 +38,12 @@ class AppointmentController extends Controller
     {
         $appointments = DB::table('appointments')
         -> join('events', 'appointments.event_id', '=', 'events.id')
-        -> join('users', 'appointments.user_id', '=', 'users.id')
+        -> join('users', 'events.user_id', '=', 'users.id')
         -> select('appointments.*', 'events.title as event_title', 'events.description as event_description', 'events.user_id as professional_id', 'events.image as event_image',  'users.name', 'users.first_name', 'users.last_name', 'users.professional_title')
         -> where('appointments.user_id', '=', Auth::id())
         -> where('appointments.status', '!=', Appointment::STATUS_BOOKED)
-        -> orderBy('appointments.start_date','asc')
-        -> orderBy('appointments.start_time', 'asc')
+        -> orderBy('appointments.start_date','desc')
+        -> orderBy('appointments.start_time', 'desc')
         -> paginate(100);
         
 
@@ -100,7 +100,6 @@ class AppointmentController extends Controller
             $task->answer = $answer;
         }
         
-
         
 
         return Inertia::render('User/Appointment/Show', [

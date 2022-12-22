@@ -64,7 +64,7 @@ class HandleInertiaRequests extends Middleware
                             'appointments.answers' => Auth::user()->can('professional appointment answer list'),
                             'appointments.tasks' => Auth::user()->can('professional appointment task list'),
                             'payments' => Auth::user()->can('professional payment list'),
-                            'users' => Auth::user()->can('professional user list'),
+                            'appointments.users' => Auth::user()->can('professional user list'),
                             'events.tasks' => Auth::user()->can('professional event task list'),
                             'events.contents' => Auth::user()->can('professional event content list'),
                             'chats' => Auth::user()->can('professional chat list'),

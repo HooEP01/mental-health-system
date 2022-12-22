@@ -102,31 +102,13 @@ export default {
                             <li class="flow-root">
                                 <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Start Date {{ appointment.start_date }}</span>
-                                </p>
-                            </li>
-                            <li class="flow-root mt-2">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Start Time {{ appointment.start_time }}</span>
-                                </p>
-                            </li>
-                            <li class="flow-root mt-2">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Session {{ event.session_length }} minutes</span>
+                                    <span class="inline-block align-top text-base">{{ appointment.start_date }} {{ appointment.start_time }}</span>
                                 </p>
                             </li>
                         </ul>
                     </div>
                 </template>
                 <!--/ #Subtitle -->
-
-                <!-- #Feature -->
-                <!-- <template #feature>
-                    
-                </template> -->
-                <!--/ #Feature -->
 
                 <!-- #Main -->
                 <template #main>
@@ -136,41 +118,43 @@ export default {
                             <div class="sm:overflow-hidden sm:rounded-md">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-xl font-bold text-indigo-500">Create Payment</h1>
-                                    
+                                    <div class="grid grid-cols-12 gap-6">
                                     <!-- Title -->
-                                    <div class="col-span-6">
+                                    <div class="col-span-12 sm:col-span-6">
                                         <label for="title" class="block text-sm font-medium text-slate-600">Name on Card</label>
                                         <input v-model="form.card_name" type="text" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <!--/ Title -->
 
                                     <!-- Title -->
-                                    <div class="col-span-6">
+                                    <div class="col-span-12 sm:col-span-6">
                                         <label for="title" class="block text-sm font-medium text-slate-600">Card Number</label>
                                         <input v-model="form.card_number" type="text" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <!--/ Title -->
 
+                                
                                     <!-- Title -->
-                                    <div class="col-span-6">
+                                    <div class="col-span-12 sm:col-span-4">
                                         <label for="title" class="block text-sm font-medium text-slate-600">Card CVC</label>
                                         <input v-model="form.card_cvc" type="number" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <!--/ Title -->
 
                                     <!-- Title -->
-                                    <div class="col-span-6">
+                                    <div class="col-span-12 sm:col-span-4">
                                         <label for="title" class="block text-sm font-medium text-slate-600">Card Expiracy Date</label>
                                         <input v-model="form.card_expiry_month" type="number" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <!--/ Title -->
 
                                     <!-- Title -->
-                                    <div class="col-span-6">
+                                    <div class="col-span-12 sm:col-span-4">
                                         <label for="title" class="block text-sm font-medium text-slate-600">Card Expiracy Year</label>
                                         <input v-model="form.card_expiry_year" type="number" name="title" id="title" autocomplete="title" required class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <!--/ Title -->
+                                </div>
 
                                 </div>
 

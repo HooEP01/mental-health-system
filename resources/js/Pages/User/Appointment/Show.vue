@@ -76,6 +76,8 @@ export default {
         showAnswer(appointment_id, answer_id){
             Inertia.get(route('appointment.answer.show', [appointment_id, answer_id]));
         },
+
+
     }
 }
 </script>

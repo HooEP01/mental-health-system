@@ -2,7 +2,6 @@
 // Import layout
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
-import ProfessionalSideBar from '@/Components/SideBar/ProfessionalSideBar.vue';
 import ScheduleEditor from "@/Components/Editor/ScheduleEditor.vue";
 import Tiptap from '@/Components/Tiptap.vue'
 // Import Inertia
@@ -15,7 +14,6 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
-        ProfessionalSideBar,
         ScheduleEditor,
         Tiptap,
         Inertia,
@@ -99,7 +97,6 @@ export default {
         //schedule sort
         scheduleSort() {
             (this.form.schedules).sort(function sortByDate(a, b) {
-
                 if (a.start_datetime < b.start_datetime)
                     return -1
                 
@@ -108,13 +105,11 @@ export default {
 
                 return 0;
             })
-
             return this.form.schedules;
         }
     }
 }
 </script>
-
 
 <template>
     <!-- Header -->
@@ -159,12 +154,6 @@ export default {
                     </li>
                 </template>
                 <!--/ #Feature -->
-
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <ProfessionalSideBar/>
-                </template> -->
-                <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>
@@ -247,8 +236,6 @@ export default {
                                             <input v-model="form.price" type="text" name="price" id="price" autocomplete="title" required placeholder="MYR" class="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         </div>
                                         <!--/ Price -->
-
-
                                     </div>
                                     <!--/ Select -->
 
@@ -281,12 +268,6 @@ export default {
                                     </div>
                                     <!--/ Question -->
                                 </div>
-                                
-                                <!-- No question -->
-                                <div v-if="!form.schedules.length" class="px-4 py-3 text-left sm:px-6">
-                                    You don't have any schedules created
-                                </div>
-                                <!--/ No question -->
 
                                 <!-- Submit -->
                                 <div class="px-4 py-3 text-right sm:px-6">

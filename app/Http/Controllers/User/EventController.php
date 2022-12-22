@@ -97,7 +97,7 @@ class EventController extends Controller
         -> join('contents', 'tasks.content_id', '=', 'contents.id')
         -> select('tasks.*', 'contents.title as content_title')
         -> where('tasks.event_id', '=', $id)
-        -> where('tasks.category', '!=', Task::CATEGORY_DELETE)
+        -> where('tasks.category', '=', Task::CATEGORY_USER)
         -> get();
 
         return Inertia::render('User/Event/Show', [

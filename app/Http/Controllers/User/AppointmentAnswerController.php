@@ -98,8 +98,8 @@ class AppointmentAnswerController extends Controller
 
     public function store($appointment_id, Request $request)
     {
-        if($request->answer_id != null){
-            return $this->updateAnswer($request);
+        if($request->answer_id){
+            return $this->updateAnswer($appointment_id, $request);
         }else{
             return $this->storeAnswer($appointment_id, $request);
         }

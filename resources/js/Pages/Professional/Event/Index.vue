@@ -78,13 +78,6 @@ export default {
 
                 <!-- #Main -->
                 <template #main>
-                    <!-- if empty -->
-                    <div v-if="(!events.data.length)" class=" px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
-                        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">Event Is Not Available!</strong>
-                            <span class="block sm:inline"> Search For Other Keyword Now.</span>
-                        </div>
-                    </div>
                     <div class="px-4 sm:px-0 md:col-span-3 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-3 xl:gap-x-3">
                         <!-- Content Card -->
                         <div v-for="event in events.data" :key="event.id" class="group relative sm:overflow-hidden sm:rounded-md">
@@ -96,10 +89,7 @@ export default {
                             <div class="mt-4 flex justify-between p-2 bg-white">
                                 <div>
                                     <h3 class="text-base font-bold text-gray-900 line-clamp-1">
-                                        <a>
-                                            <span aria-hidden="true" class="absolute"></span>
-                                            {{ event.title }}
-                                        </a>
+                                        {{ event.title }}
                                     </h3>
                                     <p v-html="event.description" class="mt-1 text-sm text-gray-600 line-clamp-3"></p>
                                     <p class="mt-1 text-sm text-gray-600"> MYR {{ event.price}} </p>

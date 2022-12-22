@@ -38,7 +38,12 @@ class AppointmentTaskController extends Controller
 
     public function show($appointment_id, $task_id)
     {
-        $appointment = Appointment::find($appointment_id);
+        $appointment = DB::table('appointments')
+        -> join('users', 'appointments.user_id', '=', 'users.id')
+        -> select('appointments.*', 'users.name as user_name', 'users.id as user_id')
+        -> where('appointments.id', '=', $appointment_id)
+        -> first();
+
         $event = Event::find($appointment->event_id);
         $task = Task::find($task_id);
         $content = Content::find($task->content_id);

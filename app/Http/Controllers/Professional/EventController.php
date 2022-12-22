@@ -46,7 +46,7 @@ class EventController extends Controller
         -> select('events.*')
         -> where('events.user_id','=',Auth::id())
         -> orderBy('created_at','desc')
-        -> paginate(100);
+        -> paginate(9);
  
         return Inertia::render('Professional/Event/Index', [
             'events' => $events,
@@ -67,15 +67,16 @@ class EventController extends Controller
      */
     public function show($id, Request $request)
     {
-        $keyword = ( $request->input('tab'))? $request->input('tab'): 'event';
+        $keyword = ($request->input('tab'))? $request->input('tab'): 'event';
        
-
+        // $event (Object)
         $event = DB::table('events')
         -> select('events.*')
         -> where('events.id', '=', $id)
         -> where('events.user_id', '=', Auth::Id())
         -> first();
 
+        // $appointments (array) for schedulling purpose
         $appointments = DB::table('appointments')
         -> select('appointments.*')
         -> where('appointments.event_id', '=', $event->id)
@@ -87,43 +88,35 @@ class EventController extends Controller
         -> orderBy('appointments.start_time', 'asc')
         -> get();
 
+        // $schedules (array)
         $schedules = DB::table('schedules')
         -> select('schedules.*')
         -> where('schedules.event_id', '=', $id)
         -> get();
+        foreach($schedules as $schedule) {
+            $schedule->data = json_decode($schedule->data);
+        }
 
-        $tasks = DB::table('tasks')
+        $taskCollection = DB::table('tasks')
         -> join('contents', 'tasks.content_id', '=', 'contents.id')
         -> select('tasks.*', 'contents.title as content_title')
         -> where('tasks.event_id', '=', $id)
         -> where('tasks.appointment_id', '=', null)
-        -> where('tasks.category', '=', Task::CATEGORY_USER)
         -> get();
 
-        $tasks_professional = DB::table('tasks')
-        -> join('contents', 'tasks.content_id', '=', 'contents.id')
-        -> select('tasks.*', 'contents.title as content_title')
-        -> where('tasks.event_id', '=', $event->id)
-        -> where('tasks.category', '=', Task::CATEGORY_PROFESSIONAL)
-        -> where('tasks.appointment_id', '=', null)
-        -> orderBy('tasks.id', 'asc')
-        -> get();
+        $collection = collect($taskCollection);
+        $tasks = $collection->where('category', Task::CATEGORY_USER);
+        $tasks->all();
 
-        $professional = DB::table('users')
-        -> select('users.*')
-        -> where('users.id', '=', $event->user_id)
-        -> first();
-
-        foreach($schedules as $schedule) {
-            $schedule->data = json_decode($schedule->data);
-        }
+        $tasks_professional = $collection->where('category', Task::CATEGORY_PROFESSIONAL);
+        $tasks_professional->all();
 
         return Inertia::render('Professional/Event/Show', [
             'event' => $event,
             'schedules' => $schedules,
             'tasks' => $tasks,
             'appointments' => $appointments,
-            'professional' => $professional,
+            'professional' => Auth::user(),
             'firstTab' => $keyword,
             'tasks_professional' => $tasks_professional,
             'can' => [
@@ -182,8 +175,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $event_id = $request->event_id;
-        if($event_id != null){
+        if($request->event_id){
             return $this->updateEvent($request);
         }else{
             return $this->storeEvent($request);
@@ -199,8 +191,7 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $event->delete();
-
-        return $this->index();
+        return redirect()->route('events.index');
     }
 
     private function storeEvent(Request $request)
@@ -224,9 +215,8 @@ class EventController extends Controller
             $session_length = $request->session_length;
         }
 
-        $user_id = Auth::Id();
         $event = Event::create([
-            'user_id' => $user_id,
+            'user_id' => Auth::Id(),
             'image' => $image_path,
             'title' => $request->title,
             'category' => $request->category,
@@ -237,7 +227,7 @@ class EventController extends Controller
             'description' => $request->description,
         ]);
 
-        if($request->schedules != null) {
+        if($request->schedules) {
             foreach ($request->schedules as $schedule) {
                 $schedule['event_id'] = $event->id;
                 $this->storeSchedule($schedule);
@@ -267,15 +257,13 @@ class EventController extends Controller
 
         if(!empty($request->schedules)){            
 
-            // get ids of exist questions
+            // get ids of exist schedules
             $existIds = $event->schedules()->pluck('id')->toArray();
-            // get ids of new questions
+            // get ids of new schedules
             $newIds = Arr::pluck($request->schedules, 'id');
-            // question to destroy
-            $toDestroy = array_diff($existIds, $newIds);
-            // question to store
-            $toStore = array_diff($newIds, $existIds);
 
+            $toDestroy = array_diff($existIds, $newIds);
+            $toStore = array_diff($newIds, $existIds);
             Schedule::destroy($toDestroy);
 
             // store questions
@@ -285,14 +273,13 @@ class EventController extends Controller
                     $this->storeSchedule($schedule);
                 }
             }
-            // update questions
 
+            // update questions
             foreach ($request->schedules as $schedule) {
                 if(in_array($schedule['id'], $existIds)){
                     $this->updateSchedule($schedule);
                 }
             }
-
 
         } else {
             $schedules = DB::table('schedules')
@@ -306,16 +293,16 @@ class EventController extends Controller
         // save content
         $event->save();
 
-        return $this->index();
+        return redirect()->route('events.show', [$request->event_id]);
     }
 
     public function storeSchedule($schedule)
     {
-        $data = "{}";
-        if(!empty($schedule['data'])) {
+        $data = $schedule['data'] ?? "";
+        if($data != "") {
             $data = json_encode($schedule['data']);
         }
-            
+
         return Schedule::create([
             'event_id'=>$schedule['event_id'],
             'category'=>$schedule['category'],
@@ -333,13 +320,9 @@ class EventController extends Controller
 
         $data = $schedule['data'] ?? "";
         if($data != ""){
-            if(is_array($schedule['data']) || !($schedule['data'] == "{}") ) {
-                if(!empty($schedule['data'])){
-                    $theSchedule->data = json_encode($schedule['data']);
-                }
-            }else{
-                $theSchedule->data = "{}";
-            }
+            $theSchedule->data = json_encode($schedule['data']);
+        }else{
+            $theSchedule->data = "";
         }
         
         $theSchedule->event_id = $schedule['event_id'];

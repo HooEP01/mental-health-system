@@ -160,10 +160,10 @@ audio {
                         </div>
                         <ul class="list-disc pt-4">
                             <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                                <Link :href="route('appointments.users.show', [appointment.id, appointment.user_id])" class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
                                     <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Status {{ content.status }}</span>
-                                </p>
+                                    <span class="inline-block align-top text-base">Name: {{ appointment.user_name }}</span>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -177,6 +177,12 @@ audio {
                         <Link v-if="can.edit" :href="route('contents.edit', content.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-edit'></box-icon>
                         <span class="inline-block align-top">Edit This Task</span>
+                        </Link>
+                    </li>
+                    <li class="flow-root">
+                        <Link :href="route('appointments.users.show', [appointment.id, appointment.user_id])" class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white bg-transparent text-gray-800 font-semibold hover:bg-indigo-500 py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' type='solid' name='user-detail'></box-icon>
+                            <span class="inline-block align-top text-base">{{ appointment.user_name }}</span>
                         </Link>
                     </li>
                     <!-- destroy content -->
@@ -198,10 +204,6 @@ audio {
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
-                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
-                                </audio>
-
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
@@ -211,7 +213,6 @@ audio {
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
-
                                 <!-- Question Viewer -->
                                 <div  class="space-y-6 bg-white sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
@@ -223,7 +224,7 @@ audio {
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Save Your Answer</span>
                                     </button>

@@ -109,9 +109,9 @@ export default {
                                                     {{ payment.amount }}
                                                 </td>
                                                 <td data-label="Action" class="py-4 px-6">
-                                                    <Link v-if="can.edit && payment.status == 'succeeded'" :href="route('appointments_view.show', payment.appointment_id)"
+                                                    <Link v-if="can.edit && payment.status == 'Succeeded'" :href="route('appointments_view.show', payment.appointment_id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-indigo-500 hover:bg-indigo-600 font-semibold py-3 px-4 border border-transparent rounded">
-                                                        <box-icon class='mr-1' name='message-square-edit'></box-icon>
+                                                        <box-icon class='mr-1' name='check'></box-icon>
                                                         <span class="inline-block align-top">Complete</span>
                                                     </Link>
                                                     <Link v-else-if="can.edit" :href="route('payment.create', payment.appointment_id)"

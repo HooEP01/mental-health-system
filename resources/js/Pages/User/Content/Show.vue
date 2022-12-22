@@ -33,7 +33,6 @@ export default {
         questions: Object, default:() => ({}),
         can: Object, default: () => ({}),
     },
-
     setup(props) {
         // Answer
         const answers = ref({});
@@ -51,7 +50,6 @@ export default {
         }
         return { answers, form, submit };
     },
-
     methods: {
         // Active Tab
         activeTab(name) {
@@ -60,7 +58,6 @@ export default {
     }
 }
 </script>
-
 
 <style setup>
 .prose {
@@ -71,7 +68,6 @@ audio {
 }
 </style>
     
-
 <template>
     <!-- Header -->
     <Head title="User Content Show" />
@@ -145,12 +141,6 @@ audio {
                 </template>
                 <!--/ #Subtitle -->
 
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <ResourceSideBar />
-                </template> -->
-                <!--/ #Tool -->
-
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
@@ -166,7 +156,6 @@ audio {
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
-
                                 <!-- Question Viewer -->
                                 <div  class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
@@ -178,7 +167,7 @@ audio {
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Save Your Answer</span>
                                     </button>

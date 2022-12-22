@@ -32,7 +32,7 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
 
-        $status = $keyword = ( $request->input('status'))? $request->input('status'): "";
+        $status = ( $request->input('status'))? $request->input('status'): "";
 
         if($status === "All"){
             $status = " ";
@@ -53,12 +53,10 @@ class AppointmentController extends Controller
             $query-> where('users.name', 'like', '%' .$search. '%')
                   -> orWhere('events.title', 'like', '%' .$search. '%');
         }) 
-        -> orderBy('appointments.start_date','asc')
-        -> orderBy('appointments.start_time', 'asc')
+        -> orderBy('appointments.start_date','desc')
+        -> orderBy('appointments.start_time', 'desc')
         -> paginate(100);
         
-
-
         return Inertia::render('Professional/Appointment/Index', [
             'appointments' => $appointments,
             'can' => [
@@ -93,14 +91,19 @@ class AppointmentController extends Controller
         -> where('appointments.start_date', '=', $appointment->start_date)
         -> where('appointments.start_time', '=', $appointment->start_time)
         -> get();
-        
 
         $tasks = DB::table('tasks')
         -> join('contents', 'tasks.content_id', '=', 'contents.id')
         -> select('tasks.*', 'contents.title as content_title')
         -> where('tasks.event_id', '=', $event->id)
-        -> where('tasks.category', '=', Task::CATEGORY_USER)
-        -> orderBy('tasks.id', 'asc')
+        -> where('tasks.category', '=', Task::CATEGORY_USER) 
+        -> where('tasks.appointment_id', '=', null)
+        -> orWhere(function($query) use ($appointments, $event) {
+                $query -> where('tasks.event_id', '=', $event->id)
+                       -> where('tasks.category', '=', Task::CATEGORY_USER) 
+                       -> whereIn('tasks.appointment_id', $appointments->pluck('id')->toArray());
+            })
+        -> orderBy('tasks.id', 'desc')
         -> get();
 
         foreach($tasks as $task) {
@@ -108,6 +111,7 @@ class AppointmentController extends Controller
             -> join('users', 'content_answers.user_id', '=', 'users.id')
             -> select('content_answers.*', 'users.name as user_name')
             -> where('content_answers.task_id', '=', $task->id)
+            -> whereIn('content_answers.appointment_id', $appointments->pluck('id')->toArray())
             -> get(); 
             $task->answer = $answers;
         }
@@ -125,6 +129,7 @@ class AppointmentController extends Controller
             -> join('users', 'content_answers.user_id', '=', 'users.id')
             -> select('content_answers.*', 'users.name as user_name')
             -> where('content_answers.task_id', '=', $task_professional->id)
+            -> whereIn('content_answers.appointment_id', $appointments->pluck('id')->toArray())
             -> get(); 
             $task_professional->answer = $answers;
         }
@@ -169,7 +174,7 @@ class AppointmentController extends Controller
         }
         $appointment->save();
 
-        return $this->index();
+        return redirect()->route('appointments.index');
     }
 
 }

@@ -37,7 +37,6 @@ export default {
         return {
             image_url: null,
             format_boolean: false,
-            audio_name: null,
         }
     },
     setup(props) {
@@ -50,7 +49,6 @@ export default {
             content_id: props.content.id,
             title: props.content.title,
             image: props.content.image,
-            audio: props.content.audio,
             slug: null,
             category: props.content.category,
             status: props.content.status,
@@ -77,16 +75,6 @@ export default {
             // use ref with the name photo
             if (this.$refs.photo) {
                 this.form.image = this.$refs.photo.files[0];
-            }
-        },
-
-        
-        // Preview Audio
-        previewAudio(e) {
-            const audio = e.target.files[0].name;
-            this.audio_name = audio;
-            if (this.$refs.audio) {
-                this.form.audio = this.$refs.audio.files[0];
             }
         },
 
@@ -289,16 +277,6 @@ export default {
                                             </select>
                                         </div>
                                         <!--/ Status -->
-
-                                         <!-- Audio -->
-                                         <div class="col-span-6 sm:col-span-3">
-                                            <label for="status" class="block text-sm font-medium text-slate-600">Audio</label>
-                                            <label for="audio" class="mt-1 block w-full rounded-md border border-gray-400 bg-white py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                                <span>Upload a Audio {{ audio_name }}</span>
-                                                <input @change="previewAudio" ref="audio" type="file" id="audio" name="audio" class="sr-only">
-                                            </label>
-                                        </div>
-                                        <!--/ Audio -->
                                     </div>
                                     <!--/ Select -->
 
@@ -342,13 +320,10 @@ export default {
                                     <!--/ Format -->
 
                                     <!-- Question Format Editor -->
-                                        <div v-for="(format, index) in form.formats" :key="format.id">
-                                            <QuestionFormatEditor v-if="form.format_category === 'Unit'" :format="format" :index="index" @change="formatChange" @addFormat="addFormat" @deleteFormat="deleteFormat"/>
-                                        </div>
-                                   
+                                    <div v-for="(format, index) in form.formats" :key="format.id">
+                                        <QuestionFormatEditor v-if="form.format_category === 'Unit'" :format="format" :index="index" @change="formatChange" @addFormat="addFormat" @deleteFormat="deleteFormat"/>
+                                    </div>
                                     <!--/ Question Format Editor -->
-
-
 
                                     <!-- Question -->
                                     <h1 class="text-xl font-bold text-indigo-500">Edit Questions</h1>
@@ -374,7 +349,6 @@ export default {
                                         </div>
                                     </div>
                                     <!--/ Question -->
-                                    
                                     
                                     <!-- show all questions -->
                                     <div v-for="(question, index) in form.questions" :key="question.id">

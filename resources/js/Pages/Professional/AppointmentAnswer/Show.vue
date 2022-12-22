@@ -47,21 +47,20 @@ export default {
     },
     setup(props) {
         // Answers
-        const answers = props.question_answers_array;
+        const theAnswers = JSON.parse(JSON.stringify(props.question_answers_array));
         // Form
         const form = useForm({
             appointment_id: props.appointment.id,
             answer_id: props.answer.id,
             content_id: props.content.id,
-            questions: [],
             answers: null,
         });
         // Answer Store
         function submit() {
-            this.form.answers = answers;
+            this.form.answers = theAnswers;
             Inertia.post(route('appointments.answers.store', props.appointment.id), form)
         }
-        return { answers, form, submit };
+        return { theAnswers, form, submit };
     },
     methods: {
         // Destroy Content
@@ -180,11 +179,18 @@ export default {
 
                 <!-- #Feature -->
                 <template #feature>
+                    
                     <!-- edit content -->
                     <li class="flow-root">
-                        <Link v-if="can.edit" :href="route('appointment.task.show', [appointment.id, answer.task_id])" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
+                        <Link v-if="can.edit" :href="route('appointments.tasks.show', [appointment.id, answer.task_id])" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-edit'></box-icon>
                         <span class="inline-block align-top">Create New Answer</span>
+                        </Link>
+                    </li>
+                    <li class="flow-root">
+                        <Link :href="route('appointments.users.show', [answer.appointment_id, answer.user_id])" class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white bg-transparent text-gray-800 font-semibold hover:bg-indigo-500 py-3 px-4 border border-transparent rounded">
+                            <box-icon class='mr-2' type='solid' name='user-detail'></box-icon>
+                            <span class="inline-block align-top text-base">{{ answer.user_name }}</span>
                         </Link>
                     </li>
                     <!-- destroy content -->
@@ -219,14 +225,14 @@ export default {
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
                                     <div v-for="(question, ind) of questions" :key="question.id">
-                                        <QuestionViewer v-model="answers[question.id]" :question="question" :index="ind" />
+                                        <QuestionViewer v-model="theAnswers[question.id]" :question="question" :index="ind" />
                                     </div>
                                 </div>
                                 <!--/ Question Viewer -->
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Update Your Answer</span>
                                     </button>

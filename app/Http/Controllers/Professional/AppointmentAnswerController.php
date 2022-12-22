@@ -45,7 +45,8 @@ class AppointmentAnswerController extends Controller
     {
         $appointment = Appointment::find($appointment_id);
         $answer = DB::table('content_answers')
-        -> select('content_answers.*')
+        -> join('users', 'content_answers.user_id', '=', 'users.id')
+        -> select('content_answers.*', 'users.name as user_name')
         -> where('content_answers.id', '=', $answer_id)
         -> first();
 
@@ -100,8 +101,8 @@ class AppointmentAnswerController extends Controller
 
     public function store($appointment_id, Request $request)
     {
-        if($request->answer_id != null){
-            return $this->updateAnswer($request);
+        if($request->answer_id){
+            return $this->updateAnswer($appointment_id, $request);
         }else{
             return $this->storeAnswer($appointment_id, $request);
         }
@@ -150,6 +151,6 @@ class AppointmentAnswerController extends Controller
             }
         }
 
-        redirect()->route('appointment.answer.show', [$appointment_id, $request->answer_id]);
+        redirect()->route('appointments.answers.show', [$appointment_id, $request->answer_id]);
     }
 }

@@ -42,7 +42,7 @@ class ContentController extends Controller
         -> select('contents.*')
         -> where('contents.status','=', Content::STATUS_APPROVE) 
         -> orderBy('created_at','desc')
-        -> paginate(100);
+        -> paginate(9);
 
         foreach($contents as $content){
             $question = DB::table('content_questions')
@@ -71,11 +71,10 @@ class ContentController extends Controller
      */
     public function show($id)
     {
-
         $content = DB::table('contents')
         ->select('contents.*')
         ->where('contents.id', '=', $id)
-        ->where('contents.status', '=', 'Approve')
+        ->where('contents.status', '=', Content::STATUS_APPROVE)
         ->first();
 
         $questions = DB::table('content_questions')
@@ -84,7 +83,7 @@ class ContentController extends Controller
         ->get();
 
         foreach($questions as $question) {
-            $question->data =  json_decode($question->data);
+            $question->data = json_decode($question->data);
         }
 
         return Inertia::render('User/Content/Show', [
@@ -95,7 +94,6 @@ class ContentController extends Controller
                 'edit' => Auth::user()->can('user content edit'),
                 'delete' => Auth::user()->can('user content delete'),
             ]
-
         ]);
     }
 

@@ -1,7 +1,6 @@
 <script setup>
 // Import Uuid
 import Dropdown from '@/Components/Dropdown.vue';
-import { eventListeners } from '@popperjs/core';
 import { v4 as uuidv4 } from "uuid";
 import { ref, toRef } from "vue";
 
@@ -162,13 +161,27 @@ function filterResult(int) {
     let resultStart = 0 + (4*int);
     let resultEnd = 4 + (4*int);
     result = [...new Map(models.map((m) => [m.start_date, m])).values()].slice(resultStart, resultEnd);
-    return result;
+    return result.sort((a,b) => (a.start_date > b.start_date) ? 1: ((b.last_nom > a.last_nom) ? -1 : 0));
 }
 
 
 function filterAppointment(model) {
     let app = appointments.find(( opt ) => opt.event_id === events.id && (opt.start_time).slice(0,-3) === model.start_time && opt.start_date === model.start_date);
     return (app)? true: false;
+}
+
+function groupAppointment(model) {
+    
+    if(events.attendance > 1) {
+        let app = appointments.filter(( opt ) => opt.event_id === events.id && (opt.start_time).slice(0,-3) === model.start_time && opt.start_date === model.start_date);
+
+        if(app.length == events.attendance) {
+            return 0;
+        }
+        
+        return app.length;
+    }
+    return 0;
 }
 
 function filterAppointmentEvents(model) {
@@ -203,81 +216,83 @@ const emits = defineEmits(["update:modelValue"]);
 
 <template>
     <div class="bg-slate-50 sm:overflow-hidden sm:rounded-md"> 
-
         <div class="flex justify-between">
-        <div class="px-6 py-6 font-bold">
-            Session Length: {{ events.session_length }} minutes
-            <br/>
-            <div v-if="events.attendance != 1">
-                Attendance Per Session: {{ events.attendance }} Max
-            </div>
-            
-        </div>
-        <div></div>
-        <div class="place-content-end px-6 py-4">
-            <!-- <button @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <box-icon type='solid' name='calendar-event'></box-icon>
-            </button> -->
-            
-            <button v-if="count != 0" @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <box-icon name='chevron-left'></box-icon>
-            </button>
-            <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <box-icon name='chevron-left'></box-icon>
-            </button>
-            <button v-if="total.length / 5 > count + 1" @click="count++" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <box-icon name='chevron-right'></box-icon>
-            </button>
-            <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                <span class="sr-only">Open dropdown</span>
-                <box-icon name='chevron-right'></box-icon>
-            </button>
-        </div>
-       
-        
-      </div>
-
-    <fieldset class="mb-4">
-        <div class="md:grid md:grid-cols-4 md:gap-3">
-            <div v-for="r in filterResult(count)">
-                <div class="">
-                    <p class="text-xl font-bold text-indigo-500 text-center">{{ r.day.toUpperCase() }}</p> 
-                    <p class="text-sm text-slate-600 text-center">{{ r.start_date }}</p>
+            <div class="px-6 py-6 font-bold">
+                Session Length: {{ events.session_length }} minutes <br/>
+                <div v-if="events.attendance != 1">
+                    Attendance Per Session: {{ events.attendance }} Max
                 </div>
-                <div class="md:col-span-1 relative">
-                    <div v-for="model in filterDate(r.start_date)" :key="model.uuid" class="mt-2">
+            </div>
+            <div></div>
+            <div class="place-content-end px-6 py-4">
+                <button v-if="count != 0" @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                    <span class="sr-only">Open dropdown</span>
+                    <box-icon name='chevron-left'></box-icon>
+                </button>
+                <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                    <span class="sr-only">Open dropdown</span>
+                    <box-icon name='chevron-left'></box-icon>
+                </button>
+                <button v-if="total.length / 5 > count + 1" @click="count++" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                    <span class="sr-only">Open dropdown</span>
+                    <box-icon name='chevron-right'></box-icon>
+                </button>
+                <button v-else class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                    <span class="sr-only">Open dropdown</span>
+                    <box-icon name='chevron-right'></box-icon>
+                </button>
+            </div>
+        </div>
 
-                        <div v-if="filterAppointment(model)">
-                            <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-red-500">
-                                <box-icon class="mr-2" name='time'></box-icon>
-                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
-                            </button>
-                        </div>
-                        <div v-else-if="filterAppointmentEvents(model)">
-                            <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-slate-500">
-                                <box-icon class="mr-2" name='time'></box-icon>
-                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
-                            </button>
-                        </div>
-                        <div v-else>
-                            <button v-if="(modelValue.uuid === model.uuid)" type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-gray-900 text-white bg-indigo-500">
-                                <box-icon class="mr-2" name='time'></box-icon>
-                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}  </span>
-                            </button>
-                            <button v-else type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-black hover:fill-white text-gray-900 hover:text-white bg-transparent hover:bg-indigo-500">
-                                <box-icon class="mr-2" name='time'></box-icon>
-                                <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}</span>
-                            </button>
+        <fieldset class="mb-4">
+            <div class="md:grid md:grid-cols-4 md:gap-3">
+                <div v-for="r in filterResult(count)">
+                    <div class="">
+                        <p class="text-xl font-bold text-indigo-500 text-center">{{ r.day.toUpperCase() }}</p> 
+                        <p class="text-sm text-slate-600 text-center">{{ r.start_date }}</p>
+                    </div>
+                    <div class="md:col-span-1 relative">
+                        <div v-for="model in filterDate(r.start_date)" :key="model.uuid" class="mt-2">
+                            <div v-if="filterAppointment(model)">
+                                <div v-if="groupAppointment(model) == 0">
+                                    <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-red-500">
+                                        <box-icon class="mr-2" name='time'></box-icon>
+                                        <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
+                                    </button>
+                                </div>
+                                <div v-else class="flex">
+                                    <button v-if="(modelValue.uuid === model.uuid)" type="button" @click="selectedModel(model)"  class="items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-gray-900 text-white bg-emerald-700">
+                                        <box-icon class="mr-2" name='time'></box-icon>
+                                        <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}  </span>
+                                        <p class="block">{{ groupAppointment(model) }} Attend</p>
+                                    </button>
+                                    <button v-else type="button" @click="selectedModel(model)" class="items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-emerald-500">
+                                        <box-icon class="mr-2" name='time'></box-icon>
+                                        <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}  </span>
+                                        <p> {{ groupAppointment(model) }} Attend</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div v-else-if="filterAppointmentEvents(model)">
+                                <button type="button" class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-white bg-slate-500">
+                                    <box-icon class="mr-2" name='time'></box-icon>
+                                    <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}   </span>
+                                </button>
+                            </div>
+                            <div v-else>
+                                <button v-if="(modelValue.uuid === model.uuid)" type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-white text-gray-900 text-white bg-indigo-500">
+                                    <box-icon class="mr-2" name='time'></box-icon>
+                                    <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}  </span>
+                                </button>
+                                <button v-else type="button" @click="selectedModel(model)"  class="flex items-center rounded-md text-xs py-1 px-3 mx-auto fill-black hover:fill-white text-gray-900 hover:text-white bg-transparent hover:bg-indigo-500">
+                                    <box-icon class="mr-2" name='time'></box-icon>
+                                    <span class="inline-block align-top text-lg mr-2">{{ model.start_time }} - {{ model.end_time }}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-        </div>
-    </fieldset>
+        </fieldset>
     </div>
 </template>

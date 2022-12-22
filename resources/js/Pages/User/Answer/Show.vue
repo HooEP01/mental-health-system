@@ -3,21 +3,18 @@
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import QuestionFormatViewer from "@/Components/Editor/QuestionFormatViewer.vue";
-import JourneySideBar from '@/Components/SideBar/JourneySideBar.vue';
 import QuestionViewer from "@/Components/Editor/QuestionViewer.vue";
 import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
 import NavTabButton from '@/Components/NavTabButton.vue';
 // Import Inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
-import { ref } from "vue";
 // Option API
 export default {
     components: {
         BreezeAuthenticatedLayout,
         ContainerWithSideBar,
         QuestionFormatViewer,
-        JourneySideBar,
         QuestionViewer,
         NavTabButton,
         NavTabBar,
@@ -25,8 +22,6 @@ export default {
         useForm,
         Head,
         Link,
-        ref,
-        
     },
     data() {
         return {
@@ -38,8 +33,8 @@ export default {
         questions: Object, default: () => ({}),
         answer: Object, default: () => ({}),
         question_answer: Object, default: () => ({}),
-        can: Object, default: () => ({}),
         question_answers_array: Object, default: () => ({}),
+        can: Object, default: () => ({}),
     },
     setup(props) {
         // Answers
@@ -70,14 +65,12 @@ export default {
 }
 </script>
 
-
 <style setup>
 .prose {
     max-width: none;
 }
 </style>
     
-
 <template>
     <!-- Header -->
     <Head title="User Answer Show" />
@@ -100,8 +93,8 @@ export default {
                 <li class="mr-6">
                     <Link :href="route('answer.index')">
                         <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
-                                <box-icon class='mr-2' name='arrow-back'></box-icon>
-                                <span class="inline-block align-top"> Back </span>
+                            <box-icon class='mr-2' name='arrow-back'></box-icon>
+                            <span class="inline-block align-top">Back</span>
                         </NavTabButton>
                     </Link>
                 </li>
@@ -125,12 +118,14 @@ export default {
                 </li>
                 <!--/ Question Tab -->
 
+                <!-- Result Tab -->
                 <li class="mr-2" v-if="content.format_category === 'Unit'">
                     <NavTabButton @click="activeTab('format')" :active="tab === 'format'" class="inline-block p-4 rounded-t-lg border-b-2">
                         <box-icon class='mr-2' name='book-add'></box-icon>
                         <span class="inline-block align-top">Result</span>
                     </NavTabButton>
                 </li>
+                <!--/ Result Tab -->
             </NavTabBar>
             <!--/ NavTabBar -->       
 
@@ -185,12 +180,6 @@ export default {
                 </template>
                 <!--/ #Feature -->
 
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <JourneySideBar />
-                </template> -->
-                <!--/ #Tool -->
-
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
@@ -206,7 +195,6 @@ export default {
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <!-- Form -->
                             <form @submit.prevent="submit" class="container mx-auto">
-
                                 <!-- Question Viewer -->
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
@@ -218,7 +206,7 @@ export default {
 
                                 <!-- Submit -->
                                 <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                         <box-icon class='mr-2' name='cube'></box-icon> 
                                         <span class="inline-block align-top text-base mr-2">Update Your Answer</span>
                                     </button>
