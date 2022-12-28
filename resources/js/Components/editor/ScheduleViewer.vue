@@ -35,42 +35,29 @@ let models = [];
 
 // schedules loop
 for (let schedule of schedules) {
-
     // periodical value (days)
     let periodical = periodicalSorter[schedule.periodical];
-
     // recuring value
     let recurring = schedule.recurring;
-
     // start date time
     let startDateTime = new Date(schedule.start_datetime);
-
     // end date time
     let endDateTime = new Date(schedule.end_datetime);
-
     // recurring
     for (let i = 0; i < recurring; i++) {
-
         for (let data of schedule.data.options) {
-
             // data's start time
             let startTime = data.start_time;
-
             // data's end time
             let endTime = data.end_time;
-
             // current start time
             let currentStartTime = new Date( formatDate(startDateTime) + " " + startTime );
-
             // current end time
             let currentEndTime = new Date( formatDate(endDateTime) + " " + endTime );
-
             // start date's day (monday - sunday)
             let currentStartDay = currentStartTime.getDay();
-
             // data's day
             let currentDataDay = sorter[data.day];
-
             currentStartTime.setDate(currentStartTime.getDate() + currentDataDay - currentStartDay);
             
             // get start hours: format 11:00 => 11
@@ -78,21 +65,17 @@ for (let schedule of schedules) {
             // get end hours
             let currentEndHour = currentEndTime.getHours();
 
-
             // Week (1,2,3,4)
             let week = data.week;
-
             let session_length = parseInt(events.session_length);
             let session_interval = session_length / 60;
   
-
             // run hours each with 1 hour interval
             for (let j = currentStartHour; j < currentEndHour; j = j + session_interval) {
 
                 if (week != 0) {
                     currentStartTime.setDate(currentStartTime.getDate() + ((week - 1) * 7))
                 }
-
 
                 // get the date time
                 let theDatetime = new Date(currentStartTime);
@@ -114,7 +97,6 @@ for (let schedule of schedules) {
                 });
 
                 // increment time by 1
-
                 if(session_length % 60 == 0) {
                     currentStartTime.setHours(currentStartTime.getHours() + 1);   
                 }else{
@@ -124,10 +106,8 @@ for (let schedule of schedules) {
             }
 
         }
-
         // each recurring + periodical day
         startDateTime.setDate(startDateTime.getDate() + periodical);
-
     }
 }
 

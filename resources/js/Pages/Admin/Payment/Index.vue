@@ -70,13 +70,14 @@ export default {
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         <div class="px-4 sm:px-0">
                             <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md overflow-x-scroll">
-                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6 overflow-x-auto">
                                     <!-- Table -->
                                     <table class="table-auto sm:rounded-md w-full text-sm text-left text-gray-500 dark:text-gray-400 border-collapse border-b border-gray-400">
                                         <thead class="text-xs text-gray-700 uppercase">
                                             <tr class="bg-white border-b border-gray-400">
                                                 <th scope="col" class="py-3 px-6">#</th>
                                                 <th scope="col" class="py-3 px-6">Title</th>
+                                                <th scope="col" class="py-3 px-6">Name</th>
                                                 <th scope="col" class="py-3 px-6">Start Date</th>
                                                 <th scope="col" class="py-3 px-6">Start Time</th>
                                                 <th scope="col" class="py-3 px-6">Status</th>
@@ -95,8 +96,10 @@ export default {
                                                     <Link :href="route('event.show', payment.event.id)" class="font-semibold">{{ payment.event.title }}</Link>
                                                 </td>
                                                 <td data-label="Description" class="py-4 px-6">
-                                                    {{ payment.start_date }}
-                                                    <!-- <p v-html="content.description" class="mt-1 text-sm text-gray-500 line-clamp-3"></p> -->
+                                                    {{ payment.user_name }}                                    
+                                                </td>
+                                                <td data-label="Description" class="py-4 px-6">
+                                                    {{ payment.start_date }}                                    
                                                 </td>
                                                 <td data-label="User_id" class="py-4 px-6">
                                                     {{ payment.start_time }}

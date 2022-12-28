@@ -45,8 +45,6 @@ Route::get('/dashboard',
 
 
 
-
-
 require __DIR__.'/auth.php';
 
 // user level

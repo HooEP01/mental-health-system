@@ -48,8 +48,9 @@ class PaymentController extends Controller
     {
 
         $payments = DB::table('payments')
+        ->join('users', 'payments.user_id', '=', 'users.id')
         ->join('appointments', 'payments.appointment_id', '=', 'appointments.id')
-        ->select('payments.*', 'appointments.start_date', 'appointments.start_time', 'appointments.event_id')
+        ->select('payments.*', 'users.name as user_name', 'appointments.start_date', 'appointments.start_time', 'appointments.event_id')
         ->orderBy('created_at', 'desc')
         ->paginate (100);
 

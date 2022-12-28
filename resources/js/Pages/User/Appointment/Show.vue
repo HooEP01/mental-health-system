@@ -103,7 +103,11 @@ export default {
             <div class="pb-6 mb-2">
                 <p class="text-base font-normal">Journey</p>
                 Appointment: {{ event.title }}
+                <p class="text-base font-sm">
+                    {{ appointment.start_date }} {{ appointment.start_time }}
+                </p>
             </div>
+            
             <!--/ Title Header -->
 
             <!-- NavTabBar -->
@@ -197,26 +201,6 @@ export default {
                                             <div class="px-6 py-6 font-bold">
                                                 {{ index + 1 }}. {{ task.title }}
                                             </div>
-                                            <div></div>
-                                            <Dropdown class="flex justify-end px-4 pt-4">
-                                                <template #trigger>
-                                                    <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                        <span class="sr-only">Open dropdown</span>
-                                                        <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                    </button>
-                                                </template>
-
-                                                <template #content>
-                                                    <ul class="py-1" aria-labelledby="dropdownButton">
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
-                                                    </li>
-                                                    </ul>
-                                                </template>
-                                            </Dropdown>
                                         </div>
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
@@ -246,9 +230,6 @@ export default {
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- </form> -->
-                                <!--/ Form -->
                             </div>
                         </div>
                        
@@ -308,10 +289,9 @@ export default {
                                             </thead>
 
                                             <tbody>
-                                                <tr v-for="appoint in appointments" class="bg-white border-b border-gray-400">
-                                                <!-- <tr v-for="(appointment, index) in appointments" :key="appointment.id" class="bg-white border-b border-gray-400"> -->
+                                                <tr v-for="(appoint, index) in appointments" class="bg-white border-b border-gray-400">
                                                     <td data-label="Title" class="py-4 px-6">
-                                                        {{ 1 }}
+                                                        {{ index + 1 }}
                                                     </td>
                                                     <td data-label="Title" class="py-4 px-6">
                                                         {{ appoint.name }}

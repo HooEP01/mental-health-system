@@ -21,7 +21,7 @@ export default {
         Link,
         Head,
     },
-    data(props) {
+    data() {
         return {
             tab: 'appointment',
         };
@@ -91,7 +91,9 @@ export default {
             <div class="pb-6 mb-2">
                 <p class="text-base font-normal">Professional</p>
                 <p>Appointment: {{ appointment.event_title }}</p>
-                <p>User: {{ user.name }}</p>
+                <p class="text-base font-sm">
+                    User {{ user.name }}
+                </p>
             </div>
             <!--/ Title Header -->
 
@@ -147,7 +149,7 @@ export default {
                 <div v-if="tab === 'appointment'">
                     <div class="">
                         <div v-for="appoint in appointments" :key="appoint.id" class="grid gap-5 grid-cols-12 group relative sm:overflow-hidden sm:rounded-md">
-                            <div class="mt-3 mb-3 col-span-4">
+                            <div class="mt-3 mb-3 col-span-3">
                                 <Link @click="showAppointment(appoint.id)">
                                     <div  class="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-grey-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
                                         <img v-if="appoint.event_image" :src="'/storage/' +appoint.event_image" alt="image" class="h-full w-full object-cover object-center lg:h-full lg:w-full" />
@@ -171,7 +173,7 @@ export default {
                                 </Link>
                             </div>
                                 
-                            <div class="mt-3 mb-3 col-span-8">
+                            <div class="mt-3 mb-3 col-span-9">
                                 <div  class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                                     <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                         <div v-for="(task, index) of appoint.task" :key="task.id">

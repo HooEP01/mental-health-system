@@ -110,8 +110,12 @@ export default {
             <!-- Title Header -->
             <div class="pb-6 mb-2">
                 <p class="text-base font-normal">Professional</p>
-                Appointment: {{ event.title }}
+                Appointment: {{ event.title }} 
+                <p class="text-base font-sm">
+                    {{ appointment.start_date }} {{ appointment.start_time }}
+                </p>
             </div>
+            
             <!--/ Title Header -->
 
             <!-- NavTabBar -->
@@ -397,7 +401,7 @@ export default {
                                                 <tr v-for="(appoint, index) in appointments" :key="appointment.id"  class="bg-white border-b border-gray-400">
                 
                                                     <td data-label="Title" class="py-4 px-6">
-                                                        {{ 1 }}
+                                                        {{ index + 1 }}
                                                     </td>
                                                     <td data-label="Title" class="py-4 px-6">
                                                         {{ appoint.name }}

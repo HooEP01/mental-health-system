@@ -105,7 +105,7 @@ class UserController extends Controller
         $appointments = DB::table('appointments')
         -> join('events','appointments.event_id', '=','events.id')
         -> join('users', 'appointments.user_id', '=', 'users.id')
-        -> select('appointments.*', 'events.id as event_id', 'events.image as event_image', 'events.user_id as professional_id', 'users.first_name', 'users.last_name', 'users.name', 'users.email', 'users.birthday', 'users.relationship_status', 'users.contact_number')
+        -> select('appointments.*', 'events.id as event_id', 'events.title as event_title', 'events.image as event_image', 'events.user_id as professional_id', 'users.first_name', 'users.last_name', 'users.name', 'users.email', 'users.birthday', 'users.relationship_status', 'users.contact_number')
         -> where('appointments.user_id', '=', $id)
         -> get();
 
@@ -116,8 +116,8 @@ class UserController extends Controller
             -> select('tasks.*', 'contents.title as content_title', 'content_answers.id as content_answer_id')
             -> where('tasks.event_id', '=', $appointment->event_id)
             -> where('content_answers.appointment_id', '=', $appointment->id)
-            -> where('content_answers.user_id', '=', $id)
-            -> where('tasks.category', '=', Task::CATEGORY_USER)
+            -> where('content_answers.user_id', '=', $user->id)
+            -> where('tasks.category', '!=', Task::CATEGORY_DELETE)
             -> get();
             $appointment->task = $tasks;
         }
