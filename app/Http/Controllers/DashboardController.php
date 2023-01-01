@@ -72,7 +72,8 @@ class DashboardController extends Controller
 
         $collectionAppointments = collect($appointments);
         $uniqueAppointment = $collectionAppointments->unique('event_id');
-        $uniqueAppointment->values()->all();
+        $valuesAppointment = $uniqueAppointment->values();
+        $valuesAppointment->all();
 
         $answers = DB::table('content_answers')
         -> join('contents', 'content_answers.content_id', '=', 'contents.id')
@@ -83,7 +84,8 @@ class DashboardController extends Controller
 
         $collectionAnswers = collect($answers);
         $uniqueAnswer = $collectionAnswers->unique('content_id');
-        $uniqueAnswer->values()->all();
+        $valuesAnswer = $uniqueAnswer->values();
+        $valuesAnswer->all();
 
         $contents = DB::table('contents')
         -> select('contents.*')
@@ -138,8 +140,8 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'user'=> Auth::user(),
             'appointments' => $appointments,
-            'uniqueAnswer' => $uniqueAnswer,
-            'uniqueAppointment'=> $uniqueAppointment,
+            'uniqueAnswer' => $valuesAnswer,
+            'uniqueAppointment'=> $valuesAppointment,
             'answers' => $answers,
             'events' => $events,
             'contents' => $contents,

@@ -188,8 +188,8 @@ export default {
                                     <div class="px-6 py-6">
                                         <p class="text-md font-bold">
                                             Total {{ appointments.length }}
-                                            <span v-if="uniqueAnswer.length > 1"> Contents</span>
-                                            <span v-else> Content </span>
+                                            <span v-if="uniqueAnswer.length > 1"> Appointments</span>
+                                            <span v-else> Appointment </span>
                                         </p>
                                         <p class="text-sm font-base">
                                              In {{ uniqueAppointment.length }} 
@@ -207,6 +207,7 @@ export default {
                                         <p>Start Your</p>
                                         <p>Healing Journey</p>
                                     </div>
+
                                     <Link v-if="uniqueAppointment.length" :href="route('event.show', uniqueAppointment[0].event_id)" class="mt-2 inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-400 hover:fill-white text-white bg-emerald-300 font-semibold py-3 px-4 border border-transparent rounded">
                                         <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                         <span class="inline-block align-top">Event</span>

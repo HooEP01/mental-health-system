@@ -158,7 +158,6 @@ function groupAppointment(model) {
         if(app.length == events.attendance) {
             return 0;
         }
-        
         return app.length;
     }
     return 0;
@@ -204,7 +203,7 @@ const emits = defineEmits(["update:modelValue"]);
                 </div>
             </div>
             <div></div>
-            <div class="place-content-end px-6 py-4">
+            <div class="place-content-end sm:px-6 py-4">
                 <button v-if="count != 0" @click="count--" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
                     <span class="sr-only">Open dropdown</span>
                     <box-icon name='chevron-left'></box-icon>
@@ -231,7 +230,7 @@ const emits = defineEmits(["update:modelValue"]);
                         <p class="text-xl font-bold text-indigo-500 text-center">{{ r.day.toUpperCase() }}</p> 
                         <p class="text-sm text-slate-600 text-center">{{ r.start_date }}</p>
                     </div>
-                    <div class="md:col-span-1 relative">
+                    <div class="md:col-span-1 relative sm:mb-0 mb-4">
                         <div v-for="model in filterDate(r.start_date)" :key="model.uuid" class="mt-2">
                             <div v-if="filterAppointment(model)">
                                 <div v-if="groupAppointment(model) == 0">

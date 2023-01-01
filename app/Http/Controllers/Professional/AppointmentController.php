@@ -32,7 +32,7 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
 
-        $status = ( $request->input('status'))? $request->input('status'): "";
+        $status = ($request->input('status'))? $request->input('status'): "";
 
         if($status === "All"){
             $status = " ";

@@ -38,11 +38,26 @@ class ContentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
         $contents = DB::table('contents')
         -> join('users', 'contents.user_id', '=' ,'users.id')
         -> select('contents.*', 'users.name', 'users.first_name', 'users.last_name', 'users.professional_title')
+        -> when($request->input('search'), function($query, $search) {
+            $query-> where('users.name', 'like', '%' .$search. '%')
+                  -> orWhere('contents.title', 'like', '%' .$search. '%');
+        }) 
+        -> when($request->input('status'), function($query, $status) {
+            if($status != Content::ALL){
+                $query-> where('contents.status', 'like', '%' .$status. '%');
+            }
+        })
+        -> when($request->input('category'), function($query, $category) {
+            if($category != Content::ALL){
+                $query-> where('contents.category', 'like', '%' .$category. '%');
+            }
+        })
         -> orderBy('created_at','desc')
         -> paginate(100);
         

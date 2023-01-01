@@ -107,7 +107,6 @@ export default {
                     {{ appointment.start_date }} {{ appointment.start_time }}
                 </p>
             </div>
-            
             <!--/ Title Header -->
 
             <!-- NavTabBar -->

@@ -25,7 +25,6 @@ export default {
         return {
             search: '',
             status: '',
-            
             statuses: [ "All", "Approve", "Paid", "Disapprove" ],
         }
     },

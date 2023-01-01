@@ -23,6 +23,8 @@ class Content extends Model
 
     const PROFESSIONAL_CATEGORY = 'Report';
 
+    const ALL = 'All';
+
     protected $fillable = [
         'user_id', 
         'title', 
