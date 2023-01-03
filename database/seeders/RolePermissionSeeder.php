@@ -37,6 +37,7 @@ class RolePermissionSeeder extends Seeder
             'professional payment list', 'professional payment create', 'professional payment edit', 'professional payment delete',
             'professional user list', 'professional user create', 'professional user edit', 'professional user delete',
             'professional chat list', 'professional chat create', 'professional chat edit', 'professional chat delete',
+            'professional appointment chat list', 'professional appointment chat create', 'professional appointment chat edit', 'professional appointment chat delete',
             'professional appointment content list', 'professional appointment content create', 'professional appointment content edit', 'professional appointment content delete',
             'professional appointment answer list', 'professional appointment answer create', 'professional appointment answer edit', 'professional appointment answer delete',
             'professional appointment task list', 'professional appointment task create', 'professional appointment task edit', 'professional appointment task delete',
@@ -50,6 +51,8 @@ class RolePermissionSeeder extends Seeder
             'user appointment list', 'user appointment create', 'user appointment edit', 'user appointment delete',
             'user payment list', 'user payment create', 'user payment edit', 'user payment delete',
             'user chat list', 'user chat create', 'user chat edit', 'user chat delete',
+            'user event task list', 'user event task create', 'user event task edit', 'user event task delete',
+            'user appointment chat list', 'user appointment chat create', 'user appointment chat edit', 'user appointment chat delete',
             'user appointment task list', 'user appointment task create', 'user appointment task edit', 'user appointment task delete',
             'user appointment answer list', 'user appointment answer create', 'user appointment answer edit', 'user appointment answer delete',
         ];        
@@ -102,10 +105,20 @@ class RolePermissionSeeder extends Seeder
         $role1->givePermissionTo('user chat edit');
         $role1->givePermissionTo('user chat delete');
 
+        $role1->givePermissionTo('user appointment chat list');
+        $role1->givePermissionTo('user appointment chat create');
+        $role1->givePermissionTo('user appointment chat edit');
+        $role1->givePermissionTo('user appointment chat delete');
+
         $role1->givePermissionTo('user appointment task list');
         $role1->givePermissionTo('user appointment task create');
         $role1->givePermissionTo('user appointment task edit');
         $role1->givePermissionTo('user appointment task delete');
+
+        $role1->givePermissionTo('user event task list');
+        $role1->givePermissionTo('user event task create');
+        $role1->givePermissionTo('user event task edit');
+        $role1->givePermissionTo('user event task delete');
 
 
         // role 2
@@ -144,10 +157,21 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('user chat edit');
         $role2->givePermissionTo('user chat delete');
 
+        $role2->givePermissionTo('user appointment chat list');
+        $role2->givePermissionTo('user appointment chat create');
+        $role2->givePermissionTo('user appointment chat edit');
+        $role2->givePermissionTo('user appointment chat delete');
+
         $role2->givePermissionTo('user appointment task list');
         $role2->givePermissionTo('user appointment task create');
         $role2->givePermissionTo('user appointment task edit');
         $role2->givePermissionTo('user appointment task delete');
+
+        $role2->givePermissionTo('user event task list');
+        $role2->givePermissionTo('user event task create');
+        $role2->givePermissionTo('user event task edit');
+        $role2->givePermissionTo('user event task delete');
+
 
 
         $role2->givePermissionTo('professional profile list');
@@ -190,6 +214,11 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('professional chat edit');
         $role2->givePermissionTo('professional chat delete');
 
+        $role2->givePermissionTo('professional appointment chat list');
+        $role2->givePermissionTo('professional appointment chat create');
+        $role2->givePermissionTo('professional appointment chat edit');
+        $role2->givePermissionTo('professional appointment chat delete');
+
         $role2->givePermissionTo('professional appointment content list');
         $role2->givePermissionTo('professional appointment content create');
         $role2->givePermissionTo('professional appointment content edit');
@@ -199,6 +228,11 @@ class RolePermissionSeeder extends Seeder
         $role2->givePermissionTo('professional appointment task create');
         $role2->givePermissionTo('professional appointment task edit');
         $role2->givePermissionTo('professional appointment task delete');
+
+        $role2->givePermissionTo('professional appointment answer list');
+        $role2->givePermissionTo('professional appointment answer create');
+        $role2->givePermissionTo('professional appointment answer edit');
+        $role2->givePermissionTo('professional appointment answer delete');
 
         $role2->givePermissionTo('professional event task list');
         $role2->givePermissionTo('professional event task create');

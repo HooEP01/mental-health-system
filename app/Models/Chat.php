@@ -9,6 +9,12 @@ class Chat extends Model
 {
     use HasFactory;
 
+    const STATUS_FAILED = 'Failed';
+    const STATUS_DELETED = 'Deleted';
+    const STATUS_EDITED = 'Edited';
+    const STATUS_DELIVERED = 'Delivered';
+    const STATUS_READ = 'Read';
+
     protected $fillable = [
         'appointment_id', 
         'user_id', 

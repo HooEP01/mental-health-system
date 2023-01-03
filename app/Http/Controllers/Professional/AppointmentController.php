@@ -139,6 +139,17 @@ class AppointmentController extends Controller
         -> where('users.id', '=', $event->user_id)
         -> first();
 
+        $chats = DB::table('chats')
+        -> join('users', 'chats.user_id', '=', 'users.id')
+        -> select('chats.*', 'users.name')
+        -> whereIn('chats.appointment_id', $appointments->pluck('id')->toArray())
+        -> orWhere(function($query) use ($appointments) {
+            $query -> where('chats.user_id', '=', Auth::id())
+                   -> whereIn('chats.appointment_id', $appointments->pluck('id')->toArray());
+        })
+        -> orderBy('created_at', 'asc')
+        -> get();
+
         return Inertia::render('Professional/Appointment/Show', [
             'appointment' => $appointment,
             'appointments' => $appointments,
@@ -147,6 +158,7 @@ class AppointmentController extends Controller
             'professional' => $professional,
             'firstTab' => $keyword,
             'tasks_professional' => $tasks_professional,
+            'chats' => $chats,
             'can' => [
                 'create' => Auth::user()->can('professional event create'),
                 'edit' => Auth::user()->can('professional event edit'),

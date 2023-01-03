@@ -152,7 +152,7 @@ export default {
                 <!-- Report Tab -->
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('report')" :active="tab === 'report'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='report' type='solid' ></box-icon>
                         <span class="inline-block align-top">Report</span>
                     </NavTabButton>
                 </li>
@@ -161,7 +161,7 @@ export default {
                 <!-- Member Tab -->
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('member')" :active="tab === 'member'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='cog'></box-icon>
                         <span class="inline-block align-top">Member</span>
                     </NavTabButton>
                 </li>

@@ -42,24 +42,30 @@ export default {
         firstTab: Object, default:() => ({}), 
         can: Object, default: () => ({}),
         appointmentsID: Object, default: () => ({}),
+        chats: Object, default: () => ({}),
     },
     setup(props) {
-        // Answer
-        const answers = ref({});
         // Form
-        const form = useForm({
-            answer_id: null,
-            event_id: props.event.id,
-            schedules: [],
-            scheduleDateTime: [],
-            answers: null,
+        const chatForm = useForm({
+            appointment_id: props.appointment.id,
+            chat_id: null,
+            message: null,
         });
-        // Answers Store
+        // Edit Chat
+        function editChat(chat) {
+            this.chatForm.chat_id = chat.id;
+            this.chatForm.message = chat.message;
+        };
+        // Cancel chat
+        function resetChat() {
+            chatForm.reset();
+        };
+        // Chats Store
         function submit() {
-            this.form.answers = answers;
-            Inertia.post(route('appointments.store'), form)
-        }
-        return { answers, form, submit };
+            Inertia.post(route('appointments.chats.store', chatForm.appointment_id), chatForm);
+            chatForm.reset();
+        };
+        return { chatForm, editChat, resetChat, submit };
     },
     methods: {
         // Destroy Content
@@ -85,6 +91,10 @@ export default {
 
         showAnswer(appointment_id, answer_id){
             Inertia.get(route('appointments.answers.show', [appointment_id, answer_id]));
+        },
+
+        destroyChat(appointment_id, chat_id) {
+            Inertia.delete(route('appointments.chats.destroy', [appointment_id, chat_id]));
         },
     }
 }
@@ -124,8 +134,8 @@ export default {
                 <li class="mr-6">
                     <Link :href="route('appointments.index')">
                         <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
-                                <box-icon class='mr-2' name='arrow-back'></box-icon>
-                                <span class="inline-block align-top"> Back </span>
+                            <box-icon class='mr-2' name='arrow-back'></box-icon>
+                            <span class="inline-block align-top">Back</span>
                         </NavTabButton>
                     </Link>
                 </li>
@@ -152,16 +162,25 @@ export default {
                 <!-- Report Tab -->
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('report')" :active="tab === 'report'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='report' type='solid' ></box-icon>
                         <span class="inline-block align-top">Report</span>
                     </NavTabButton>
                 </li>
                 <!--/ Report Tab -->
 
+                <!-- Chat Tab -->
+                <li class="mr-6">
+                    <NavTabButton @click="activeTab('chat')" :active="tab === 'chat'" class="inline-block p-4 rounded-t-lg border-b-2">
+                        <box-icon class='mr-2' name='message-square-dots'></box-icon>
+                        <span class="inline-block align-top">Chat</span>
+                    </NavTabButton>
+                </li>
+                <!--/ Chat Tab -->
+
                 <!-- Member Tab -->
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('member')" :active="tab === 'member'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='cog'></box-icon>
                         <span class="inline-block align-top">Member</span>
                     </NavTabButton>
                 </li>
@@ -330,7 +349,7 @@ export default {
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
                                             <p>{{ task.content_title }}</p>
                                             <div class="grid grid-cols-12 mt-2 gap-2">
-                                                <div v-for="(appoint, index) in appointments" :key="appointment.id" class="col-span-4 sm:col-span-4">
+                                                <div v-for="appoint in appointments" :key="appointment.id" class="col-span-4 sm:col-span-4">
                                                     <Link @click="showTask(appoint.id, task.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                         <span class="inline-block align-top"> {{ appoint.name }}</span>
@@ -361,10 +380,79 @@ export default {
                             </div>
                         </div>
 
+                        <div v-if="tab === 'chat'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
+                            <form @submit.prevent="submit">
+                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                    <h1 class="text-3xl font-bold">Chat</h1>
+                                    <div class="bg-white border border-slate-400 sm:overflow-hidden sm:rounded-md">
+                                        <div class="flex justify-between">
+                                            <div class="px-6 py-6 font-bold">
+                                                Message
+                                            </div>                                   
+                                        </div>
+                                        <div class="flex flex-col px-6 pb-6">
+
+                                            <div v-for="chat in chats" :key="chat.id" class="">
+                                                <div v-if="chat.user_id != professional.id">
+                                                    <div v-if="chat.status != 'Deleted'">
+                                                        <p class="text-base font-medium text-slate-600 mt-3 text-right">{{ chat.message }}</p>
+                                                        <p class="text-sm font-base text-slate-400 text-right">{{ chat.updated_at }} {{ chat.status }} </p>
+                                                        <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
+                                                    </div>
+                                                    <div v-else>
+                                                        <p class="text-base font-medium text-slate-400 mt-3">This message has been {{ chat.status.toLowerCase() }}</p>
+                                                        <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
+                                                    </div>
+                                                </div>
+                                                <div v-else>
+                                                    <div v-if="chat.status != 'Deleted'" class="flex justify-between">
+                                                        <div>
+                                                            <p class="text-base font-medium text-slate-600 mt-3">{{ chat.message }}</p>
+                                                            <p class="text-sm font-base text-slate-400">{{ chat.updated_at }} {{ chat.status }}</p>
+                                                        </div>
+                                        
+                                                        <Dropdown class="flex justify-end">
+                                                            <template #trigger>
+                                                                <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
+                                                                    <span class="sr-only">Open dropdown</span>
+                                                                    <box-icon name='dots-horizontal-rounded'></box-icon>
+                                                                </button>
+                                                            </template>
+                                                            <template #content>
+                                                                <ul class="py-1" aria-labelledby="dropdownButton">
+                                                                    <li><a @click="editChat(chat)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a></li>
+                                                                    <li><a @click="destroyChat(appointment.id, chat.id)" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a></li>
+                                                                </ul>
+                                                            </template>
+                                                        </Dropdown>
+                                                    </div>
+                                                    <div v-else>
+                                                        <p class="text-base font-medium text-slate-400 mt-3">You {{ chat.status.toLowerCase() }} this message</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+
+                                        <div class="flex px-6 pb-6">
+                                            <label for="title" class="pr-4 pt-2 flex-none w-16 text-sm font-medium text-slate-600">Message</label>
+                                            <input v-model="chatForm.message" type="text" name="title" id="title" autocomplete="title" required class="flex-initial block w-full rounded-md border-gray-400 mr-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <button v-if="chatForm.chat_id" @click="resetChat()" type="button" class="flex-none pt-1 w-14 mr-2 justify-center rounded-md border border-transparent fill-white bg-red-500 text-sm font-medium text-white shadow-sm hover:bg-red-600">
+                                                <box-icon name='message-square-x'></box-icon>
+                                            </button>
+                                            <button type="submit" class="flex-none pt-1 w-14 justify-center rounded-md border border-transparent fill-white bg-indigo-500 text-sm font-medium text-white shadow-sm hover:bg-indigo-600">
+                                                <box-icon name='send'></box-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
                         <div v-if="tab === 'member'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                 <h1 class="text-3xl font-bold">Owner</h1>
-                                <div class="bg-yellow-50 sm:overflow-hidden sm:rounded-md">
+                                <div class="border border-gray-400 sm:overflow-hidden sm:rounded-md">
                                     <div class="flex justify-between">
                                         <div class="px-6 py-6 font-bold">
                                             {{ 1 }}. {{ professional.professional_title }} {{ professional.first_name }} {{ professional.last_name }}

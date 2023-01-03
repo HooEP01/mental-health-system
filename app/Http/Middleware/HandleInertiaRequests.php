@@ -51,9 +51,11 @@ class HandleInertiaRequests extends Middleware
                             'event' => Auth::user()->can('user event list'),
                             'appointment' => Auth::user()->can('user appointment list'),
                             'payment' => Auth::user()->can('user payment list'),
+                            'event.task' => Auth::user()->can('user event task list'),
                             'appointment.task' => Auth::user()->can('user appointment task list'),
                             'appointment.answer' => Auth::user()->can('user appointment answer list'),
                             'chat' => Auth::user()->can('user chat list'),
+                            'appointment.chat' => Auth::user()->can('user appointment chat list'),
 
                             'profiles' => Auth::user()->can('professional profile list'),
                             'contents' => Auth::user()->can('professional content list'),
@@ -68,6 +70,7 @@ class HandleInertiaRequests extends Middleware
                             'events.tasks' => Auth::user()->can('professional event task list'),
                             'events.contents' => Auth::user()->can('professional event content list'),
                             'chats' => Auth::user()->can('professional chat list'),
+                            'appointments.chats' => Auth::user()->can('professional appointment chat list'),
 
                             'contents_view' => Auth::user()->can('admin content list'),
                             'answers_view' => Auth::user()->can('admin answer list'),

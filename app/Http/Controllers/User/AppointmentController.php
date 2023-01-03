@@ -100,6 +100,16 @@ class AppointmentController extends Controller
             $task->answer = $answer;
         }
         
+        $chats = DB::table('chats')
+        -> join('users', 'chats.user_id', '=', 'users.id')
+        -> select('chats.*', 'users.name')
+        -> whereIn('chats.appointment_id', $appointments->pluck('id')->toArray())
+        -> orWhere(function($query) use ($appointments, $professional) {
+            $query -> where('chats.user_id', '=', $professional->id)
+                   -> whereIn('chats.appointment_id', $appointments->pluck('id')->toArray());
+        })
+        -> orderBy('created_at', 'asc')
+        -> get();
         
 
         return Inertia::render('User/Appointment/Show', [
@@ -109,6 +119,7 @@ class AppointmentController extends Controller
             'tasks' => $tasks,
             'professional' => $professional,
             'firstTab' => $keyword,
+            'chats' => $chats,
             'can' => [
                 'create' => Auth::user()->can('user appointment create'),
                 'edit' => Auth::user()->can('user appointment edit'),

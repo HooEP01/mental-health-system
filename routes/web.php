@@ -60,6 +60,8 @@ Route::group([
     Route::resource('appointment', 'AppointmentController');
     Route::resource('payment', 'PaymentController');
     Route::resource('chat', 'ChatController');
+    Route::resource('event.task', 'EventTaskController');
+    Route::resource('appointment.chat', 'AppointmentChatController');
     Route::resource('appointment.task', 'AppointmentTaskController');
     Route::resource('appointment.answer', 'AppointmentAnswerController');
 });
@@ -78,6 +80,7 @@ Route::group([
     Route::resource('payments', 'PaymentController');
     Route::resource('appointments.users', 'AppointmentUserController');
     Route::resource('chats', 'ChatController');
+    Route::resource('appointments.chats', 'AppointmentChatController');
     Route::resource('appointments.contents', 'AppointmentContentController');
     Route::resource('appointments.answers', 'AppointmentAnswerController'); 
     Route::resource('appointments.tasks', 'AppointmentTaskController');
