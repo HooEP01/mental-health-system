@@ -96,6 +96,9 @@ audio {
             <div class="pb-6 mb-2">
                 <p class="text-base font-normal">{{ event.title }}</p>
                 Task: {{ content.title }}
+                <p class="text-base font-sm">
+                    {{ appointment.start_date }} {{ appointment.start_time }}
+                </p>
             </div>
             <!--/ Title Header -->
 

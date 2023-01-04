@@ -90,6 +90,9 @@ export default {
            <div class="pb-6 mb-2">
                 <p class="text-base font-normal">Professional</p>
                 Event: {{ event.title }}
+                <p class="text-base font-sm">
+                    Edit this Task
+                </p>
             </div>
             <!--/ Title Header -->
         </template>
@@ -100,7 +103,7 @@ export default {
             <ContainerWithSideBar>
                 <!-- #Title -->
                 <template #title>
-                    Create New Task
+                    Edit this Task
                 </template>
                 <!--/ #Title -->
 
@@ -140,7 +143,7 @@ export default {
                         <form @submit.prevent="submit">
                             <div class="sm:overflow-hidden sm:rounded-md">
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                    <h1 class="text-xl font-bold text-indigo-500">Create Event Task</h1>
+                                    <h1 class="text-xl font-bold text-indigo-500">Edit this Task</h1>
 
                                     <!-- Title -->
                                     <div class="col-span-6">
@@ -205,8 +208,6 @@ export default {
                 <!--/ #Main -->
             </ContainerWithSideBar>
             <!--/ Container With Sidebar -->
-
-            
         </template>
         <!--/ #Content -->
     </BreezeAuthenticatedLayout>

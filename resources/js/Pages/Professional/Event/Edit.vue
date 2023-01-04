@@ -154,18 +154,12 @@ export default {
                 <!-- #Feature -->
                 <template #feature>
                     <li class="flow-root">
-                        <Link :href="route('events.index')" class="inline-flex items-center text-left w-full fill-white bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 border border-transparent rounded">
+                        <Link :href="route('events.show', event.id)" class="inline-flex items-center text-left w-full fill-white bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 border border-transparent rounded">
                             <box-icon class='mr-2' name='arrow-back'></box-icon> <span class="inline-block align-top">Back To Home</span>
                         </Link>
                     </li>
                 </template>
                 <!--/ #Feature -->
-
-                <!-- #Tool -->
-                <!-- <template #tool>
-                    <ProfessionalSideBar/>
-                </template> -->
-                <!--/ #Tool -->
 
                 <!-- #Main -->
                 <template #main>

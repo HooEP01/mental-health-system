@@ -27,18 +27,19 @@ export default {
         Link,
         ref,
     },
-    data() {
-        return {
-            tab: 'event',
-        };
-    },
     props: {
         event: Object, default: () => ({}),
         schedules: Object, default:() => ({}),
         appointments: Object, default:() => ({}),
         tasks: Object, default:() => ({}),
         professional: Object, default:() => ({}),
+        firstTab: Object, default:() => ({}), 
         can: Object, default: () => ({}),
+    },
+    data(props) {
+        return {
+            tab: props.firstTab,
+        };
     },
     setup(props) {
         // Answer
@@ -63,6 +64,9 @@ export default {
         activeTab(name) {
             this.tab = name;
         },
+        showEventTask(event_id, task_id){
+            Inertia.get(route('event.task.show', [event_id, task_id]));
+        }
     }
 }
 </script>
@@ -98,7 +102,7 @@ export default {
                     <Link :href="route('event.index')">
                         <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
                             <box-icon class='mr-2' name='arrow-back'></box-icon>
-                            <span class="inline-block align-top"> Back </span>
+                            <span class="inline-block align-top">Back</span>
                         </NavTabButton>
                     </Link>
                 </li>
@@ -116,7 +120,7 @@ export default {
                 <!-- Schedule Tab -->
                 <li class="mr-6" v-if="schedules.length">
                     <NavTabButton @click="activeTab('appointment')" :active="tab === 'appointment'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='calendar'></box-icon>
                         <span class="inline-block align-top">Appointment</span>
                     </NavTabButton>
                 </li>
@@ -134,7 +138,7 @@ export default {
                 <!-- Member Tab -->
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('member')" :active="tab === 'member'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='cog'></box-icon>
                         <span class="inline-block align-top">Member</span>
                     </NavTabButton>
                 </li>
@@ -228,33 +232,16 @@ export default {
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                 <h1 class="text-3xl font-bold">Task</h1>
                                 <div v-for="(task, index) of tasks" :key="task.id">
-                                    <div class="bg-violet-50 sm:overflow-hidden sm:rounded-md">
+                                    <div class="border border-slate-400 sm:overflow-hidden sm:rounded-md">
                                         <div class="flex justify-between">
                                             <div class="px-6 py-6 font-bold">
                                                 {{ index + 1 }}. {{ task.title }}
                                             </div>
-                                            <div></div>
-                                            <Dropdown class="flex justify-end px-4 pt-4">
-                                                <template #trigger>
-                                                    <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                        <span class="sr-only">Open dropdown</span>
-                                                        <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                    </button>
-                                                </template>
-
-                                                <template #content>
-                                                    <ul class="py-1" aria-labelledby="dropdownButton">
-                                                        <li>
-                                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                                                        </li>
-                                                    </ul>
-                                                </template>
-                                            </Dropdown>
                                         </div>
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600 line-clamp-3"></p>
                                             <div class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link  :href="route('content.show', task.content_id)" class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-violet-600 hover:fill-white text-white bg-violet-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                <Link @click="showEventTask(event.id, task.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-500 hover:fill-white text-white bg-violet-400 font-semibold py-3 px-4 border border-transparent rounded">
                                                     <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                     <span class="inline-block align-top">{{ task.content_title }}</span>
                                                 </Link>
@@ -268,27 +255,11 @@ export default {
                         <div v-if="tab === 'member'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                 <h1 class="text-3xl font-bold">Owner</h1>
-                                <div class="bg-yellow-50 sm:overflow-hidden sm:rounded-md">
+                                <div class="border border-slate-400 sm:overflow-hidden sm:rounded-md">
                                     <div class="flex justify-between">
                                         <div class="px-6 py-6 font-bold">
                                             {{ 1 }}. {{ professional.professional_title }} {{ professional.first_name }} {{ professional.last_name }}
-                                        </div>
-                                        <div></div>
-                                        <Dropdown class="flex justify-end px-4 pt-4">
-                                            <template #trigger>
-                                                <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                    <span class="sr-only">Open dropdown</span>
-                                                    <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                </button>
-                                            </template>
-                                            <template #content>
-                                                <ul class="py-1" aria-labelledby="dropdownButton">
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                                                    </li>
-                                                </ul>
-                                            </template>
-                                        </Dropdown>
+                                        </div>   
                                     </div>
                                     <div class="flex flex-col items-left px-6 pb-6">
                                         <span class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">

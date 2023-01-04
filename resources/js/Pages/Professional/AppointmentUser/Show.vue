@@ -133,7 +133,7 @@ export default {
                 <li class="mr-6">
                     <NavTabButton @click="activeTab('setting')" :active="tab === 'setting'"
                         class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='cog'></box-icon>
                         <span class="inline-block align-top">Setting</span>
                     </NavTabButton>
                 </li>

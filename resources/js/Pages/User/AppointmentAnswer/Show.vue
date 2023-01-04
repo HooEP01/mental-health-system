@@ -96,8 +96,11 @@ export default {
         <template #header>
             <!-- Title Header -->
             <div class="pb-6 mb-2">
-                <p class="text-base font-normal">Journey</p>
+                <p class="text-base font-normal">{{ appointment.event_title }}</p>
                 Answer: {{ content.title }}
+                <p class="text-base font-sm">
+                    {{ appointment.start_date }} {{ appointment.start_time }}
+                </p>
             </div>
             <!--/ Title Header -->
 

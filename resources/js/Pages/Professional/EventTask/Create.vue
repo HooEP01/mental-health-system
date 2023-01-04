@@ -89,6 +89,9 @@ export default {
            <div class="pb-6 mb-2">
                 <p class="text-base font-normal">Professional</p>
                 Event: {{ event.title }}
+                <p class="text-base font-sm">
+                    Create New Task
+                </p>
             </div>
             <!--/ Title Header -->
         </template>

@@ -64,8 +64,10 @@ class EventController extends Controller
      * @param \App\Models\Content $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
+        $keyword = ($request->input('tab'))? $request->input('tab'): 'event';
+
         $event = DB::table('events')
         -> select('events.*')
         -> where('events.id', '=', $id)
@@ -95,7 +97,7 @@ class EventController extends Controller
 
         $tasks = DB::table('tasks')
         -> join('contents', 'tasks.content_id', '=', 'contents.id')
-        -> select('tasks.*', 'contents.title as content_title')
+        -> select('tasks.*', 'contents.title as content_title', 'contents.image as content_image')
         -> where('tasks.event_id', '=', $id)
         -> where('tasks.category', '=', Task::CATEGORY_USER)
         -> get();
@@ -106,6 +108,7 @@ class EventController extends Controller
             'appointments' => $appointments,
             'tasks' => $tasks,
             'professional' => $professional,
+            'firstTab' => $keyword,
             'can' => [
                 'create' => Auth::user()->can('user event create'),
                 'edit' => Auth::user()->can('user event edit'),

@@ -199,7 +199,7 @@ audio {
                         <!-- Content Question Show Card -->
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md">
                             <!-- Form -->
-                            <form @submit.prevent="submit" class="container mx-auto">
+                            <form class="container mx-auto">
 
                                 <!-- Question Viewer -->
                                 <div  class="space-y-6 bg-white sm:p-6">
@@ -210,14 +210,6 @@ audio {
                                 </div>
                                 <!--/ Question Viewer -->
 
-                                <!-- Submit -->
-                                <div class="bg-white px-4 py-3 text-right sm:px-6">
-                                    <button type="submit" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                                        <box-icon class='mr-2' name='cube'></box-icon> 
-                                        <span class="inline-block align-top text-base mr-2">Save Your Answer</span>
-                                    </button>
-                                </div>
-                                <!--/ Submit -->
                             </form>
                             <!--/ Form -->
                         </div>

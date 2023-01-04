@@ -56,6 +56,7 @@ class DashboardController extends Controller
         -> orderBy('appointments.start_time', 'asc')
         -> get();
 
+        $collectionTasks = [];
         foreach($appointments as $appointment) {
             
             $tasks = DB::table('tasks')
@@ -67,8 +68,11 @@ class DashboardController extends Controller
             -> where('content_answers.id', '=', null)
             -> get();
 
+            $collectionTask = collect($tasks);
+            $collectionTasks = $collectionTask;
             $appointment->task = $tasks;
         }
+        $collectionTasks->all();
 
         $collectionAppointments = collect($appointments);
         $uniqueAppointment = $collectionAppointments->unique('event_id');
@@ -142,6 +146,7 @@ class DashboardController extends Controller
             'appointments' => $appointments,
             'uniqueAnswer' => $valuesAnswer,
             'uniqueAppointment'=> $valuesAppointment,
+            'tasks'=> $collectionTasks,
             'answers' => $answers,
             'events' => $events,
             'contents' => $contents,

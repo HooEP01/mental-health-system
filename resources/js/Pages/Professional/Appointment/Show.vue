@@ -245,13 +245,13 @@ export default {
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                                          
                         <div v-if="tab === 'event'" class="sm:overflow-hidden sm:rounded-md">
-                            <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                            <div class="space-y-6 bg-white px-0 py-0 sm:p-6">
                                 <div v-html="event.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
 
                         <div v-if="tab === 'task'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
-                            <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                            <div class="space-y-6 bg-white px-0 py-0 sm:p-6">
                                 <h1 class="text-3xl font-bold">Task</h1>
                                 <div class="col-span-6 sm:col-span-3">
                                     <button type="button"  @click="createTask(appointment.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-violet-500 hover:bg-violet-600">
@@ -285,23 +285,17 @@ export default {
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
                                             <div class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link @click="showTask(appointment.id, task.id)"  class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-violet-600 hover:fill-white text-white bg-violet-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                <Link @click="showTask(appointment.id, task.id)"  class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-500 hover:fill-white text-white bg-violet-400 font-semibold py-3 px-4 border border-transparent rounded">
                                                     <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                     <span class="inline-block align-top">{{ task.content_title }}</span>
                                                 </Link>
                                             </div>
                                             <div v-if="task.answer.length" class="grid grid-cols-12 mt-2 gap-2">
                                                 <div v-for="(answer, index) of task.answer" class="col-span-4 sm:col-span-4">
-                                                    <div v-if="answer.status == 'Answered'">
-                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-600 hover:fill-white text-white bg-emerald-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                    <div>
+                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-600 hover:fill-white text-white bg-violet-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                            <span class="inline-block align-top">{{ answer.user_name }}: {{ index + 1 }}</span>
-                                                        </Link>
-                                                    </div>
-                                                    <div v-else-if="answer.status == 'Commented'">
-                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-700 hover:fill-white text-white bg-emerald-600 font-semibold py-3 px-4 border border-transparent rounded">
-                                                            <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                            <span class="inline-block align-top">{{ answer.user_name }}: {{ index + 1 }}</span>
+                                                            <span class="inline-block align-top">{{ index + 1 }}. {{ answer.user_name }}</span>
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -314,7 +308,7 @@ export default {
                         </div>
                        
                         <div v-if="tab === 'report'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
-                            <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                            <div class="space-y-6 bg-white px-0 py-0 sm:p-6">
                                 <h1 class="text-3xl font-bold">Report</h1>
                                 <div class="col-span-6 sm:col-span-3">
                                     <button type="button"  @click="createTask(appointment.id)" class="inline-flex justify-center rounded-md border border-transparent py-2 px-4 fill-white text-sm font-medium text-white bg-teal-500 hover:bg-teal-600">
@@ -350,7 +344,7 @@ export default {
                                             <p>{{ task.content_title }}</p>
                                             <div class="grid grid-cols-12 mt-2 gap-2">
                                                 <div v-for="appoint in appointments" :key="appointment.id" class="col-span-4 sm:col-span-4">
-                                                    <Link @click="showTask(appoint.id, task.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                    <Link @click="showTask(appoint.id, task.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-500 hover:fill-white text-white bg-teal-400 font-semibold py-3 px-4 border border-transparent rounded">
                                                         <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                         <span class="inline-block align-top"> {{ appoint.name }}</span>
                                                     </Link>
@@ -358,19 +352,12 @@ export default {
                                             </div>
                                             <div v-if="task.answer.length" class="grid grid-cols-12 mt-2 gap-2">
                                                 <div v-for="(answer, index) of task.answer" class="col-span-4 sm:col-span-4">
-                                                    <div v-if="answer.status == 'Answered'">
-                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-600 hover:fill-white text-white bg-emerald-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                    <div>
+                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
                                                             <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                             <span class="inline-block align-top">{{ index + 1 }}. {{ answer.user_name }}</span>
                                                         </Link>
                                                     </div>
-                                                    <div v-else-if="answer.status == 'Commented'">
-                                                        <Link @click="showAnswer(answer.appointment_id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-emerald-700 hover:fill-white text-white bg-emerald-600 font-semibold py-3 px-4 border border-transparent rounded">
-                                                            <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                            <span class="inline-block align-top">{{ index + 1 }}. {{ answer.user_name }}</span>
-                                                        </Link>
-                                                    </div>
-                                                   
                                                 </div>
                                             </div>
                                         
@@ -382,7 +369,7 @@ export default {
 
                         <div v-if="tab === 'chat'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
                             <form @submit.prevent="submit">
-                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <div class="space-y-6 bg-white px-0 py-0 sm:p-6">
                                     <h1 class="text-3xl font-bold">Chat</h1>
                                     <div class="bg-white border border-slate-400 sm:overflow-hidden sm:rounded-md">
                                         <div class="flex justify-between">
@@ -400,7 +387,7 @@ export default {
                                                         <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
                                                     </div>
                                                     <div v-else>
-                                                        <p class="text-base font-medium text-slate-400 mt-3">This message has been {{ chat.status.toLowerCase() }}</p>
+                                                        <p class="text-base font-medium text-slate-400 mt-3 text-right">This message has been {{ chat.status.toLowerCase() }}</p>
                                                         <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
                                                     </div>
                                                 </div>

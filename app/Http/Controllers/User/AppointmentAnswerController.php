@@ -43,7 +43,12 @@ class AppointmentAnswerController extends Controller
 
     public function show($appointment_id, $answer_id)
     {
-        $appointment = Appointment::find($appointment_id);
+        $appointment = DB::table('appointments')
+        -> join('events', 'appointments.event_id', '=', 'events.id')
+        -> select('appointments.*', 'events.title as event_title')
+        -> where('appointments.id', '=', $appointment_id)
+        -> first();
+
         $answer = DB::table('content_answers')
         -> select('content_answers.*')
         -> where('content_answers.id', '=', $answer_id)

@@ -54,29 +54,12 @@ function upperCaseFirst(str) {
 
 <template>
 
-  <div class="bg-emerald-50 sm:overflow-hidden sm:rounded-md">
+  <div class=" bg-emerald-50 sm:overflow-hidden sm:rounded-md">
 
     <div class="flex justify-between">
       <div class="px-6 py-6 font-bold">
         {{ index + 1 }}. {{ question.question }}
       </div>
-    <div></div>
-    <Dropdown class="place-content-end px-6 py-4">
-      <template #trigger>
-        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-            <span class="sr-only">Open dropdown</span>
-                <box-icon name='dots-horizontal-rounded'></box-icon>
-        </button>
-      </template>
-
-      <template #content>
-        <ul class="py-1" aria-labelledby="dropdownButton">
-            <li>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">{{ upperCaseFirst(question.category) }}</a>
-            </li>
-         </ul>
-         </template>
-    </Dropdown>
     </div>
 
     <div class="flex flex-col items-left px-6 pb-6">

@@ -45,22 +45,14 @@ export default {
         };
     },
     setup(props) {
-        // Answer
-        const answers = ref({});
         // Form
         const form = useForm({
-            answer_id: null,
             event_id: props.event.id,
             schedules: [],
             scheduleDateTime: [],
-            answers: null,
         });
-        // Answers Store
-        function submit() {
-            this.form.answers = answers;
-            Inertia.post(route('appointments.store'), form)
-        }
-        return { answers, form, submit };
+
+        return { form };
     },
     methods: {
         // Destroy Content
@@ -134,7 +126,7 @@ export default {
                 <!-- Schedule Tab -->
                 <li class="mr-6" v-if="schedules.length">
                     <NavTabButton @click="activeTab('appointment')" :active="tab === 'appointment'" class="inline-block p-4 rounded-t-lg border-b-2">
-                        <box-icon class='mr-2' name='book-add'></box-icon>
+                        <box-icon class='mr-2' name='calendar'></box-icon>
                         <span class="inline-block align-top">Schedule</span>
                     </NavTabButton>
                 </li>
@@ -285,7 +277,7 @@ export default {
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
                                             <div class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link @click="showTask(event.id, task.id)"  class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-violet-600 hover:fill-white text-white bg-violet-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                <Link @click="showTask(event.id, task.id)"  class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-500 hover:fill-white text-white bg-violet-400 font-semibold py-3 px-4 border border-transparent rounded">
                                                     <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                     <span class="inline-block align-top">{{ task.content_title }}</span>
                                                 </Link>
@@ -323,7 +315,7 @@ export default {
                                                 <template #content>
                                                     <ul class="py-1" aria-labelledby="dropdownButton">
                                                         <li>
-                                                        <a :href="route('events.tasks.edit', [event.id, task.id])" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+                                                            <a :href="route('events.tasks.edit', [event.id, task.id])" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
                                                         </li>
                                                         <li>
                                                             <a @click="destroyTask(event.id, task.id)" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
@@ -335,7 +327,7 @@ export default {
                                         <div class="flex flex-col items-left px-6 pb-6">
                                             <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
                                             <div class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link @click="showTask(event.id, task.id)"  class="inline-flex items-center text-left w-50 fill-white hover:text-white hover:bg-teal-600 hover:fill-white text-white bg-teal-500 font-semibold py-3 px-4 border border-transparent rounded">
+                                                <Link @click="showTask(event.id, task.id)"  class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-teal-500 hover:fill-white text-white bg-teal-400 font-semibold py-3 px-4 border border-transparent rounded">
                                                     <box-icon class="mr-2" name='spreadsheet'></box-icon>
                                                     <span class="inline-block align-top">{{ task.content_title }}</span>
                                                 </Link>
@@ -354,26 +346,6 @@ export default {
                                         <div class="px-6 py-6 font-bold">
                                             {{ 1 }}. {{ professional.professional_title }} {{ professional.first_name }} {{ professional.last_name }}
                                         </div>
-                                        <div></div>
-                                        <Dropdown class="flex justify-end px-4 pt-4">
-                                            <template #trigger>
-                                                <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                    <span class="sr-only">Open dropdown</span>
-                                                    <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                </button>
-                                            </template>
-
-                                            <template #content>
-                                                <ul class="py-1" aria-labelledby="dropdownButton">
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
-                                                    </li>
-                                                </ul>
-                                            </template>
-                                        </Dropdown>
                                     </div>
                                     <div class="flex flex-col items-left px-6 pb-6">
                                         <span class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">

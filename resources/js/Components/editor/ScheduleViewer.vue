@@ -194,7 +194,7 @@ const emits = defineEmits(["update:modelValue"]);
 
 
 <template>
-    <div class="bg-slate-50 sm:overflow-hidden sm:rounded-md"> 
+    <div class="border border-slate-400 sm:overflow-hidden sm:rounded-md"> 
         <div class="flex justify-between">
             <div class="px-6 py-6 font-bold">
                 Session Length: {{ events.session_length }} minutes <br/>

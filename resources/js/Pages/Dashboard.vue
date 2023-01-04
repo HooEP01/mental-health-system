@@ -39,6 +39,7 @@ export default {
         uniqueAppointment: Object, default: () => ({}),
         events: Object, default: () => ({}),
         contents: Object, default: () => ({}),
+        tasks: Object, default: () => ({}),
         can: Object, default: () => ({}),
     },
     setup() {
@@ -74,7 +75,7 @@ export default {
             <!--/ Title Header -->
 
             <!-- NavTabBar -->
-            <NavTabBar  v-if="events.length">
+            <NavTabBar v-if="events.length">
          
                 <!-- Content Tab -->
                 <li class="mr-6">
@@ -101,64 +102,44 @@ export default {
 
         <!-- #Main -->
         <template #content>
-            <div v-if="tab === 'home'" class="px-5 sm:px-2 md:col-span-3 md:mt-0 mt-5 gap-y-10 gap-x-6 xl:gap-x-3">
+            <div v-if="tab === 'home'" class="px-5 sm:px-2 md:col-span-3 gap-y-10 gap-x-6 xl:gap-x-3">
                 <div class="bg-white overflow-hidden sm:rounded-lg">
-
                     <div class="grid gap-0 md:gap-5 grid-cols-12">
                         <div class="mt-3 mb-3 col-span-12 sm:col-span-4">
-                        <div class="mt-3 bg-slate-50 sm:overflow-hidden sm:rounded-md">
-                            <div class="flex justify-between">
-                                <div class="px-6 py-6">
-                                    <p class="text-md font-bold"> {{ user.name }}</p>
-                                    <p class="text-sm font-base">
-                                        Good Day
-                                    </p>
+                            <div class="mt-3 bg-slate-50 sm:overflow-hidden sm:rounded-md">
+                                <div class="flex justify-between">
+                                    <div class="px-6 py-6">
+                                        <p class="text-md font-bold"> {{ user.name }} </p>
+                                        <p class="text-sm font-base"> Good Day </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-left px-6 pb-6">
+                                    <div v-if="appointments.length">
+                                        <p> {{ appointments[0].event_title }} </p>
+                                        <p> {{ appointments[0].start_date }} {{ appointments[0].start_time }} </p>
+                                        <Link :href="route('appointment.show', appointments[0].id)" class="mt-2 inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-slate-500 hover:fill-white text-white bg-slate-400 font-semibold py-3 px-4 border border-transparent rounded">
+                                            <box-icon class="mr-2" name='spreadsheet'></box-icon>
+                                            <span class="inline-block align-top">Upcomming</span>
+                                        </Link>
+                                    </div>
+                                    <div v-else>
+                                        <p> Join an event now! </p>
+                                        <p> Go to Resource to find out more </p>
+                                        <Link :href="route('event.index')" class="mt-2 inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-slate-500 hover:fill-white text-white bg-slate-400 font-semibold py-3 px-4 border border-transparent rounded">
+                                            <box-icon class="mr-2" name='spreadsheet'></box-icon>
+                                            <span class="inline-block align-top">Upcomming</span>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
-                        <div class="flex flex-col items-left px-6 pb-6">
-                            <div v-if="appointments.length">
-                                <p>
-                                {{ appointments[0].event_title }}
-                                </p>
-                                <p>
-                                    {{ appointments[0].start_date }} {{ appointments[0].start_time }}
-                                </p>
-                                <Link :href="route('appointment.show', appointments[0].id)" class="mt-2 inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-slate-500 hover:fill-white text-white bg-slate-400 font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                    <span class="inline-block align-top">Upcomming</span>
-                                </Link>
-                            </div>
-                            <div v-else>
-                                <p>
-                                    Join an event now!
-                                </p>
-                                <p>
-                                    Go to Resource to find out more
-                                </p>
-                                <Link :href="route('event.index')" class="mt-2 inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-slate-500 hover:fill-white text-white bg-slate-400 font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                    <span class="inline-block align-top">Upcomming</span>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
                         </div>
                     
                         <div class="mt-3 mb-3 col-span-12 sm:col-span-4">
                             <div class="mt-3 bg-emerald-50 sm:overflow-hidden sm:rounded-md">
                                 <div class="flex justify-between">
                                     <div class="px-6 py-6">
-                                        <p class="text-md font-bold">
-                                            Total {{ answers.length }}
-                                            <span v-if="answers.length > 1"> Answers</span>
-                                            <span v-else> Answer </span>
-                                        </p>
-                                        
-                                        <p class="text-sm font-base">
-                                             In {{ uniqueAnswer.length }} 
-                                            <span v-if="uniqueAnswer.length > 1">Contents</span>
-                                            <span v-else>Content</span> 
-                                        </p>
+                                        <p class="text-md font-bold"> Total {{ answers.length }} <span v-if="answers.length > 1"> Answers</span> <span v-else> Answer </span> </p>
+                                        <p class="text-sm font-base"> In {{ uniqueAnswer.length }} <span v-if="uniqueAnswer.length > 1">Contents</span> <span v-else>Content</span> </p>
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-left px-6 pb-6">
@@ -186,16 +167,8 @@ export default {
                             <div class="mt-3 bg-emerald-50 sm:overflow-hidden sm:rounded-md">
                                 <div class="flex justify-between">
                                     <div class="px-6 py-6">
-                                        <p class="text-md font-bold">
-                                            Total {{ appointments.length }}
-                                            <span v-if="uniqueAnswer.length > 1"> Appointments</span>
-                                            <span v-else> Appointment </span>
-                                        </p>
-                                        <p class="text-sm font-base">
-                                             In {{ uniqueAppointment.length }} 
-                                            <span v-if="uniqueAppointment.length > 1">Events</span>
-                                            <span v-else>Event</span> 
-                                        </p>
+                                        <p class="text-md font-bold"> Total {{ appointments.length }} <span v-if="uniqueAnswer.length > 1"> Appointments</span> <span v-else> Appointment </span> </p>
+                                        <p class="text-sm font-base"> In {{ uniqueAppointment.length }} <span v-if="uniqueAppointment.length > 1">Events</span> <span v-else>Event</span> </p>
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-left px-6 pb-6">
@@ -220,12 +193,10 @@ export default {
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="bg-white overflow-hidden sm:rounded-lg mt-3 md:mt-0">
-
-                    <div v-if="appointments.length">
+                    <div v-if="tasks.length">
                         <div v-for="appointment in appointments" :key="appointment.id">
                             <div v-for="(task, index) in appointment.task" class="mt-3 mb-3 bg-violet-50 sm:overflow-hidden sm:rounded-md">
                                 <div class="flex justify-between">
@@ -252,7 +223,7 @@ export default {
                                     No Task
                                 </div>
                             </div>
-                            
+        
                             <div class="flex flex-col items-left px-6 pb-6">
                                 <p>Task allow Professional to know better about you. It is usually assigned piece of work often to be finished within a certain time.</p>
                                 <Link :href="route('event.index')" class="mt-2 inline-flex items-center text-left w-40 fill-white hover:text-white hover:bg-violet-500 hover:fill-white text-white bg-violet-400 font-semibold py-3 px-4 border border-transparent rounded">
@@ -264,6 +235,7 @@ export default {
                     </div>
                 </div>
             </div>
+
             <div v-if="tab === 'home'" class="px-5 sm:px-0 md:col-span-1 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 grid-cols-1">
                 <div v-for="content in contents.data" :key="content.id" >
                     <Link :href="route('content.show', content.id)">
@@ -286,7 +258,7 @@ export default {
                 </div>
             </div>
              
-            <div v-if="tab === 'schedule'"  class="px-5 sm:px-0 md:col-span-4 md:mt-0 mt-5 grid grid-cols-1 gap-y-10 gap-x-6 grid-cols-1">
+            <div v-if="tab === 'schedule'"  class="px-5 sm:px-0 md:col-span-4 grid grid-cols-1">
                 <h1 class="text-3xl font-bold">Schedule</h1>
                 <div v-for="event in events" :key="event.id">
                     <div class="space-y-6 bg-white px-4 py-5 sm:p-6">

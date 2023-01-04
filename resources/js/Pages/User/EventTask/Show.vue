@@ -28,6 +28,12 @@ export default {
             tab: 'content',
         };
     },
+    setup() {
+        // Answer
+        const answers = ref({});
+       
+        return { answers };
+    },
     props: {
         task: Object, default: () => ({}),
         event: Object, default: () => ({}),
@@ -35,31 +41,13 @@ export default {
         questions: Object, default:() => ({}),
         can: Object, default: () => ({}),
     },
-    setup(props) {
-        // Answer
-        const answers = ref({});
-        // Form
-        const form = useForm({
-            answer_id: null,
-            content_id: props.content.id,
-            questions: [],
-            answers: null,
-        });
- 
-        return { answers, form };
-    },
     methods: {
-        // Destroy Content
-        destroy(id) {
-            Inertia.delete(route('tasks.destroy', id));
-        },
         // Active Tab
         activeTab(name) {
             this.tab = name;
         },
-
         back(value){
-            Inertia.get(route('events.show', [value, {tab: 'task'}])); 
+            Inertia.get(route('event.show', [value, {tab: 'task'}])); 
         }
     }
 }
@@ -69,10 +57,6 @@ export default {
 <style setup>
 .prose {
     max-width: none;
-}
-
-audio {
-    background-color: #000000;
 }
 </style>
     
@@ -100,8 +84,8 @@ audio {
                 <li class="mr-6">
                     <Link @click="back(event.id)">
                         <NavTabButton class="inline-block p-4 rounded-t-lg border-b-2"> 
-                                <box-icon class='mr-2' name='arrow-back'></box-icon>
-                                <span class="inline-block align-top"> Back </span>
+                            <box-icon class='mr-2' name='arrow-back'></box-icon>
+                            <span class="inline-block align-top"> Back </span>
                         </NavTabButton>
                     </Link>
                 </li>
@@ -147,49 +131,19 @@ audio {
                         <div v-if="content.image" class="sm:overflow-hidden sm:rounded-md">
                             <img :src="'/storage/' + content.image" class="w-199 h-100 object-cover" />
                         </div>
-                        <ul class="list-disc pt-4">
-                            <li class="flow-root">
-                                <p class="inline-flex items-center text-left w-full fill-white bg-indigo-400 text-white font-semibold py-3 px-4 border border-transparent rounded">
-                                    <box-icon class='mr-2' name='cube'></box-icon> 
-                                    <span class="inline-block align-top text-base">Status {{ content.status }}</span>
-                                </p>
-                            </li>
-                        </ul>
                     </div>
                 </template>
                 <!--/ #Subtitle -->
 
-                <!-- #Feature -->
-                <template #feature>
-                    <!-- edit content -->
-                    <li class="flow-root">
-                        <Link v-if="can.edit" :href="route('events.tasks.edit', [event.id, task.id])" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-indigo-600 hover:fill-white text-white bg-indigo-500 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-edit'></box-icon>
-                        <span class="inline-block align-top">Edit This Task</span>
-                        </Link>
-                    </li>
-                    <!-- destroy content -->
-                    <li class="flow-root">
-                        <Link v-if="can.delete" @click="destroy(task.id)"
-                            class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-400 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
-                        <box-icon class='mr-2' name='message-square-minus'></box-icon>
-                        <span class="inline-block align-top">Delete This Task</span>
-                        </Link>
-                    </li>
-                </template>
-                <!--/ #Feature -->
-
+        
                 <!-- #Main -->
                 <template #main>
                     <div class="mt-5 md:col-span-3 md:mt-0 px-4 sm:px-0">
                         
+
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
-                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
-                                </audio>
-
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>
@@ -199,7 +153,6 @@ audio {
                         <div v-if="questions.length && tab === 'question'" class="sm:overflow-hidden sm:rounded-md">
                             <!-- Form -->
                             <form class="container mx-auto">
-
                                 <!-- Question Viewer -->
                                 <div  class="space-y-6 bg-white sm:p-6">
                                     <h1 class="text-3xl font-bold">Question</h1>
@@ -208,7 +161,6 @@ audio {
                                     </div>
                                 </div>
                                 <!--/ Question Viewer -->
-
                             </form>
                             <!--/ Form -->
                         </div>
