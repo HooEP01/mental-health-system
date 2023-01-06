@@ -187,10 +187,6 @@ audio {
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
-                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
-                                </audio>
-
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>

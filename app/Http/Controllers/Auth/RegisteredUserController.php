@@ -57,7 +57,6 @@ class RegisteredUserController extends Controller
         // assign role
         $user->assignRole('user');
 
-
         return redirect(RouteServiceProvider::HOME);
     }
 }

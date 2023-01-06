@@ -127,7 +127,7 @@ class ContentController extends Controller
         }
         $content->save();
 
-        return $this->index();
+        return redirect()->route('contents_view.index');
     }
 
     /**

@@ -60,6 +60,10 @@ export default {
         // Active Tab
         activeTab(name) {
             this.tab = name;
+        },
+
+        toEvent() {
+            Inertia.get(route('event.index'));
         }
     }
 }
@@ -222,6 +226,10 @@ export default {
                             <div class="space-y-6 bg-white sm:p-6">
                                 <!-- Question Viewer -->
                                 <h1 class="text-3xl font-bold">Result</h1>
+                                <button @click="toEvent()" type="button" class="inline-flex justify-center fill-white rounded-md border border-transparent bg-amber-300 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2">
+                                    <box-icon class='mr-2' name='cube'></box-icon> 
+                                    <span class="inline-block align-top text-base mr-2">Join An Event</span>
+                                </button>
                                 <QuestionFormatViewer :answers="question_answer" :content="content" />
                                 <!--/ Question Viewer -->
                             </div>

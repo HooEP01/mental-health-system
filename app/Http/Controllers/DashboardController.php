@@ -34,10 +34,10 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('can:user payment list', ['only' => ['index', 'show']]);
-        $this->middleware('can:user payment create', ['only' => ['create', 'store']]);
-        $this->middleware('can:user payment edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:user payment delete', ['only' => ['destroy']]);
+        $this->middleware('can:user content list', ['only' => ['index', 'show']]);
+        $this->middleware('can:user content create', ['only' => ['create', 'store']]);
+        $this->middleware('can:user content edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:user content delete', ['only' => ['destroy']]);
     } 
 
     /**
@@ -72,7 +72,9 @@ class DashboardController extends Controller
             $collectionTasks = $collectionTask;
             $appointment->task = $tasks;
         }
-        $collectionTasks->all();
+
+        if($collectionTasks)
+            $collectionTasks->all();
 
         $collectionAppointments = collect($appointments);
         $uniqueAppointment = $collectionAppointments->unique('event_id');
@@ -151,9 +153,9 @@ class DashboardController extends Controller
             'events' => $events,
             'contents' => $contents,
             'can' => [
-                'create' => Auth::user()->can('user appointment create'),
-                'edit' => Auth::user()->can('user appointment edit'),
-                'delete' => Auth::user()->can('user appointment delete'),
+                'create' => Auth::user()->can('user content create'),
+                'edit' => Auth::user()->can('user content edit'),
+                'delete' => Auth::user()->can('user content delete'),
             ]
         ]);
     }

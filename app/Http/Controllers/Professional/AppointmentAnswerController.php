@@ -35,10 +35,10 @@ class AppointmentAnswerController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('can:professional appointment list', ['only' => ['index', 'show']]);
-        $this->middleware('can:professional appointment create', ['only' => ['create', 'store']]);
-        $this->middleware('can:professional appointment edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:professional appointment delete', ['only' => ['destroy']]);
+        $this->middleware('can:professional appointment answer list', ['only' => ['index', 'show']]);
+        $this->middleware('can:professional appointment answer create', ['only' => ['create', 'store']]);
+        $this->middleware('can:professional appointment answer edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:professional appointment answer delete', ['only' => ['destroy']]);
     }   
 
     public function show($appointment_id, $answer_id)
@@ -101,11 +101,9 @@ class AppointmentAnswerController extends Controller
 
     public function store($appointment_id, Request $request)
     {
-        if($request->answer_id){
-            return $this->updateAnswer($appointment_id, $request);
-        }else{
-            return $this->storeAnswer($appointment_id, $request);
-        }
+
+        return ($request->answer_id)? $this->updateAnswer($appointment_id, $request) : $this->storeAnswer($appointment_id, $request);
+
     }
 
     public function storeAnswer($appointment_id, Request $request)
@@ -127,7 +125,6 @@ class AppointmentAnswerController extends Controller
                 'content_answer_id'=>$contentAnswer->id,
                 'answer'=>is_array($answer) ? json_encode($answer) : $answer,
             ]);
-
         }
         return redirect()->route('appointments.answers.show', [$appointment_id, $contentAnswer->id]);
     }

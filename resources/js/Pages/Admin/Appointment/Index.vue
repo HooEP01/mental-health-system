@@ -83,10 +83,9 @@ export default {
                                             <tr class="bg-white border-b border-gray-400">
                                                 <th scope="col" class="py-3 px-6">#</th>
                                                 <th scope="col" class="py-3 px-6">Title</th>
-                                                <th scope="col" class="py-3 px-6">Description</th>
+                                                <th scope="col" class="py-3 px-6">Prof</th>
+                                                <th scope="col" class="py-3 px-6">Reason</th>
                                                 <th scope="col" class="py-3 px-6">Name</th>
-                                                <th scope="col" class="py-3 px-6">Name</th>
-                                                <th scope="col" class="py-3 px-6">Status</th>
                                                 <th scope="col" class="py-3 px-6">View</th>
                                                 <th scope="col" class="py-3 px-6">Action</th>
                                             </tr>
@@ -101,18 +100,17 @@ export default {
                                                 <td data-label="Title" class="py-4 px-6">
                                                     {{ appointment.event_title }}
                                                 </td>
-                                                <td data-label="Description" class="py-4 px-6">
-                                                    <p v-html="appointment.event_description" class="mt-1 text-sm text-gray-500 line-clamp-3"></p>
-                                                </td>
                                                 <td data-label="Title" class="py-4 px-6">
                                                     {{ appointment.professional_id.name }}
                                                 </td>
+                                                <td data-label="Description" class="py-4 px-6">
+                                                    {{ appointment.reason }}
+                                                </td>
+                                               
                                                 <td data-label="User_id" class="py-4 px-6">
                                                     {{ appointment.name }}
                                                 </td>
-                                                <td data-label="Status" class="py-4 px-6">
-                                                    {{ appointment.status }}
-                                                </td>
+
                                                 <td data-label="View" class="py-4 px-6">
                                                     <Link v-if="can.edit" :href="route('appointments_view.show', appointment.id)"
                                                         class="inline-flex items-center text-left fill-white text-white w-full bg-yellow-400 hover:bg-yellow-500 font-semibold py-3 px-4 border border-transparent rounded">

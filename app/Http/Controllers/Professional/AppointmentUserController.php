@@ -80,6 +80,8 @@ class AppointmentUserController extends Controller
         -> join('users', 'appointments.user_id', '=', 'users.id')
         -> select('appointments.*', 'events.id as event_id', 'events.title as event_title', 'events.image as event_image', 'events.user_id as professional_id', 'users.first_name', 'users.last_name', 'users.name', 'users.email', 'users.birthday', 'users.relationship_status', 'users.contact_number')
         -> where('appointments.user_id', '=', $user_id)
+        -> orderBy('appointments.start_date','desc')
+        -> orderBy('appointments.start_time', 'desc')
         -> get();
 
         foreach($appointments as $appointment){

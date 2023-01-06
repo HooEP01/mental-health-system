@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Task;
 use App\Models\Event;
+use App\Models\Payment;
 use App\Models\Appointment;
 
 // illuminate
@@ -189,7 +190,19 @@ class AppointmentController extends Controller
         $event = Event::find($appointment->event_id);
         $price = $event->price;
         if($price == EVENT::PRICE_FREE || $price == EVENT::PRICE_FREE_STRING) {
-            return rediect()->route('content.index');
+            $payment = Payment::create([
+                'appointment_id'=>$appointment->id,
+                'amount'=>EVENT::PRICE_FREE,
+                'status'=>Payment::STATUS_SUCCEEDED,
+                'method'=>"none",
+                'user_id'=>Auth::Id(),
+            ]);
+
+            $appoint = Appointment::find($appointment->id);
+            $appoint->status = APPOINTMENT::STATUS_PAID;
+            $appoint->save();
+
+            return redirect()->route('appointment.index');
         }
 
         return redirect()->route('appointment.show', [$appointment->id]);

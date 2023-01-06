@@ -41,6 +41,7 @@ class ContentController extends Controller
         $contents = DB::table('contents')
         -> select('contents.*')
         -> where('contents.status','=', Content::STATUS_APPROVE) 
+        -> where('contents.category', '!=', Content::PROFESSIONAL_CATEGORY)
         -> orderBy('created_at','desc')
         -> paginate(9);
 

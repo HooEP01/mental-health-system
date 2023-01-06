@@ -40,7 +40,7 @@ Route::get('/', function () {
 // dashboard
 Route::get('/dashboard', 
     [App\Http\Controllers\DashboardController::class, 'index']
-)->middleware(['auth', 'verified'])->name('dashboard');
+)->middleware(['auth'])->name('dashboard');
 
 
 

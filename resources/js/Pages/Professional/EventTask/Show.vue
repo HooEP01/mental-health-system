@@ -57,7 +57,7 @@ export default {
         activeTab(name) {
             this.tab = name;
         },
-
+        // Back Button
         back(value){
             Inertia.get(route('events.show', [value, {tab: 'task'}])); 
         }
@@ -69,10 +69,6 @@ export default {
 <style setup>
 .prose {
     max-width: none;
-}
-
-audio {
-    background-color: #000000;
 }
 </style>
     
@@ -170,8 +166,7 @@ audio {
                     </li>
                     <!-- destroy content -->
                     <li class="flow-root">
-                        <Link v-if="can.delete" @click="destroy(task.id)"
-                            class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-400 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
+                        <Link v-if="can.delete" @click="destroy(task.id)" class="inline-flex items-center text-left w-full fill-black hover:fill-white hover:text-white hover:bg-red-400 text-gray-800 font-semibold py-3 px-4 border border-transparent rounded">
                         <box-icon class='mr-2' name='message-square-minus'></box-icon>
                         <span class="inline-block align-top">Delete This Task</span>
                         </Link>
@@ -186,10 +181,6 @@ audio {
                         <!-- Content Show Card -->
                         <div v-if="tab === 'content'" class="sm:overflow-hidden sm:rounded-md">
                             <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <audio v-if="content.audio != ''" controls class="sm:overflow-hidden rounded-md">
-                                    <source :src="('/storage/' + content.audio)" type="audio/mpeg" alt="" class="bg-gray-400"> 
-                                </audio>
-
                                 <div v-html="content.description" class="prose w-full text-slate-600"></div>
                             </div>
                         </div>

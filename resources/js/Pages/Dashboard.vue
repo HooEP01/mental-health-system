@@ -52,6 +52,10 @@ export default {
             this.tab = name;
         },
 
+        showTask(appointment_id, task_id) {
+            Inertia.get(route('appointment.task.show', [appointment_id, task_id]))
+        },
+
     }
 }
 </script>
