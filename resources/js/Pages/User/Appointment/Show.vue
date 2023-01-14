@@ -7,6 +7,9 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavTabButton from '@/Components/NavTabButton.vue';
 import NavTabBar from '@/Components/TopBar/NavTabBar.vue';
+
+import TaskList from '@/Components/User/TaskList.vue'
+import ChatList from '@/Components/User/ChatList.vue'
 // Import inertia
 import { useForm, Head, Link } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -26,6 +29,8 @@ export default {
         Head,
         Link,
         ref,
+        TaskList,
+        ChatList,
     },
     data(props) {
         return {
@@ -42,29 +47,6 @@ export default {
         chats: Object, default:() => ({}),
         can: Object, default: () => ({}),
     },
-    setup(props) {
-         // Form
-         const chatForm = useForm({
-            appointment_id: props.appointment.id,
-            chat_id: null,
-            message: null,
-        });
-        // Edit Chat
-        function editChat(chat) {
-            this.chatForm.chat_id = chat.id;
-            this.chatForm.message = chat.message;
-        };
-        // Cancel chat
-        function resetChat() {
-            chatForm.reset();
-        };
-        // Chats Store
-        function submit() {
-            Inertia.post(route('appointment.chat.store', chatForm.appointment_id), chatForm);
-            chatForm.reset();
-        };
-        return { chatForm, editChat, resetChat, submit };
-    },
     methods: {
         // Destroy Content
         destroy(id) {
@@ -73,19 +55,6 @@ export default {
         // Active Tab
         activeTab(name) {
             this.tab = name;
-        },
-
-        showTask(appointment_id, task_id){
-            Inertia.get(route('appointment.task.show', [appointment_id, task_id]));
-        },
-
-        showAnswer(appointment_id, answer_id){
-            Inertia.get(route('appointment.answer.show', [appointment_id, answer_id]));
-        },
-
-        
-        destroyChat(appointment_id, chat_id) {
-            Inertia.delete(route('appointment.chat.destroy', [appointment_id, chat_id]));
         },
     }
 }
@@ -209,107 +178,13 @@ export default {
 
                         <!-- Task Tab -->
                         <div v-if="tab === 'task'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
-                            <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <!-- Task -->
-                                <h1 class="text-3xl font-bold">Task</h1>
-                                <div v-for="(task, index) of tasks" :key="task.id">
-                                    <div class="bg-violet-50 sm:overflow-hidden sm:rounded-md">
-                                        <div class="flex justify-between">
-                                            <div class="px-6 py-6 font-bold">
-                                                {{ index + 1 }}. {{ task.title }}
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-col items-left px-6 pb-6">
-                                            <p v-html="task.description" class="text-base font-medium text-slate-600"></p>
-                                            <div class="flex mt-2 space-x-3 md:mt-2">
-                                                <Link @click="showTask(appointment.id, task.id)"  class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-500 hover:fill-white text-white bg-violet-400 font-semibold py-3 px-4 border border-transparent rounded">
-                                                    <box-icon class="mr-2" name='spreadsheet'></box-icon>
-                                                    <span class="inline-block align-top">{{ task.content_title }}</span>
-                                                </Link>
-                                            </div>
-                                            <div v-if="task.answer.length" class="grid grid-cols-12 mt-2 gap-2">
-                                                <div v-for="(answer, index) of task.answer" class="col-span-3 sm:col-span-2">
-                                                    <div>
-                                                        <Link @click="showAnswer(appointment.id, answer.id)" class="inline-flex items-center text-left w-full fill-white hover:text-white hover:bg-violet-600 hover:fill-white text-white bg-violet-500 font-semibold py-3 px-4 border border-transparent rounded">
-                                                            <box-icon class="mr-2" type='solid' name='card'></box-icon>
-                                                            <span class="inline-block align-top">Ans: {{ index + 1 }}</span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <TaskList :tasks="tasks" :appointmentID="appointment.id" />
                         </div>
                         <!--/ Task Tab -->
 
                         <!-- Chat Tab -->
                         <div v-if="tab === 'chat'" class="sm:overflow-hidden sm:rounded-md mt-2 pt-2">
-                            <form @submit.prevent="submit">
-                                <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                    <!-- Chat -->
-                                    <h1 class="text-3xl font-bold">Chat</h1>
-                                    <div class="bg-white border border-slate-400 sm:overflow-hidden sm:rounded-md">
-                                        <div class="flex justify-between">
-                                            <div class="px-6 py-6 font-bold">
-                                                Message
-                                            </div>                                   
-                                        </div>
-                                        <div class="flex flex-col px-6 pb-6">
-                                            <div v-for="chat in chats" :key="chat.id" class="">
-                                                <div v-if="chat.user_id != appointment.user_id">
-                                                    <div v-if="chat.status != 'Deleted'">
-                                                        <p class="text-base font-medium text-slate-600 mt-3 text-right">{{ chat.message }}</p>
-                                                        <p class="text-sm font-base text-slate-400 text-right">{{ chat.updated_at }} {{ chat.status }} </p>
-                                                        <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
-                                                    </div>
-                                                    <div v-else>
-                                                        <p class="text-base font-medium text-slate-400 mt-3 text-right">This message has been {{ chat.status.toLowerCase() }}</p>
-                                                        <p class="text-sm font-base text-slate-400 text-right">By {{ chat.name }} </p>
-                                                    </div>
-                                                </div>
-                                                <div v-else>
-                                                    <div v-if="chat.status != 'Deleted'" class="flex justify-between">
-                                                        <div>
-                                                            <p class="text-base font-medium text-slate-600 mt-3">{{ chat.message }}</p>
-                                                            <p class="text-sm font-base text-slate-400">{{ chat.updated_at }} {{ chat.status }}</p>
-                                                        </div>
-                                                        <Dropdown class="flex justify-end">
-                                                            <template #trigger>
-                                                                <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 rounded-lg text-sm p-1.5" type="button">
-                                                                    <span class="sr-only">Open dropdown</span>
-                                                                    <box-icon name='dots-horizontal-rounded'></box-icon>
-                                                                </button>
-                                                            </template>
-                                                            <template #content>
-                                                                <ul class="py-1" aria-labelledby="dropdownButton">
-                                                                    <li><a @click="editChat(chat)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a></li>
-                                                                    <li><a @click="destroyChat(appointment.id, chat.id)" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a></li>
-                                                                </ul>
-                                                            </template>
-                                                        </Dropdown>
-                                                    </div>
-                                                    <div v-else>
-                                                        <p class="text-base font-medium text-slate-400 mt-3">You {{ chat.status.toLowerCase() }} this message</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Message input -->
-                                        <div class="flex px-6 pb-6">
-                                            <label for="title" class="pr-4 pt-2 flex-none w-16 text-sm font-medium text-slate-600">Message</label>
-                                            <input v-model="chatForm.message" type="text" name="title" id="title" autocomplete="title" required class="flex-initial block w-full rounded-md border-gray-400 mr-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                            <button v-if="chatForm.chat_id" @click="resetChat()" type="button" class="flex-none pt-1 w-14 mr-2 justify-center rounded-md border border-transparent fill-white bg-red-500 text-sm font-medium text-white shadow-sm hover:bg-red-600">
-                                                <box-icon name='message-square-x'></box-icon>
-                                            </button>
-                                            <button type="submit" class="flex-none pt-1 w-14 justify-center rounded-md border border-transparent fill-white bg-indigo-500 text-sm font-medium text-white shadow-sm hover:bg-indigo-600">
-                                                <box-icon name='send'></box-icon>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                            <ChatList :chats="chats" :appointment="appointment"/>
                         </div>
                         <!--/ Chat Tab  -->
                        

@@ -61,7 +61,7 @@ export default {
         activeTab(name) {
             this.tab = name;
         },
-
+        // To Event Page
         toEvent() {
             Inertia.get(route('event.index'));
         }

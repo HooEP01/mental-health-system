@@ -36,8 +36,7 @@ export default {
         <template #header>
             <!-- Title Header -->
             <div class="pb-6 mb-2">
-                <p class="text-base font-normal">Journey</p>
-                Answer
+                <p class="text-base font-normal">Journey</p> Answer
             </div>
             <!--/ Title Header -->
         </template>
