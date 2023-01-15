@@ -48,9 +48,9 @@ class EventController extends Controller
         return Inertia::render('Admin/Event/Index', [
             'events' => $events,
             'can' => [
-                'create' => Auth::user()->can('admin content create'),
-                'edit' => Auth::user()->can('admin content edit'),
-                'delete' => Auth::user()->can('admin content delete'),
+                'create' => Auth::user()->can('admin event create'),
+                'edit' => Auth::user()->can('admin event edit'),
+                'delete' => Auth::user()->can('admin event delete'),
             ]
         ]);
     }
@@ -65,12 +65,7 @@ class EventController extends Controller
     public function edit($id)
     {
         $event = Event::find($id);
-        
-        if($event->status != EVENT::STATUS_APPROVE){
-            $event->status = EVENT::STATUS_APPROVE;
-        }else{
-            $event->status = EVENT::STATUS_DISAPPROVE;
-        }
+        $event->status = ($event->status != EVENT::STATUS_APPROVE) ? EVENT::STATUS_APPROVE : EVENT::STATUS_DISAPPROVE; 
         $event->save();
 
         return $this->index();

@@ -122,10 +122,6 @@ class UserController extends Controller
             $appointment->task = $tasks;
         }
 
-        
-
-        
-
         return Inertia::render('Admin/User/Edit', [
             'user' => $model,
             'roles' => $roles,

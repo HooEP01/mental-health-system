@@ -88,6 +88,7 @@ class HandleInertiaRequests extends Middleware
                         'location' => $request->url(),
                     ]);
                 },
+                'success' => $request->session()->get('success'),
             ]);
         }
         return array_merge(parent::share($request), [

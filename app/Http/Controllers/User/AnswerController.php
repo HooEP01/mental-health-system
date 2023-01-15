@@ -21,6 +21,14 @@ use Inertia\Inertia;
 // Carbon
 use Carbon\Carbon;
 
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+
+// Request
+use App\Http\Requests\ContentAnswerRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 class AnswerController extends Controller
 {
     /**
@@ -118,11 +126,7 @@ class AnswerController extends Controller
 
     public function store(Request $request)
     {
-        if($request->answer_id){
-            return $this->updateAnswer($request);
-        }else{
-            return $this->storeAnswer($request);
-        }
+        return ($request->answer_id) ? $this->updateAnswer($request) : $this->storeAnswer($request);
     }
 
     /**

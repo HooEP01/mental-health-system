@@ -40,14 +40,13 @@ export default {
         const form = useForm({
             id: null,
             content_id: props.content.id,
-            questions: [],
             answers: null,
         });
         // Answer Store
         function submit() {
             this.form.answers = answers;
             Inertia.post(route('answer.store'), form)
-        }
+        };
         return { answers, form, submit };
     },
     methods: {

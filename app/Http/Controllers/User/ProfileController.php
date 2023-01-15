@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\DB;
 // inertia
 use Inertia\Inertia;
 
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -51,7 +57,7 @@ class ProfileController extends Controller
                 'create' => Auth::user()->can('user post create'),
                 'edit' => Auth::user()->can('user post edit'),
                 'delete' => Auth::user()->can('user post delete'),
-            ]
+            ],
         ]);
     }
 
@@ -63,38 +69,51 @@ class ProfileController extends Controller
      */
     public function show($name)
     {
-        if($name == 'professional'){
-            return $this->professional();
-        }
-        return $this->index();
+        return ($name == 'professional') ? $this->professional() : $this->index();
     }
 
+    /**
+     * Store a user's information
+     *
+     * @param $name 
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        if($request->professional_status == 'none'){
-            return $this->userUpdate($request);
-        }else{
-            $image_path = '';
-            if ($request->hasFile('image')) {
-                $image_path = $request->file('image')->store('image', 'public');
-            }
-            return $this->professionalUpdate($request, $image_path);
-        }
+        return ($request->professional_status) ? $this->userUpdate($request) : $this->professionalUpdate($request);
     }
 
     private function userUpdate(Request $request)
     {
-        $id = Auth::Id();
-        $data = User::find($id);
+        try {
+            $validatedData = $request->validate([
+                'first_name' => 'string|max:255|nullable',
+                'last_name' => 'string|max:255|nullable',
+                'birthday' => 'date|nullable',
+                'gender' => 'string|max:100|nullable',
+                'relationship_status' => 'string|max:100|nullable',
+                'contact_number' => 'string|max:100|nullable',
+            ]);      
 
-        $data->first_name = $request->first_name;
-        $data->last_name = $request->last_name;
-        $data->birthday = $request->birthday;
-        $data->gender = $request->gender;
-        $data->relationship_status = $request->relationship_status;
-        $data->contact_number = $request->contact_number;
-        $data->save();
-        return redirect()->route('profile.index');
+            $id = Auth::Id();
+            $data = User::find($id);
+
+            $data->first_name = $request->first_name;
+            $data->last_name = $request->last_name;
+            $data->birthday = $request->birthday;
+            $data->gender = $request->gender;
+            $data->relationship_status = $request->relationship_status;
+            $data->contact_number = $request->contact_number;
+            $data->save();
+
+        } catch (Exception $exception) {
+            if(get_class($exception) == 'Illuminate\Validation\ValidationException') {
+                session()->flash('errors', $exception->errors());
+            }
+            return redirect()->back();
+        }
+        session()->flash('success', 'Your account details have been saved.');
+        return redirect()->back();
     }
 
     private function professional()
@@ -115,8 +134,13 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function professionalUpdate(Request $request, $image_path)
+    public function professionalUpdate(Request $request)
     {
+        $image_path = '';
+        if ($request->hasFile('image')) {
+            $image_path = $request->file('image')->store('image', 'public');
+        }
+
         $id = Auth::Id();
         $data = User::find($id);
 

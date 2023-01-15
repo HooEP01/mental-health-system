@@ -119,12 +119,7 @@ class ContentController extends Controller
     public function edit($id)
     {
         $content = Content::find($id);
-        
-        if($content->status != Content::STATUS_APPROVE){
-            $content->status = Content::STATUS_APPROVE;
-        }else{
-            $content->status = Content::STATUS_DISAPPROVE;
-        }
+        $content->status = ($event->status != Content::STATUS_APPROVE) ? Content::STATUS_APPROVE : Content::STATUS_DISAPPROVE; 
         $content->save();
 
         return redirect()->route('contents_view.index');
