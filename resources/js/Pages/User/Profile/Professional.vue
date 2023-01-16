@@ -3,18 +3,17 @@
 import BreezeAuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContainerWithSideBar from '@/Components/ContainerWithSideBar.vue';
 import SettingSideBar from '@/Components/SideBar/SettingSideBar.vue';
+import AlertDanger from '@/Components/AlertDanger.vue';
+import AlertSuccess from '@/Components/AlertSuccess.vue';
 // Import inertia
-import { useForm, Head } from '@inertiajs/inertia-vue3';
+import { useForm, usePage, Head } from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
+import { computed } from 'vue';
 // Option API
 export default {
     components: {
-        BreezeAuthenticatedLayout,
-        ContainerWithSideBar,
-        SettingSideBar,
-        Inertia,
-        useForm,
-        Head,
+        BreezeAuthenticatedLayout, ContainerWithSideBar, SettingSideBar, AlertDanger, AlertSuccess,
+        Inertia, useForm, usePage, Head,
     },
     props: {
         user: Object, default: () => ({}),
@@ -57,13 +56,21 @@ export default {
             }
         },
     },
+    computed: {
+        errors() {
+            return usePage().props.value.errors;
+        },
+        success() {
+            return usePage().props.value.success;
+        },
+    }
 }
 </script>
 
 
 <template>
-     <!-- Header -->
-     <Head title="Professional Profile Show" />
+    <!-- Header -->
+    <Head title="Professional Profile Show" />
     <!--/ Header -->
 
     <!-- Breeze Authenticated layout -->
@@ -72,8 +79,7 @@ export default {
         <template #header>
             <!-- Title Header -->
             <div class="pb-6 mb-2">
-                <p class="text-base font-normal">Profile</p>
-                Professional
+                <p class="text-base font-normal">Profile</p> Professional
             </div>
             <!--/ Title Header -->
         </template>
@@ -110,6 +116,17 @@ export default {
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                    <!-- Profile -->
                                    <h1 class="text-xl font-bold text-indigo-500">Professional Profile</h1>
+                                    
+                                   <div v-if="errors">
+                                        <div v-for="(error, key) in errors" :key="key">
+                                            <AlertDanger :error="error"/>
+                                        </div>
+                                    </div>
+
+                                    <div v-if="success">
+                                        <AlertSuccess :success="success"/>
+                                    </div>
+
                                     <div class="grid grid-cols-6 gap-6">
                                         <!-- Professional Title -->
                                         <div class="col-span-6">
