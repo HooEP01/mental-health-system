@@ -21,6 +21,14 @@ use Redirect;
 // Carbon
 use Carbon\Carbon;
 
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
+
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 class AppointmentChatController extends Controller
 {
     /**
@@ -38,32 +46,51 @@ class AppointmentChatController extends Controller
 
     public function store($appointment_id, Request $request)
     {
-        $chat_id = $request->chat_id;
-        return ($chat_id) ? $this->updateChat($appointment_id, $request) : $this->storeChat($appointment_id, $request); 
+        return ($request->chat_id) ? $this->updateChat($appointment_id, $request) : $this->storeChat($appointment_id, $request); 
     }
 
     private function storeChat($appointment_id, Request $request)
     {
-        $appointment = Appointment::find($appointment_id);
+        try {
+            $validatedData = $request->validate([
+                'message' => 'required|string|max:1000',
+            ]);
 
-        $chat = Chat::create([
-            'appointment_id' => $appointment->id,
-            'user_id' => Auth::id(),
-            'message' => $request->message,
-            'status' => Chat::STATUS_DELIVERED,
-        ]);
+            $appointment = Appointment::find($appointment_id);
+
+            $chat = Chat::create([
+                'appointment_id' => $appointment->id,
+                'user_id' => Auth::id(),
+                'message' => Crypt::encryptString($validatedData['message']),
+                'status' => Chat::STATUS_DELIVERED,
+            ]);
+
+        } catch (Exception $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
+        }
 
         return redirect()->route('appointment.show', [$appointment_id , 'tab' => 'chat']);
     }
 
     private function updateChat($appointment_id, Request $request)
     {
-        $chat = Chat::find($request->chat_id);
-        if($chat->user_id == Auth::id()){
-            $chat->message = $request->message;
-            $chat->status = Chat::STATUS_EDITED;
+        try {
+            $validatedData = $request->validate([
+                'message' => 'required|string|max:1000',
+            ]);
+
+            $chat = Chat::find($request->chat_id);
+            if($chat->user_id == Auth::id()){
+                $chat->message = Crypt::encryptString($validatedData['message']);
+                $chat->status = Chat::STATUS_EDITED;
+            }
+            $chat->save();
+
+        } catch (Exception $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
         }
-        $chat->save();
         
         return redirect()->route('appointment.show', [$appointment_id , 'tab' => 'chat']);
     }

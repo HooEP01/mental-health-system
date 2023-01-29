@@ -1,7 +1,7 @@
 <script setup>
     import { Inertia } from '@inertiajs/inertia';
-    import { ref } from "vue";
     import { useForm } from '@inertiajs/inertia-vue3';
+    import { computed } from 'vue';
     import Dropdown from '@/Components/Dropdown.vue';
 
     const props = defineProps({
@@ -15,7 +15,7 @@
         message: null,
     });
 
-    const chats = ref(JSON.parse(JSON.stringify(props.chats)))
+    const chats = computed(() => props.chats)
 
     const destroyChat = (chatID) => {
         Inertia.delete(route('appointment.chat.destroy', [props.appointment.id, chatID]))

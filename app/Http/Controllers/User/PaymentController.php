@@ -17,13 +17,16 @@ use Illuminate\Support\Facades\DB;
 // inertia
 use Inertia\Inertia;
 use App\Http\Requests;
-use Validator;
 use URL;
 use Session;
 use Redirect;
 use Input;
 use Stripe\Error\Card;
 use Stripe;
+
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
@@ -43,7 +46,7 @@ class PaymentController extends Controller
         ->select('payments.*', 'appointments.start_date', 'appointments.start_time', 'appointments.event_id')
         ->where('payments.user_id', '=', Auth::id())
         ->orderBy('created_at', 'desc')
-        ->paginate (100);
+        ->paginate(100);
 
         foreach($payments as $payment) {
             $payment->event = Event::find($payment->event_id);
@@ -67,7 +70,7 @@ class PaymentController extends Controller
         ->where('appointments.user_id', '=', Auth::id())
         ->where('appointments.id', '=', $id)
         ->orderBy('created_at', 'desc')
-        ->paginate (100);;
+        ->paginate (100);
         
         return Inertia::render('User/Payment/Create', [
             'appointment' => $appointment,
@@ -86,53 +89,65 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $payment_id = $request->payment_id;
-        if($payment_id != null){
-
-        }else{
-            return $this->storePayment($request);
-        }
+        return ($request->payment_id)? $this->updatePayment($request) : $this->storePayment($request);
     }
 
     private function storePayment(Request $request)
     {
 
-        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        
-        $token = Stripe\Token::create([
-            'card' => [
-            'number' => $request->card_number,
-            'exp_month' => $request->card_expiry_month,
-            'exp_year' => $request->card_expiry_year,
-            'cvc' => $request->card_cvc,
-            ],
-        ]);
-
-        $charge = Stripe\Charge::create([
-            'card' => $token['id'],
-            'currency' => 'MYR',
-            'amount' => ($request->amount) * 100,
-            'description' => 'This is a description',
-        ]);
-
-        if($charge['status'] == 'succeeded') { 
-        
-            $payment = Payment::create([
-                'appointment_id'=>$request->appointment_id,
-                'amount'=>$request->amount,
-                'status'=>Payment::STATUS_SUCCEEDED,
-                'method'=>"card",
-                'user_id'=>Auth::Id(),
+        try {
+            $validatedData = $request->validate([
+                'card_number' => 'required|numeric',
+                'card_expiry_month' => 'required|numeric|max:12',
+                'card_expiry_year' => 'required|numeric|max:9999',
+                'card_cvc' => 'required|numeric|max:999',
+                'amount' => 'required|numeric',
+                'appointment_id' => 'required|exists:appointments,id',
             ]);
 
-            $appointment = Appointment::find($request->appointment_id);
-            $appointment->status = APPOINTMENT::STATUS_PAID;
-            $appointment->save();
+            Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        
+            $token = Stripe\Token::create([
+                'card' => [
+                'number' => $request->card_number,
+                'exp_month' => $request->card_expiry_month,
+                'exp_year' => $request->card_expiry_year,
+                'cvc' => $request->card_cvc,
+                ],
+            ]);
+
+            $charge = Stripe\Charge::create([
+                'card' => $token['id'],
+                'currency' => 'MYR',
+                'amount' => ($request->amount) * 100,
+                'description' => 'This is a description',
+            ]);
+
+            if($charge['status'] == 'succeeded') { 
+        
+                $payment = Payment::create([
+                    'appointment_id'=>$request->appointment_id,
+                    'amount'=>$request->amount,
+                    'status'=>Payment::STATUS_SUCCEEDED,
+                    'method'=>"card",
+                    'user_id'=>Auth::Id(),
+                ]);
+    
+                $appointment = Appointment::find($request->appointment_id);
+                $appointment->status = APPOINTMENT::STATUS_PAID;
+                $appointment->save();
+            }
+
+        } catch (Exception $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
         }
 
         return redirect()->route('appointment.index');
     }
 
-    
+    private function updatePayment(Request $request) {
+        // empty
+    }
 }
 

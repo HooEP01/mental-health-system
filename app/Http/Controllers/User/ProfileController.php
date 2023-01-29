@@ -44,11 +44,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        $user = DB::table('users')
-        -> select('users.*')
-        -> where('users.id', '=', Auth::Id())
-        -> orderBy('created_at','desc')
-        -> first();
+        $user = User::find(Auth::id());
 
         try {
             $user->contact_number = Crypt::decryptString($user->contact_number);
@@ -93,14 +89,15 @@ class ProfileController extends Controller
 
     private function userUpdate(Request $request)
     {
+       
         try {
             $validatedData = $request->validate([
-                'first_name' => 'string|max:255|nullable',
-                'last_name' => 'string|max:255|nullable',
-                'birthday' => 'date|nullable',
-                'gender' => 'string|max:100|nullable',
-                'relationship_status' => 'string|max:100|nullable',
-                'contact_number' => 'string|max:100|nullable',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'birthday' => 'required|date|before:today',
+                'gender' => 'required|string|max:100',
+                'relationship_status' => 'required|string|max:100',
+                'contact_number' => 'required|string|max:20',
             ]);      
 
             $data = User::find(Auth::Id());
@@ -113,11 +110,10 @@ class ProfileController extends Controller
             $data->save();
 
         } catch (Exception $exception) {
-            if(get_class($exception) == 'Illuminate\Validation\ValidationException') {
-                session()->flash('errors', $exception->errors());
-            }
+            session()->flash('errors', $exception->errors());
             return redirect()->back();
         }
+
         session()->flash('success', 'Your account details have been saved.');
         return redirect()->back();
     }
@@ -140,15 +136,15 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function professionalUpdate(Request $request)
+    private function professionalUpdate(Request $request)
     {
     
         try {
             $validatedData = $request->validate([
-                'image' => 'string|max:1000|nullable',
-                'professional_title' => 'string|max:1000|nullable',
-                'professional_description' => 'string|nullable',
-                'professional_status' => 'string|max:100|nullable',
+                'image' => 'required|string|max:1000',
+                'professional_title' => 'required|string|max:1000',
+                'professional_description' => 'required|string',
+                'professional_status' => 'required|string|max:100',
             ]); 
             
             $image_path = '';
@@ -164,14 +160,11 @@ class ProfileController extends Controller
             $data->save();
 
         } catch (Exception $exception) {
-            if(get_class($exception) == 'Illuminate\Validation\ValidationException') {
-                session()->flash('errors', $exception->errors());
-            }
+            session()->flash('errors', $exception->errors());
             return redirect()->back();
         }
+
         session()->flash('success', 'Your professional account details have been saved.');
         return redirect()->route('profile.show', ['professional']);
     }
-
-
 }

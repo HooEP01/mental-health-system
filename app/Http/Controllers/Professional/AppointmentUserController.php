@@ -25,6 +25,15 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
+
 
 class AppointmentUserController extends Controller
 {
@@ -51,6 +60,13 @@ class AppointmentUserController extends Controller
     public function show($appointment_id, $user_id)
     {
         $user = User::find($user_id);
+
+        try {
+            $user->contact_number = Crypt::decryptString($user->contact_number);
+        } catch (DecryptException $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
+        }
 
         $answers = DB::table('content_answers')
         -> join('contents', 'content_answers.content_id', '=', 'contents.id')

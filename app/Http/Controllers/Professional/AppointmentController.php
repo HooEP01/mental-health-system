@@ -18,6 +18,14 @@ use Illuminate\Support\Facades\DB;
 // inertia
 use Inertia\Inertia;
 
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class AppointmentController extends Controller
 {
@@ -149,6 +157,11 @@ class AppointmentController extends Controller
         })
         -> orderBy('created_at', 'asc')
         -> get();
+
+        
+        foreach($chats as $chat) {
+            $chat->message = Crypt::decryptString($chat->message);
+        }
 
         return Inertia::render('Professional/Appointment/Show', [
             'appointment' => $appointment,

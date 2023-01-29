@@ -42,7 +42,6 @@ class AppointmentTaskController extends Controller
         $event = Event::find($appointment->event_id);
         $task = Task::find($task_id);
         $content = Content::find($task->content_id);
-
         $content->formats = json_decode($content->formats);
 
         $questions = DB::table('content_questions')

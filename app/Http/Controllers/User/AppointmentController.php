@@ -20,6 +20,15 @@ use Illuminate\Support\Facades\Response;
 // inertia
 use Inertia\Inertia;
 
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
+
 class AppointmentController extends Controller
 {
     /**
@@ -111,7 +120,10 @@ class AppointmentController extends Controller
         })
         -> orderBy('created_at', 'asc')
         -> get();
-        
+
+        foreach($chats as $chat) {
+            $chat->message = Crypt::decryptString($chat->message);
+        }
 
         return Inertia::render('User/Appointment/Show', [
             'appointment' => $appointment,
@@ -153,14 +165,7 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        $appointment_id = $request->appointment_id;
-        if($appointment_id != null){
-            // $this->updateContent($request);
-        }else{
-            return $this->storeAppointment($request);
-        }
-
-        return $this->index();
+        return ($request->appointment_id) ? $this->updateAppointment($request) : $this->storeAppointment($request);
     }
 
     public function destroy($id)
@@ -174,40 +179,53 @@ class AppointmentController extends Controller
     private function storeAppointment(Request $request)
     {
 
-        $user_id = Auth::Id();
-        $status = APPOINTMENT::STATUS_BOOKED;
-        $appointment = Appointment::create([
-            'event_id'=>$request->event_id,
-            'user_id'=>$user_id,
-            'reason'=>$request->reason,
-            'status'=>$status,
-            'start_date'=>$request->scheduleDateTime['start_date'],
-            'end_date'=>$request->scheduleDateTime['end_date'],
-            'start_time'=>$request->scheduleDateTime['start_time'],
-            'end_time'=>$request->scheduleDateTime['end_time'],
-        ]);
-
-        $event = Event::find($appointment->event_id);
-        $price = $event->price;
-        if($price == EVENT::PRICE_FREE || $price == EVENT::PRICE_FREE_STRING) {
-            $payment = Payment::create([
-                'appointment_id'=>$appointment->id,
-                'amount'=>EVENT::PRICE_FREE,
-                'status'=>Payment::STATUS_SUCCEEDED,
-                'method'=>"none",
-                'user_id'=>Auth::Id(),
+        try {
+            $validatedData = $request->validate([
+                'appointment_id' => 'nullable|numeric|unique:appointments',
+                'event_id' => 'required|exists:events,id',
+                'reason' => 'required|string|max:255',
+                'scheduleDateTime' => 'required',
             ]);
 
-            $appoint = Appointment::find($appointment->id);
-            $appoint->status = APPOINTMENT::STATUS_PAID;
-            $appoint->save();
+            $appointment = Appointment::create([
+                'event_id'=>$request->event_id,
+                'user_id'=>Auth::Id(),
+                'reason'=>$request->reason,
+                'status'=>APPOINTMENT::STATUS_BOOKED,
+                'start_date'=>$request->scheduleDateTime['start_date'],
+                'end_date'=>$request->scheduleDateTime['end_date'],
+                'start_time'=>$request->scheduleDateTime['start_time'],
+                'end_time'=>$request->scheduleDateTime['end_time'],
+            ]);
 
-            return redirect()->route('appointment.index');
+            $event = Event::find($appointment->event_id);
+            $price = $event->price;
+            if($price == EVENT::PRICE_FREE || $price == EVENT::PRICE_FREE_STRING) {
+                $payment = Payment::create([
+                    'appointment_id'=>$appointment->id,
+                    'amount'=>EVENT::PRICE_FREE,
+                    'status'=>Payment::STATUS_SUCCEEDED,
+                    'method'=>"none",
+                    'user_id'=>Auth::Id(),
+                ]);
+
+                $appoint = Appointment::find($appointment->id);
+                $appoint->status = APPOINTMENT::STATUS_PAID;
+                $appoint->save();
+
+                return redirect()->route('appointment.index');
+            }
+
+        } catch (Exception $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
         }
-
         return redirect()->route('appointment.show', [$appointment->id]);
     }
 
+    public function updateAppointment(Request $request) {
+        // empty
+    }   
     
 }
 

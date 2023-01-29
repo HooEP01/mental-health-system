@@ -25,6 +25,14 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
+// Request
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+// Encryption
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class UserController extends Controller
 {
@@ -74,6 +82,13 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = Auth::user();
+
+        try {
+            $user->contact_number = Crypt::decryptString($user->contact_number);
+        } catch (DecryptException $exception) {
+            session()->flash('errors', $exception->errors());
+            return redirect()->back();
+        }
 
         $model = DB::table('model_has_roles')
         -> join ('roles', 'model_has_roles.role_id', '=', 'roles.id')
