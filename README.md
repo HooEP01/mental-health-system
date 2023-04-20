@@ -23,7 +23,7 @@
 <li> Inertia</li>
 </ul>
 
-<h3>Demonstration Video</h3>
+<h3>Demonstration Video:</h3>
 https://www.youtube.com/watch?v=9qPWKUUX4G0
 
 <h3> Future Improvement of this system: </h3>
