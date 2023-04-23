@@ -6,7 +6,7 @@
         tasks: Object, default: () => ({}),
         appointmentID: [Number, String], default: () => (0)
     });
-
+    
     const tasks = ref(JSON.parse(JSON.stringify(props.tasks)))
 
     const showTask = (taskID) => {

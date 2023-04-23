@@ -127,13 +127,13 @@ export default {
                                 <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
                                     <!-- Profile -->
                                     <h1 class="text-xl font-bold text-indigo-500">User Profile</h1>
-                                    
+                                    <!-- Alert Danger -->
                                     <div v-if="errors">
                                         <div v-for="(error, key) in errors" :key="key">
                                             <AlertDanger :error="error"/>
                                         </div>
                                     </div>
-
+                                    <!-- Alert Success -->
                                     <div v-if="success">
                                         <AlertSuccess :success="success"/>
                                     </div>
